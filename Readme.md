@@ -31,3 +31,14 @@ Inicie o serviço
 ```bash
   docker-compose up -d
 ```
+
+Instalando as dependências
+
+```bash
+  composer install
+```
+
+Subindo as migrations
+
+```bash
+  php artisan migrate
