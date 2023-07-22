@@ -20,6 +20,11 @@ Entre no diretório do projeto
   cd DecLaravel
 ```
 
+Copie a env
+```bash
+  cp .env-example .env
+```
+
 Construção das imagens
 
 ```bash

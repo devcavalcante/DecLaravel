@@ -14,14 +14,14 @@ ENV XDEBUG_PORT $XDEBUG_PORT
 RUN apk add --y --no-cache openssl bash nodejs npm postgresql-dev
 RUN docker-php-ext-install bcmath pdo pdo_pgsql
 
-WORKDIR /var/www
+WORKDIR /app
 
-RUN rm -rf /var/www/html
+RUN rm -rf /app
 RUN ln -s public html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY . /var/www
+COPY . /app
 
 RUN if [ -z "`getent group 1000`" ]; then \
   addgroup -g 1000 -S www ; \
