@@ -30,7 +30,7 @@ RUN if [ -z "`getent group 1000`" ]; then \
 fi
 
 RUN if [ -z "`getent passwd 1000`" ]; then \
-  adduser -u 1000 -D -S -G www -h /var/www -g www www ; \
+  adduser -u 1000 -D -S -G www -h /app -g www www ; \
 fi
 
 RUN composer update --optimize-autoloader
