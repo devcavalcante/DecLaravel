@@ -13,7 +13,7 @@ services:
                 XDEBUG_IDEKEY: ${XDEBUG_IDEKEY}
                 XDEBUG_HANDLER: ${XDEBUG_HANDLER}
         volumes:
-            - ./:/var/www/
+            - ./:/app
         depends_on:
             - plataforma.db
 

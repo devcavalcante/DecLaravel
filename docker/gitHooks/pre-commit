@@ -1,0 +1,49 @@
+#!/bin/sh
+
+#########################
+#                       #
+#     Initializing      #
+#                       #
+#########################
+
+PHPCS_BIN=./vendor/bin/phpcs
+PHPCBF_BIN=./vendor/bin/phpcbf
+DOCKER=docker
+
+# Check for PHPCS / PHPCBF
+if [ ! -x $PHPCS_BIN ]; then
+    echo "[PRE-COMMIT] PHP CodeSniffer is not installed locally."
+    echo "[PRE-COMMIT] Please run 'composer install' or check the path: $PHPCS_BIN"
+    exit 1
+fi
+
+if [ ! -x $PHPCBF_BIN ]; then
+    echo "[PRE-COMMIT] PHP Code Beautifier and Fixer is not installed locally."
+    echo "[PRE-COMMIT] Please run 'composer install' or check the path: $PHPCBF_BIN"
+    exit 1
+fi
+
+#########################
+#                       #
+#       Starting        #
+#                       #
+#########################
+
+$DOCKER exec -i plataforma.dev composer phpcs
+
+if [ $? != 0 ]
+then
+
+    $DOCKER exec -i plataforma.dev composer phpcbf
+    $DOCKER exec -i plataforma.dev composer phpcs
+
+    if [ $? != 0 ]
+    then
+        echo "[PRE-COMMIT] Error."
+        exit 1
+    fi
+
+fi
+
+echo "[PRE-COMMIT] No errors."
+exit 0
