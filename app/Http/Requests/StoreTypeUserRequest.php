@@ -36,8 +36,8 @@ class StoreTypeUserRequest extends FormRequest
     {
         return [
             'name.required' => 'O campo nome é obrigatório.',
-            'name.string' => 'O campo nome deve ser uma string.',
-            'name.min' => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'name.string'   => 'O campo nome deve ser uma string.',
+            'name.min'      => 'O campo nome deve ter no mínimo 4 caracteres.',
         ];
     }
     /**

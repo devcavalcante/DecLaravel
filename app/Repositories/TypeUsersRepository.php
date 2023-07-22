@@ -12,5 +12,4 @@ class TypeUsersRepository extends AbstractRepository implements Interfaces\TypeU
     {
         $this->model = $model;
     }
-
 }
