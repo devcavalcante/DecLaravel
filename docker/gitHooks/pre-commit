@@ -29,13 +29,13 @@ fi
 #                       #
 #########################
 
-$DOCKER exec -i api.acquirer.dev composer phpcs-precommit
+$DOCKER exec -i plataforma.dev composer phpcs
 
 if [ $? != 0 ]
 then
 
-    $DOCKER exec -i api.acquirer.dev composer phpcbf
-    $DOCKER exec -i api.acquirer.dev composer phpcs-precommit
+    $DOCKER exec -i plataforma.dev composer phpcbf
+    $DOCKER exec -i plataforma.dev composer phpcs
 
     if [ $? != 0 ]
     then

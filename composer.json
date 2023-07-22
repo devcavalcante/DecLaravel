@@ -48,10 +48,10 @@
             "@php artisan key:generate --ansi"
         ],
         "phpcs": [
-            "./vendor/bin/phpcs -sp app bootstrap config database routes tests"
+            "./vendor/bin/phpcs --standard=phpcs.xml -n app bootstrap config database routes tests"
         ],
         "phpcbf": [
-            "./vendor/bin/phpcbf -sp app bootstrap config database routes tests"
+            "./vendor/bin/phpcbf --standard=phpcs.xml -n -sp app bootstrap config database routes tests"
         ]
     },
     "extra": {
