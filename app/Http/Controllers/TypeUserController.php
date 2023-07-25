@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\TypeUsersRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\StoreTypeUserRequest;
-<<<<<<< HEAD
 use App\Http\Requests\UpdateTypeUserRequest;
-=======
->>>>>>> origin/DEC-45-backend-crud-tipos-de-usuarios
 
 class TypeUserController extends Controller
 {
@@ -27,11 +24,8 @@ class TypeUserController extends Controller
         $typeUser=$this->typeUsersRepository->findById($id);
         return response()->json($typeUser, 200);
     }
-<<<<<<< HEAD
+
     public function update(string $id, UpdateTypeUserRequest $request ):JsonResponse
-=======
-    public function update(string $id, \Illuminate\Http\Request $request):JsonResponse
->>>>>>> origin/DEC-45-backend-crud-tipos-de-usuarios
     {
         $payload= $request->validated();
         $typeUser=$this->typeUsersRepository->update($id, $payload);
