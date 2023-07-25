@@ -5,32 +5,21 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-class StoreTypeUserRequest extends FormRequest
+
+class UpdateTypeUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
-     */
     public function rules(): array
     {
-        return[
+        return [
             'name' => 'required|string|min:4',
         ];
     }
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
+
     public function messages(): array
     {
         return [
@@ -39,18 +28,10 @@ class StoreTypeUserRequest extends FormRequest
             'name.min' => 'O campo nome deve ter no mínimo 4 caracteres.',
         ];
     }
-    /**
-     * Handle a failed validation attempt.
-     *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
-     *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
-     */
+
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
-
 }
+

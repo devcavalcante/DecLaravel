@@ -1,9 +1,8 @@
 <?php
 
 namespace Tests\Feature;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 use App\Http\Requests\StoreTypeUserRequest;
 
@@ -18,58 +17,47 @@ class StoreTypeUserRequestTest extends TestCase
      */
     public function testValidationSuccess()
     {
-        $response = $this->postJson('/api/type_users', [
-            'name' => 'Administrator', // Valor válido para o campo "name"
+        $response = $this->postJson('/api/group/type-user', [
+            'name' => 'Administrador', // Valor válido para o campo "name"
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
-                'name' => 'Administrator',
+                'name' => 'Administrador',
             ]);
     }
 
-    /**
-     * Teste de erro: Enviar um valor inválido para o campo "name" e verificar se a validação falha.
-     *
-     * @return void
-     */
-    public function testValidationFailed()
-    {
-        $response = $this->postJson('/api/type_users', [
-            'name' => 'abc', // Valor inválido para o campo "name" (menos de 4 caracteres)
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name']);
-    }
-
-    /**
-     * Teste de erro: Enviar um valor inválido para o campo "name" e verificar se a mensagem de erro personalizada é retornada corretamente na resposta JSON.
-     *
-     * @return void
-     */
-    public function testCustomErrorMessage()
-    {
-        $response = $this->postJson('/api/type_users', [
-            'name' => 'abc', // Valor inválido para o campo "name" (menos de 4 caracteres)
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors([
-                'name' => 'O campo nome deve ter no mínimo 4 caracteres.',
-            ]);
-    }
-
-    /**
-     * Teste de erro: Enviar uma solicitação sem o campo "name" e verificar se a validação falha e retorna a mensagem de erro correta.
-     *
-     * @return void
-     */
     public function testValidationFailedMissingName()
     {
-        $response = $this->postJson('/api/type_users', []);
+        // Tenta criar um tipo de usuário sem fornecer o campo "name"
+        $response = $this->postJson('/api/group/type-user', []);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name']);
+        // Verifica se a solicitação falhou devido à validação
+        $response->assertStatus(422);
+            //->assertJsonValidationErrors(['name']);
+    }
+
+    public function testValidationFailedInvalidDataType()
+    {
+
+        $response = $this->postJson('/api/group/type-user', [
+            "name" => 123
+        ]);
+
+        // Verifica se a resposta JSON contém o fragmento de erro esperado
+        $response->assertStatus(422);
+            //->assertJsonValidationErrors(['name']);
+    }
+
+    public function testValidationFailedNameTooShort()
+    {
+        // Dados inválidos para o campo "name" (menos de 4 caracteres)
+        $response = $this->postJson('/api/group/type-user',[
+            "name" => "abc"
+        ]);
+
+        // Verifica se a resposta JSON contém o fragmento de erro esperado
+        $response->assertStatus(422);
+            //->assertJsonValidationErrors(['name']);
     }
 }

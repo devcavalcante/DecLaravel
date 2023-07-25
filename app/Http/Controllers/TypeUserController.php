@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\TypeUsersRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\StoreTypeUserRequest;
-
+use App\Http\Requests\UpdateTypeUserRequest;
 
 class TypeUserController extends Controller
 {
@@ -25,9 +25,9 @@ class TypeUserController extends Controller
         $typeUser=$this->typeUsersRepository->findById($id);
         return response()->json($typeUser,200);
     }
-    public function update(string $id, \Illuminate\Http\Request $request ):JsonResponse
+    public function update(string $id, UpdateTypeUserRequest $request ):JsonResponse
     {
-        $payload= $request->all();
+        $payload= $request->validated();
         $typeUser=$this->typeUsersRepository->update($id, $payload);
         return response()->json($typeUser,201);
     }
