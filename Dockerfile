@@ -21,6 +21,8 @@ RUN ln -s public html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN cp -R ./docker/gitHooks/ ./.git/hooks/;
+
 COPY . /app
 
 RUN if [ -z "`getent group 1000`" ]; then \
@@ -28,10 +30,9 @@ RUN if [ -z "`getent group 1000`" ]; then \
 fi
 
 RUN if [ -z "`getent passwd 1000`" ]; then \
-  adduser -u 1000 -D -S -G www -h /var/www -g www www ; \
+  adduser -u 1000 -D -S -G www -h /app -g www www ; \
 fi
 
-RUN cp -R ./docker/gitHooks/ ./.git/hooks/;
 RUN composer update --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
 

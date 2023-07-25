@@ -13,8 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+<<<<<<< HEAD
 
         $this->call(TypeUserSeeder::class);
         TypeUser::factory()->count(10)->create();
+=======
+        $this->call(TypeUserSeeder::class);
+>>>>>>> origin/DEC-45-backend-crud-tipos-de-usuarios
     }
 }

@@ -13,5 +13,4 @@ class TypeUsersRepository extends AbstractRepository implements TypeUsersInterfa
     {
         $this->model = $model;
     }
-
 }
