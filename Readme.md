@@ -22,7 +22,7 @@ Entre no diretório do projeto
 
 Copie a env
 ```bash
-  cp .env-example .env
+  cp .env.example .env
 ```
 
 Construção das imagens
