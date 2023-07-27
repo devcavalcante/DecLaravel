@@ -30,7 +30,6 @@ class UpdateTypeUserRequestTest extends TestCase
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
-           // ->assertJsonValidationErrors(['name']);
 
         // Verifica se o modelo TypeUser não foi atualizado após a solicitação falhada
         $typeUser->refresh();
@@ -56,9 +55,6 @@ class UpdateTypeUserRequestTest extends TestCase
 
         // Verifica se a solicitação foi bem-sucedida
         $response->assertStatus(201);
-        //->assertJson([
-           // 'name' => $data['name'],
-        //]);
 
         // Verifica se o modelo TypeUser foi atualizado corretamente
         $typeUser->refresh();
@@ -80,6 +76,5 @@ class UpdateTypeUserRequestTest extends TestCase
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
-            //->assertJsonValidationErrors(['name']);
     }
 }

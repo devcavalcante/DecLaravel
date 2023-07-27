@@ -34,7 +34,6 @@ class StoreTypeUserRequestTest extends TestCase
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
-            //->assertJsonValidationErrors(['name']);
     }
 
     public function testValidationFailedInvalidDataType()
@@ -46,7 +45,6 @@ class StoreTypeUserRequestTest extends TestCase
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
         $response->assertStatus(422);
-            //->assertJsonValidationErrors(['name']);
     }
 
     public function testValidationFailedNameTooShort()
@@ -58,6 +56,5 @@ class StoreTypeUserRequestTest extends TestCase
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
         $response->assertStatus(422);
-            //->assertJsonValidationErrors(['name']);
     }
 }
