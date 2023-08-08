@@ -27,9 +27,9 @@ jobs:
     - name: Create Database
       run: |
         mkdir -p database
-        touch database/database.pgsql
+        touch database/plataform.pgsql
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: pgsql
-        DB_DATABASE: plataform
+        DB_DATABASE: plataform.db
       run: vendor/bin/phpunit
