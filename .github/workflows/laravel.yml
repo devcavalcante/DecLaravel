@@ -1,10 +1,13 @@
-on: push
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 name: CI
 jobs:
-  phpunit:
+  laravel-tests:
     runs-on: ubuntu-latest
-    container:
-      image: kirschbaumdevelopment/laravel-test-runner:7.3
 
     services:
       postgres:
@@ -19,13 +22,16 @@ jobs:
 
 
     steps:
+      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: '8.1'
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
       - name: Install composer dependencies
         run: |
-          composer install --no-scripts
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Prepare Laravel Application
         run: |
