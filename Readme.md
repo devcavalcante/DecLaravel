@@ -22,7 +22,7 @@ Entre no diretório do projeto
 
 Copie a env
 ```bash
-  cp .env-example .env
+  cp .env.example .env
 ```
 
 Construção das imagens
@@ -40,10 +40,10 @@ Inicie o serviço
 Instalando as dependências
 
 ```bash
-  composer install
+  docker exec -it plataforma.dev composer install
 ```
 
 Subindo as migrations
 
 ```bash
-  php artisan migrate
+  docker exec -it plataforma.dev php artisan migrate
