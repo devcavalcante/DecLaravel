@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TypeUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,4 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('health', function () {
     return response('ok');
+});
+
+
+Route::group(['prefix' => '/group'], function () {
+     Route::post('type-user', [TypeUserController::class, 'store']);
+     Route::get('type-user/{id}', [TypeUserController::class, 'show']);
+     Route::put('type-user/{id}', [TypeUserController::class, 'update']);
+     Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
+     Route::get('type-user', [TypeUserController::class, 'index']);
 });

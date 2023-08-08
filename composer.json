@@ -52,6 +52,12 @@
         ],
         "phpcbf": [
             "./vendor/bin/phpcbf --standard=phpcs.xml -n -sp app bootstrap config database routes tests"
+        ],
+        "test-coverage": [
+            "./vendor/bin/phpunit --colors=always --coverage-html ./tests/reports/coverage"
+        ],
+        "test": [
+            "./vendor/bin/phpunit --colors=always"
         ]
     },
     "extra": {
