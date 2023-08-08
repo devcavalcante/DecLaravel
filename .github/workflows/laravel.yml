@@ -1,17 +1,14 @@
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+on: push
 name: CI
 jobs:
-  laravel-tests:
+  phpunit:
     runs-on: ubuntu-latest
+    container:
+      image: kirschbaumdevelopment/laravel-test-runner:8.1
 
     services:
       postgres:
-        image: postgres:11.0
+        image: postgres:10.8
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -20,26 +17,19 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-
     steps:
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-        with:
-          php-version: '8.1'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v1
         with:
           fetch-depth: 1
 
       - name: Install composer dependencies
         run: |
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          composer install --no-scripts
 
       - name: Prepare Laravel Application
         run: |
           cp .env.ci .env
           php artisan key:generate
-
-      - name: Run migrations and seeders
-        run: php artisan migrate:fresh --seed --force
 
       - name: Run Testsuite
         run: vendor/bin/phpunit tests/
