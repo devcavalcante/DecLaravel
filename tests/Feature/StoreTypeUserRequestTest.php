@@ -40,7 +40,7 @@ class StoreTypeUserRequestTest extends TestCase
     {
 
         $response = $this->postJson('/api/group/type-user', [
-            "name" => 123
+            "name" => 123,
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
@@ -50,8 +50,8 @@ class StoreTypeUserRequestTest extends TestCase
     public function testValidationFailedNameTooShort()
     {
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
-        $response = $this->postJson('/api/group/type-user',[
-            "name" => "abc"
+        $response = $this->postJson('/api/group/type-user', [
+            "name" => "abc",
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado

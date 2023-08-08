@@ -25,7 +25,7 @@ class ShowTypeUserRequestTest extends TestCase
         // Verifica se a solicitação foi bem-sucedida e se os dados retornados são corretos
         $response->assertStatus(200)
             ->assertJson([
-                'id' => $typeUser->id,
+                'id'   => $typeUser->id,
                 'name' => $typeUser->name,
             ]);
     }

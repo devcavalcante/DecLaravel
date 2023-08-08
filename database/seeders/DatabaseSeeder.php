@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Factories\TypeUserFactory;
 use App\Models\TypeUser;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -17,6 +18,5 @@ class DatabaseSeeder extends Seeder
 
         $this->call(TypeUserSeeder::class);
         TypeUser::factory()->count(10)->create();
-
     }
 }

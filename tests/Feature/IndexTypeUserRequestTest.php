@@ -28,11 +28,11 @@ class IndexTypeUserRequestTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 [
-                    'id' => $typeUser1->id,
+                    'id'   => $typeUser1->id,
                     'name' => $typeUser1->name,
                 ],
                 [
-                    'id' => $typeUser2->id,
+                    'id'   => $typeUser2->id,
                     'name' => $typeUser2->name,
                 ],
             ]);

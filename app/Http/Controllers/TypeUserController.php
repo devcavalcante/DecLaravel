@@ -25,7 +25,7 @@ class TypeUserController extends Controller
         return response()->json($typeUser, 200);
     }
 
-    public function update(string $id, UpdateTypeUserRequest $request ):JsonResponse
+    public function update(string $id, UpdateTypeUserRequest $request):JsonResponse
     {
         $payload= $request->validated();
         $typeUser=$this->typeUsersRepository->update($id, $payload);

@@ -20,7 +20,7 @@ class UpdateTypeUserRequestTest extends TestCase
     {
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
         $data = [
-            "name" => "abc"
+            "name" => "abc",
         ];
 
         // Obtenha um tipo de usuário existente do banco de dados
@@ -48,7 +48,7 @@ class UpdateTypeUserRequestTest extends TestCase
 
         // Dados válidos para o campo "name"
         $data = [
-            "name" => "Novo Nome"
+            "name" => "Novo Nome",
         ];
 
         $response = $this->putJson('/api/group/type-user/' . $typeUser->id, $data);
