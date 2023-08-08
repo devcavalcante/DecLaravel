@@ -19,6 +19,5 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="DB_DATABASE" value="plataform_test"/>
     </php>
 </phpunit>
