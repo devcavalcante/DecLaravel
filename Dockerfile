@@ -38,5 +38,5 @@ RUN composer update --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
 
 EXPOSE 9000
-
 ENTRYPOINT [ "php-fpm" ]
+
