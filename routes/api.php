@@ -19,9 +19,15 @@ Route::get('health', function () {
 
 
 Route::group(['prefix' => '/group'], function () {
-     Route::post('type-user', [TypeUserController::class, 'store']);
-     Route::get('type-user/{id}', [TypeUserController::class, 'show']);
-     Route::put('type-user/{id}', [TypeUserController::class, 'update']);
-     Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
-     Route::get('type-user', [TypeUserController::class, 'index']);
+    Route::post('type-user', [TypeUserController::class, 'store']);
+    Route::get('type-user/{id}', [TypeUserController::class, 'show']);
+    Route::put('type-user/{id}', [TypeUserController::class, 'update']);
+    Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
+    Route::get('type-user', [TypeUserController::class, 'index']);
+
+    Route::post('type-group', [TypeUserController::class, 'store']);
+    Route::get('type-group/{id}', [TypeUserController::class, 'show']);
+    Route::put('type-group/{id}', [TypeUserController::class, 'update']);
+    Route::delete('type-group/{id}', [TypeUserController::class, 'destroy']);
+    Route::get('type-group', [TypeUserController::class, 'index']);
 });
