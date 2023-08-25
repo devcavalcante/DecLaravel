@@ -15,4 +15,9 @@ class TypeUser extends Model
     {
         return 'Tipo de usuário não encontrado';
     }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'type_user_id');
+    }
 }

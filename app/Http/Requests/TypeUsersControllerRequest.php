@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateTypeUserRequest extends FormRequest
+class TypeUsersControllerRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,11 +14,10 @@ class UpdateTypeUserRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        return[
             'name' => 'required|string|min:4',
         ];
     }
-
     public function messages(): array
     {
         return [

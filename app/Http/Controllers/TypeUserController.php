@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\TypeUsersRepository;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\StoreTypeUserRequest;
-use App\Http\Requests\UpdateTypeUserRequest;
+use App\Http\Requests\TypeUsersControllerRequest;
 
 class TypeUserController extends Controller
 {
@@ -13,7 +12,7 @@ class TypeUserController extends Controller
     {
     }
 
-    public function store(StoreTypeUserRequest $request):JsonResponse
+    public function store(TypeUsersControllerRequest $request):JsonResponse
     {
         $payload= $request->validated();
         $typeUser=$this->typeUsersRepository->create($payload);
@@ -25,7 +24,7 @@ class TypeUserController extends Controller
         return response()->json($typeUser, 200);
     }
 
-    public function update(string $id, UpdateTypeUserRequest $request):JsonResponse
+    public function update(string $id, TypeUsersControllerRequest $request):JsonResponse
     {
         $payload= $request->validated();
         $typeUser=$this->typeUsersRepository->update($id, $payload);
