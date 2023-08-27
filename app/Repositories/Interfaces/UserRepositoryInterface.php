@@ -13,5 +13,4 @@ interface UserRepositoryInterface
     public function update(string $id, array $data): Model;
     public function delete(string $id): Model;
     public function restore(string $id): Model;
-
 }
