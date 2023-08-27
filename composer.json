@@ -31,6 +31,8 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "PHPUnit\\Metadata\\": "vendor/phpunit/phpunit/src/Metadata",
+            "PHPUnit\\Metadata\\Annotation\\Parser\\": "vendor/phpunit/phpunit/src/Metadata/Parser/Annotation",
             "Tests\\": "tests/"
         }
     },

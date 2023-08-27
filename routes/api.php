@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 /*
@@ -19,12 +20,19 @@ Route::get('health', function () {
     return response('ok');
 });
 
+
 Route::group(['prefix' => '/group'], function () {
-     Route::post('type-user', [TypeUserController::class, 'store']);
-     Route::get('type-user/{id}', [TypeUserController::class, 'show']);
-     Route::put('type-user/{id}', [TypeUserController::class, 'update']);
-     Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
-     Route::get('type-user', [TypeUserController::class, 'index']);
+    Route::post('type-user', [TypeUserController::class, 'store']);
+    Route::get('type-user/{id}', [TypeUserController::class, 'show']);
+    Route::put('type-user/{id}', [TypeUserController::class, 'update']);
+    Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
+    Route::get('type-user', [TypeUserController::class, 'index']);
+
+    Route::post('type-group', [TypeGroupController::class, 'store']);
+    Route::get('type-group/{id}', [TypeGroupController::class, 'show']);
+    Route::put('type-group/{id}', [TypeGroupController::class, 'update']);
+    Route::delete('type-group/{id}', [TypeGroupController::class, 'destroy']);
+    Route::get('type-group', [TypeGroupController::class, 'index']);
 });
 
 Route::group(['prefix' => '/users'], function () {
