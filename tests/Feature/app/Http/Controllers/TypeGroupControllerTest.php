@@ -3,12 +3,13 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Models\TypeGroup;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TypeGroupControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function testIndexTypeGroups()
     {
