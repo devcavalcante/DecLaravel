@@ -14,7 +14,7 @@ trait CRUDTrait
         return $this->model->create($data);
     }
 
-    public function listAll(): Collection
+    public function listAll(): Model
     {
         return $this->model->get();
     }
