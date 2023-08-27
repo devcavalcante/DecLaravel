@@ -33,12 +33,12 @@ class AuthControllerTest extends TestCase
     public function testShouldNotCreateWhenValidationErrors()
     {
         $payload = [
-            'name'     => 'Test Name',
-            'email'    => 'teste',
-            'password' => '12345678',
-            'c_password' => '12345678',
+            'name'         => 'Test Name',
+            'email'        => 'teste',
+            'password'     => '12345678',
+            'c_password'   => '12345678',
             'type_user_id' => 1,
-        ];;
+        ];
 
         $response = $this->postJson(sprintf('%s/register', self::BASE_URL), $payload);
         $actual = json_decode($response->getContent(), true);
@@ -68,7 +68,6 @@ class AuthControllerTest extends TestCase
         $user = User::where('email', $payload['email'])->first();
         $response = $this->postJson(sprintf('%s/login', self::BASE_URL), ['email' => $user->email, 'password' => '12345678']);
         $this->assertEquals(200, $response->getStatusCode());
-
     }
 
     public function testShouldErrorWithInvalidCredentials()
@@ -100,15 +99,15 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('Usuario não esta logado', $actual['errors']);
     }
 
-    private function getFakePayload (): array
+    private function getFakePayload(): array
     {
         $typeUser = TypeUser::factory()->create();
 
         return [
-            'name'     => 'Test Name',
-            'email'    => 'teste@email.com',
-            'password' => '12345678',
-            'c_password' => '12345678',
+            'name'         => 'Test Name',
+            'email'        => 'teste@email.com',
+            'password'     => '12345678',
+            'c_password'   => '12345678',
             'type_user_id' => $typeUser->id,
         ];
     }

@@ -37,4 +37,3 @@ Route::group(['prefix' => '/users'], function () {
     Route::get('/', [UserController::class, 'index']);
     Route::put('/restore/{id}', [UserController::class, 'restore']);
 });
-
