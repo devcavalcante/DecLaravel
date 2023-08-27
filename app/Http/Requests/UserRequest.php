@@ -26,10 +26,10 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return[
-            'name' => 'required|min:4|string',
-            'email' => 'required|email|string',
-            'password' => 'required|min:8|string',
-            'c_password' => 'required|same:password|min:8|string'
+            'name'       => 'required|min:4|string',
+            'email'      => 'required|email|string',
+            'password'   => 'required|min:8|string',
+            'c_password' => 'required|same:password|min:8|string',
         ];
     }
     /**
@@ -40,18 +40,18 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O campo nome é obrigatório.',
-            'name.string'   => 'O campo nome deve ser uma string.',
-            'name.min'      => 'O campo nome deve ter no mínimo 4 caracteres.',
-            'email.email'   => 'Email invalido.',
-            'email.required'   => 'O campo e-mail é obrigatório.',
-            'email.string'   => 'O campo email deve ser uma string.',
-            'password.required' => 'O campo password é obrigatório.',
-            'password.min' => 'O campo password deve ter no mínimo 8 caracteres.',
-            'password.string'   => 'O campo password deve ser uma string.',
-            'c_password.min' => 'O campo password deve ter no mínimo 8 caracteres.',
+            'name.required'       => 'O campo nome é obrigatório.',
+            'name.string'         => 'O campo nome deve ser uma string.',
+            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'email.email'         => 'Email invalido.',
+            'email.required'      => 'O campo e-mail é obrigatório.',
+            'email.string'        => 'O campo email deve ser uma string.',
+            'password.required'   => 'O campo password é obrigatório.',
+            'password.min'        => 'O campo password deve ter no mínimo 8 caracteres.',
+            'password.string'     => 'O campo password deve ser uma string.',
+            'c_password.min'      => 'O campo password deve ter no mínimo 8 caracteres.',
             'c_password.required' => 'O campo c_password é obrigatório.',
-            'c_password.same' => 'O campo c_password deve ser igual ao campo password.',
+            'c_password.same'     => 'O campo c_password deve ser igual ao campo password.',
             'c_password.string'   => 'O campo c_password deve ser uma string.',
         ];
     }

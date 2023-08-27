@@ -57,7 +57,7 @@ class AuthService
             return $user;
         }
 
-        throw new AuthorizedException('Não autorizado', 401);
+        throw new AuthorizedException('Nao autorizado', 401);
     }
 
     /**
@@ -66,7 +66,7 @@ class AuthService
     public function logout(): void
     {
         if (!Auth::check()) {
-            throw new AuthorizedException('Usuário não está logado', 401);
+            throw new AuthorizedException('Usuario não esta logado', 401);
         }
         Auth::logout();
     }

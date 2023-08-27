@@ -26,7 +26,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return[
-            'email' => 'required|email|string',
+            'email'    => 'required|email|string',
             'password' => 'required|string',
         ];
     }
@@ -38,11 +38,11 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.email'   => 'Email inválido.',
-            'email.required'   => 'O campo e-mail é obrigatório.',
-            'email.string'   => 'O campo e-mail deve ser uma string.',
+            'email.email'       => 'Email inválido.',
+            'email.required'    => 'O campo e-mail é obrigatório.',
+            'email.string'      => 'O campo e-mail deve ser uma string.',
             'password.required' => 'O campo password é obrigatório.',
-            'password.string' => 'O campo password deve ser uma string.',
+            'password.string'   => 'O campo password deve ser uma string.',
         ];
     }
     /**

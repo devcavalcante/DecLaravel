@@ -62,7 +62,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], $exceptionCode);
         }
 
-        if ($exception instanceof NotFoundHttpException){
+        if ($exception instanceof NotFoundHttpException) {
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], 404);
         }
 

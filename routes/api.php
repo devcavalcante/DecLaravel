@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TypeUserController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,6 @@ Route::get('health', function () {
     return response('ok');
 });
 
-
 Route::group(['prefix' => '/group'], function () {
      Route::post('type-user', [TypeUserController::class, 'store']);
      Route::get('type-user/{id}', [TypeUserController::class, 'show']);
@@ -31,4 +31,10 @@ Route::group(['prefix' => '/users'], function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::put('/{id}', [UserController::class, 'update']);
+    Route::delete('/{id}', [UserController::class, 'destroy']);
+    Route::get('/', [UserController::class, 'index']);
+    Route::put('/restore/{id}', [UserController::class, 'restore']);
 });
+

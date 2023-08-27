@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Traits;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -48,5 +49,17 @@ trait CRUDTrait
     public function findByFilters(array $data): Model|null
     {
         return $this->model->where($data)->first();
+    }
+
+    public function restore(string $id): Model
+    {
+        $user = $this->model->withTrashed()->find($id);
+
+        if (!$user) {
+            throw new NotFoundHttpException($this->model->getNotFoundMessage());
+        }
+
+        $user->restore();
+        return $user;
     }
 }
