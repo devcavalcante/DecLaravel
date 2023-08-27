@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\TypeUsersRepository;
+use App\Repositories\TypeUserRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\StoreTypeUserRequest;
 use App\Http\Requests\UpdateTypeUserRequest;
 
 class TypeUserController extends Controller
 {
-    public function __construct(private TypeUsersRepository $typeUsersRepository)
+    public function __construct(private TypeUserRepository $typeUsersRepository)
     {
     }
 

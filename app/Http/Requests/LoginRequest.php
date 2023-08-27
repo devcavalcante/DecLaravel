@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
 
-class StoreTypeUserRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,12 +21,13 @@ class StoreTypeUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return[
-            'name' => 'required|string|min:4',
+            'email' => 'required|email|string',
+            'password' => 'required|string',
         ];
     }
     /**
@@ -35,22 +38,23 @@ class StoreTypeUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O campo nome é obrigatório.',
-            'name.string'   => 'O campo nome deve ser uma string.',
-            'name.min'      => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'email.email'   => 'Email inválido.',
+            'email.required'   => 'O campo e-mail é obrigatório.',
+            'email.string'   => 'O campo e-mail deve ser uma string.',
+            'password.required' => 'O campo password é obrigatório.',
+            'password.string' => 'O campo password deve ser uma string.',
         ];
     }
     /**
      * Handle a failed validation attempt.
      *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @param Validator $validator
      * @return void
      *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @throws HttpResponseException
      */
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

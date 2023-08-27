@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TypeUserController;
 
@@ -24,4 +25,10 @@ Route::group(['prefix' => '/group'], function () {
      Route::put('type-user/{id}', [TypeUserController::class, 'update']);
      Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
      Route::get('type-user', [TypeUserController::class, 'index']);
+});
+
+Route::group(['prefix' => '/users'], function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });

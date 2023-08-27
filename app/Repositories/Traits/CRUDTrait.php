@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class AbstractRepository
+trait CRUDTrait
 {
     public function create(array $data): Model
     {
@@ -43,5 +43,10 @@ class AbstractRepository
         $model = $this->findById($id);
         $model->delete();
         return $model;
+    }
+
+    public function findByFilters(array $data): Model|null
+    {
+        return $this->model->where($data)->first();
     }
 }

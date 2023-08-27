@@ -47,3 +47,11 @@ Subindo as migrations
 
 ```bash
   docker exec -it plataforma.dev php artisan migrate
+```
+
+Criando chaves de acesso
+
+```bash
+  docker exec -it plataforma.dev php artisan passport:install
+```
+
