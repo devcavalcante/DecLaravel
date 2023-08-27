@@ -24,7 +24,7 @@ class TypeGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' =>'required|string|min:4'
+            'name' =>'required|string|min:4',
         ];
     }
    /**
@@ -54,6 +54,3 @@ class TypeGroupRequest extends FormRequest
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }
-
-
-

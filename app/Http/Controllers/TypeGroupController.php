@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\TypeGroupsRepository;
+use App\Http\Requests\TypeGroupRequest;
+use App\Repositories\TypeGroupRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\TypeUserRequest;
-use App\Http\Requests\UpdateTypeUserRequest;
 
 class TypeGroupController extends Controller
 {
-    public function __construct(private TypeGroupsRepository $typeGroupsRepository)
+    public function __construct(private TypeGroupRepository $typeGroupsRepository)
     {
     }
 
-    public function store(TypeUserRequest $request): JsonResponse
+    public function index(): JsonResponse
+    {
+        $typeUser = $this->typeGroupsRepository->listAll();
+        return response()->json($typeUser, 200);
+    }
+
+    public function store(TypeGroupRequest $request): JsonResponse
     {
         $payload = $request->validated();
         $typeGroup = $this->typeGroupsRepository->create($payload);
@@ -26,7 +32,7 @@ class TypeGroupController extends Controller
         return response()->json($typeGroup, 200);
     }
 
-    public function update(string $id, UpdateTypeUserRequest $request): JsonResponse
+    public function update(string $id, TypeGroupRequest $request): JsonResponse
     {
         $payload = $request->validated();
         $typeGroup = $this->typeGroupsRepository->update($id, $payload);
@@ -37,11 +43,5 @@ class TypeGroupController extends Controller
     {
         $this->typeGroupsRepository->delete($id);
         return response()->json([], 204);
-    }
-
-    public function index():JsonResponse
-    {
-        $typeUser = $this->typeGroupsRepository->listAll();
-        return response()->json($typeUser, 200);
     }
 }

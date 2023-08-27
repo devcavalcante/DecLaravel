@@ -10,6 +10,8 @@ class UserRepository implements UserRepositoryInterface
 {
     use CRUDTrait;
 
+    protected User $model;
+
     public function __construct(User $model)
     {
         $this->model = $model;

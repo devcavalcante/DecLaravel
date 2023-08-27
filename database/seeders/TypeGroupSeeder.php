@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class TypeUserSeeder extends Seeder
+class TypeGroupSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,14 +13,12 @@ class TypeUserSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            'Administrador',
-            'Gerente',
-            'Representante',
-            'Visualizador',
+            'Comitê',
+            'Comissão',
         ];
 
         foreach ($types as $type) {
-            DB::table('type_users')->insert([
+            DB::table('type_groups')->insert([
                 'name'       => $type,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s"),
