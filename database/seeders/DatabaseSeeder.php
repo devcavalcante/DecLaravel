@@ -15,8 +15,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(TypeUserSeeder::class);
-
-        $this->call(TypeUserSeeder::class);
-        TypeUser::factory()->count(10)->create();
+        $this->call(UserSeeder::class);
     }
 }

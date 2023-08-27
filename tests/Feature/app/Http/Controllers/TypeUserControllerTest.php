@@ -3,12 +3,12 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Models\TypeUser;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class TypeUserControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function testIndexTypeUsers()
     {

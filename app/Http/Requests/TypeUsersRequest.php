@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateTypeUserRequest extends FormRequest
+class TypeUsersRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,11 +14,10 @@ class UpdateTypeUserRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        return[
             'name' => 'required|string|min:4',
         ];
     }
-
     public function messages(): array
     {
         return [
@@ -31,6 +29,6 @@ class UpdateTypeUserRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
-        throw new HttpResponseException(response()->json($validator->errors(), 422));
+        throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

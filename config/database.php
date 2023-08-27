@@ -35,7 +35,7 @@ return [
 
     'connections' => [
 
-        'sqlite' => [
+        'sqlite'     => [
             'driver'                  => 'sqlite',
             'url'                     => env('DATABASE_URL'),
             'database'                => env('DB_DATABASE', database_path('database.sqlite')),
@@ -43,7 +43,7 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
-        'mysql'  => [
+        'mysql'      => [
             'driver'         => 'mysql',
             'url'            => env('DATABASE_URL'),
             'host'           => env('DB_HOST', '127.0.0.1'),
@@ -63,7 +63,7 @@ return [
             ]) : [],
         ],
 
-        'pgsql'  => [
+        'pgsql'      => [
             'driver'         => 'pgsql',
             'url'            => env('DATABASE_URL'),
             'host'           => env('DB_HOST', '127.0.0.1'),
@@ -78,7 +78,22 @@ return [
             'sslmode'        => 'prefer',
         ],
 
-        'sqlsrv' => [
+        'pgsql_test' => [
+            'driver'         => 'pgsql',
+            'url'            => env('DATABASE_URL'),
+            'host'           => env('DB_HOST', '127.0.0.1'),
+            'port'           => env('DB_PORT', '5432'),
+            'database'       => 'plataform_test',
+            'username'       => env('DB_USERNAME', 'forge'),
+            'password'       => env('DB_PASSWORD', ''),
+            'charset'        => 'utf8',
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'search_path'    => 'public',
+            'sslmode'        => 'prefer',
+        ],
+
+        'sqlsrv'     => [
             'driver'         => 'sqlsrv',
             'url'            => env('DATABASE_URL'),
             'host'           => env('DB_HOST', 'localhost'),

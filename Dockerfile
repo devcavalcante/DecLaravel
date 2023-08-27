@@ -34,6 +34,8 @@ fi
 RUN cp -R ./docker/gitHooks/ ./.git/hooks/
 RUN composer update --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
+RUN php artisan passport:install
+
 
 EXPOSE 9000
 ENTRYPOINT [ "php-fpm" ]
