@@ -2,45 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\TypeUsersRepository;
+use App\Repositories\TypeUserRepository;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\TypeUserRequest;
+use App\Http\Requests\TypeUsersRequest;
 
 class TypeUserController extends Controller
 {
-    public function __construct(private TypeUsersRepository $typeUsersRepository)
+    public function __construct(private TypeUserRepository $typeUsersRepository)
     {
     }
 
-    public function store(TypeUserRequest $request): JsonResponse
+    public function store(TypeUsersRequest $request):JsonResponse
     {
-        $payload = $request->validated();
-        $typeUser = $this->typeUsersRepository->create($payload);
+        $payload= $request->validated();
+        $typeUser=$this->typeUsersRepository->create($payload);
         return response()->json($typeUser, 201);
     }
 
     public function show(string $id): JsonResponse
     {
-        $typeUser = $this->typeUsersRepository->findById($id);
+        $typeUser=$this->typeUsersRepository->findById($id);
         return response()->json($typeUser, 200);
     }
 
-    public function update(string $id, TypeUserRequest $request): JsonResponse
+    public function update(string $id, TypeUsersRequest $request):JsonResponse
     {
-        $payload = $request->validated();
-        $typeUser = $this->typeUsersRepository->update($id, $payload);
+        $payload= $request->validated();
+        $typeUser=$this->typeUsersRepository->update($id, $payload);
         return response()->json($typeUser, 201);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id):JsonResponse
     {
         $this->typeUsersRepository->delete($id);
         return response()->json([], 204);
     }
 
-    public function index(): JsonResponse
+    public function index():JsonResponse
     {
-        $typeUser = $this->typeUsersRepository->listAll();
+        $typeUser=$this->typeUsersRepository->listAll();
         return response()->json($typeUser, 200);
     }
 }

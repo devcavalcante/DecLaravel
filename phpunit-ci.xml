@@ -19,11 +19,5 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="DB_CONNECTION" value="pgsql_test"/>
-        <env name="DB_HOST" value="plataforma.db"/>
-        <env name="DB_DATABASE" value="plataform_test"/>
-        <env name="DB_PORT" value="5432"/>
-        <env name="DB_USERNAME" value="postgres"/>
-        <env name="DB_PASSWORD" value="postgres"/>
     </php>
 </phpunit>
