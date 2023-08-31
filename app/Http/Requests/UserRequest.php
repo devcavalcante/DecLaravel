@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TypeUserEnum;
+use App\Helpers\TypeUser;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -24,11 +27,15 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return[
-            'name'       => 'required|min:4|string',
-            'email'      => 'required|email|string',
-            'password'   => 'required|min:8|string',
-            'c_password' => 'required|same:password|min:8|string',
+        $method = request()->method;
+        $isRequired = $method == 'POST' ? 'required' : 'sometimes';
+        $isForbidden = $method !== 'POST' ? 'prohibited' : 'required';
+        return [
+            'name'       => sprintf('%s|min:4|string', $isRequired),
+            'email'      => sprintf('%s|email|string|unique:users', $isRequired),
+            'password'   => sprintf('%s|min:8|string', $isRequired),
+            'c_password' => sprintf('%s|same:password|min:8|string', $isRequired),
+            'type_user_id' => [$isForbidden, Rule::in(TypeUser::listOfKeysTypeUserEnum())]
         ];
     }
     /**
@@ -52,6 +59,9 @@ class UserRequest extends FormRequest
             'c_password.required' => 'O campo c_password é obrigatório.',
             'c_password.same'     => 'O campo c_password deve ser igual ao campo password.',
             'c_password.string'   => 'O campo c_password deve ser uma string.',
+            'type_user_id.in'     => 'O valor passado em type_user_id não existe',
+            'email.unique'        => 'Esse e-mail já está cadastrado',
+            'type_user_id.prohibited'  => 'Esse campo não pode ser atualizado'
         ];
     }
     /**

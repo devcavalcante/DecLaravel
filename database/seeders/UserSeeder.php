@@ -2,27 +2,50 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $typeUserIds = [1, 2, 3, 4]; // IDs válidos de type_users
-
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('users')->insert([
-                'name'              => Str::random(10),
-                'email'             => Str::random(10) . '@example.com',
-                'password'          => Hash::make('password'),
-                'email_verified_at' => now(),
-                'type_user_id'      => $typeUserIds[array_rand($typeUserIds)],
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]);
-        }
+        DB::Table('users')->insertOrIgnore(
+            [
+                [
+                    'name'         => 'Debora Cavalcante',
+                    'email'        => 'debs@mail.com',
+                    'password'     => Hash::make('visualizador'),
+                    'type_user_id' => 4,
+                    'created_at'   => Carbon::now(),
+                    'updated_at'   => Carbon::now(),
+                ],
+                [
+                    'name'         => 'Administrador',
+                    'email'        => 'admin@mail.com',
+                    'password'     => Hash::make('administrador'),
+                    'type_user_id' => 1,
+                    'created_at'   => Carbon::now(),
+                    'updated_at'   => Carbon::now(),
+                ],
+                [
+                    'name'         => 'Gerente',
+                    'email'        => 'gerente@mail.com',
+                    'password'     => Hash::make('gerente'),
+                    'type_user_id' => 2,
+                    'created_at'   => Carbon::now(),
+                    'updated_at'   => Carbon::now(),
+                ],
+                [
+                    'name'         => 'Representante',
+                    'email'        => 'representante@mail.com',
+                    'password'     => Hash::make('representante'),
+                    'type_user_id' => 3,
+                    'created_at'   => Carbon::now(),
+                    'updated_at'   => Carbon::now(),
+                ],
+            ]
+        );
     }
 }

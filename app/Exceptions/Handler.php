@@ -10,6 +10,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -64,6 +65,10 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof NotFoundHttpException) {
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], 404);
+        }
+
+        if ($exception instanceof UnauthorizedException || $exception instanceof AuthorizationException) {
+            return response(['errors' => $exceptionMessage, 'code' => 403], 403);
         }
 
         return parent::render($request, $exception);
