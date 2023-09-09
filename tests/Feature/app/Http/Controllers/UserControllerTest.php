@@ -28,6 +28,15 @@ class UserControllerTest extends TestCase
         $this->assertEquals(User::all()->toArray(), $actual);
     }
 
+    public function testShouldNotListUsersWithoutPermission()
+    {
+        $this->loginViewer();
+        User::factory(10)->create();
+
+        $response = $this->get('/api/users');
+        $response->assertStatus(403);
+    }
+
     /**
      * Teste de falha: Verificar se um usuário inexistente retorna um erro 404.
      *
@@ -151,9 +160,56 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    private function login(): void
+    public function testShouldUpdate()
+    {
+        $user = $this->login();
+
+        $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testShouldNotUpdateOthersUsers()
+    {
+        $this->login();
+        $user = User::factory()->create();
+
+        $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShouldNotDestroyWithoutPermissions()
+    {
+        $this->loginViewer();
+        $user = User::factory()->create();
+
+        $response = $this->delete(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShouldNotRestoreWithoutPermissions()
+    {
+        $this->loginViewer();
+        $user = User::factory()->create();
+
+        $response = $this->put(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    private function login(): User
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
+        $user = User::where('type_user_id', $typeUser->id)->first();
+        Passport::actingAs($user);
+        return $user;
+    }
+
+    private function loginViewer(): void
+    {
+        $typeUser = TypeUser::where('name', TypeUserEnum::VIEWER)->first();
         $user = User::where('type_user_id', $typeUser->id)->first();
         Passport::actingAs($user);
     }
