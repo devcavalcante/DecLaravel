@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeUserEnum;
+use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -12,26 +15,17 @@ class UserControllerTest extends TestCase
 
     public function testIndexUsers()
     {
-        // Cria dois usuários no banco de dados usando o model factory
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
+        $this->login();
+        // Cria 10 usuários no banco de dados usando o model factory
+        User::factory(10)->create();
 
         // Envia uma solicitação para listar todos os usuários
-        $response = $this->getJson('/api/users');
-
-        // Converte os objetos Carbon para strings antes da asserção
-        $user1Array = $user1->toArray();
-        $user1Array['email_verified_at'] = $user1->email_verified_at->toISOString();
-
-        $user2Array = $user2->toArray();
-        $user2Array['email_verified_at'] = $user2->email_verified_at->toISOString();
+        $response = $this->get('/api/users');
+        $actual = json_decode($response->getContent(), true);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os usuários
-        $response->assertStatus(200)
-            ->assertJson([
-                $user1Array,
-                $user2Array,
-            ]);
+        $response->assertStatus(200);
+        $this->assertEquals(User::all()->toArray(), $actual);
     }
 
     /**
@@ -41,6 +35,8 @@ class UserControllerTest extends TestCase
      */
     public function testIndexNotExistsUser()
     {
+        $this->login();
+
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
 
@@ -53,6 +49,8 @@ class UserControllerTest extends TestCase
 
     public function testShowUser()
     {
+        $this->login();
+
         // Cria um usuário no banco de dados usando o model factory
         $user = User::factory()->create();
 
@@ -73,8 +71,10 @@ class UserControllerTest extends TestCase
      *
      * @return void
      */
-    public function testShowNonExistingUser()
+    public function testShowNotExistingUser()
     {
+        $this->login();
+
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
 
@@ -87,6 +87,8 @@ class UserControllerTest extends TestCase
 
     public function testDestroyUser()
     {
+        $this->login();
+
         // Cria um usuário no banco de dados usando o model factory
         $user = User::factory()->create();
 
@@ -102,6 +104,8 @@ class UserControllerTest extends TestCase
 
     public function testDestroyNonExistingUser()
     {
+        $this->login();
+
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
 
@@ -111,8 +115,11 @@ class UserControllerTest extends TestCase
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
     }
+
     public function testRestoreUser()
     {
+        $this->login();
+
         // Cria um usuário e apaga ele
         $user = User::factory()->create();
         $user->delete();
@@ -130,8 +137,10 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function testRestoreNonExistingUser()
+    public function testRestoreNotExistingUser()
     {
+        $this->login();
+
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
 
@@ -140,5 +149,12 @@ class UserControllerTest extends TestCase
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
+    }
+
+    private function login(): void
+    {
+        $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
+        $user = User::where('type_user_id', $typeUser->id)->first();
+        Passport::actingAs($user);
     }
 }

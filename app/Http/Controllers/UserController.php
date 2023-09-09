@@ -59,7 +59,7 @@ class UserController extends Controller
      */
     public function restore($id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, User::class);
+        $this->authorize(AbilitiesEnum::RESTORE, User::class);
         $user = $this->userRepository->restore($id);
         return response()->json($user);
     }

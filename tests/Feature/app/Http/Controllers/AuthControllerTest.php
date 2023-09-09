@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeUserEnum;
 use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
@@ -20,14 +22,55 @@ class AuthControllerTest extends TestCase
         $this->artisan('passport:install');
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateWhenUserIsAdmin()
     {
-        $payload = $this->getFakePayload();
-
-        $response = $this->postJson(sprintf('%s/register', self::BASE_URL), $payload);
+        $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
+        $user = User::factory(['type_user_id' => $typeUser->id])->create();
+        $payload = $this->getFakePayload($typeUser->id);
+        Passport::actingAs($user);
+        $response = $this->post('/api/register', $payload);
         $actual = json_decode($response->getContent(), true);
         $this->assertEquals(Arr::only($payload, ['name', 'email']), Arr::only($actual, ['name', 'email']));
         $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function testShouldCreateWhenUserIsManagerAndRegisterRepresentative()
+    {
+        $typeUserManager = TypeUser::where('name', TypeUserEnum::MANAGER)->first();
+        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $user = User::factory(['type_user_id' => $typeUserManager->id])->create();
+        $payload = $this->getFakePayload($typeUserRepresentative->id);
+        Passport::actingAs($user);
+        $response = $this->post('/api/register', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals(Arr::only($payload, ['name', 'email']), Arr::only($actual, ['name', 'email']));
+        $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function testShouldCreateWhenUserIsRepresentativeAndRegisterViewer()
+    {
+        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $typeUserViewer = TypeUser::where('name', TypeUserEnum::VIEWER)->first();
+        $user = User::factory(['type_user_id' => $typeUserRepresentative->id])->create();
+        $payload = $this->getFakePayload($typeUserViewer->id);
+        Passport::actingAs($user);
+        $response = $this->post('/api/register', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals(Arr::only($payload, ['name', 'email']), Arr::only($actual, ['name', 'email']));
+        $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function testShouldNotCreateWhenOutsidePermissionRule()
+    {
+        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $typeUserManager = TypeUser::where('name', TypeUserEnum::MANAGER)->first();
+        $user = User::factory(['type_user_id' => $typeUserRepresentative->id])->create();
+        $payload = $this->getFakePayload($typeUserManager->id);
+        Passport::actingAs($user);
+        $response = $this->post('/api/register', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals('This action is unauthorized.', $actual['errors']);
+        $this->assertEquals(403, $actual['code']);
     }
 
     public function testShouldNotCreateWhenValidationErrors()
@@ -48,25 +91,24 @@ class AuthControllerTest extends TestCase
 
     public function testShouldNotCreateWhenUserExists()
     {
-        $payload = Arr::except($this->getFakePayload(), 'c_password');
+        $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
+        $user = User::factory(['type_user_id' => $typeUser->id])->create();
+        $payload = Arr::except($this->getFakePayload($typeUser->id), 'c_password');
 
+        Passport::actingAs($user);
         User::factory($payload)->create();
 
-        $response = $this->postJson(sprintf('%s/register', self::BASE_URL), $this->getFakePayload());
+        $response = $this->postJson('api/register', $this->getFakePayload($typeUser->id));
         $actual = json_decode($response->getContent(), true);
 
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals('Usuario ja existe', $actual['errors']);
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals('Esse e-mail ja esta cadastrado', Arr::first($actual['errors']['email']));
     }
 
     public function testShouldLogin()
     {
-        $payload = $this->getFakePayload();
-
-        $this->postJson(sprintf('%s/register', self::BASE_URL), $payload);
-
-        $user = User::where('email', $payload['email'])->first();
-        $response = $this->postJson(sprintf('%s/login', self::BASE_URL), ['email' => $user->email, 'password' => '12345678']);
+        $user = User::first();
+        $response = $this->postJson('api/login', ['email' => $user->email, 'password' => '12345678']);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -82,13 +124,9 @@ class AuthControllerTest extends TestCase
 
     public function testShouldLogout()
     {
-        $payload = $this->getFakePayload();
-
-        $this->postJson(sprintf('%s/register', self::BASE_URL), $payload);
-
-        $user = User::where('email', $payload['email'])->first();
-        $this->postJson(sprintf('%s/login', self::BASE_URL), ['email' => $user->email, 'password' => '12345678']);
-        $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
+        $user = User::first();
+        Passport::actingAs($user);
+        $response = $this->post(sprintf('%s/logout', self::BASE_URL));
         $this->assertEquals(204, $response->getStatusCode());
     }
 
@@ -96,19 +134,17 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
         $actual = json_decode($response->getContent(), true);
-        $this->assertEquals('Usuario não esta logado', $actual['errors']);
+        $this->assertEquals('Unauthorized.', $actual['errors']);
     }
 
-    private function getFakePayload(): array
+    private function getFakePayload(string $typeUserId): array
     {
-        $typeUser = TypeUser::factory()->create();
-
         return [
             'name'         => 'Test Name',
             'email'        => 'teste@email.com',
             'password'     => '12345678',
             'c_password'   => '12345678',
-            'type_user_id' => $typeUser->id,
+            'type_user_id' => $typeUserId,
         ];
     }
 }

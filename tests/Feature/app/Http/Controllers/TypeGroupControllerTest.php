@@ -2,9 +2,13 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeUserEnum;
 use App\Models\TypeGroup;
+use App\Models\TypeUser;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class TypeGroupControllerTest extends TestCase
@@ -13,25 +17,17 @@ class TypeGroupControllerTest extends TestCase
 
     public function testIndexTypeGroups()
     {
-        // Cria dois tipos de grupos no banco de dados usando o model factory
-        $typeGroup1 = TypeGroup::factory()->create();
-        $typeGroup2 = TypeGroup::factory()->create();
+        $this->login();
+        // Cria 10 tipos de grupos no banco de dados usando o model factory
+        TypeGroup::factory(10)->create();
 
         // Envia uma solicitação para listar todos os tipos de grupos
         $response = $this->getJson('/api/group/type-group');
+        $actual = json_decode($response->getContent(), true);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os tipos de grupos
-        $response->assertStatus(200)
-            ->assertJson([
-                [
-                    'id'   => $typeGroup1->id,
-                    'name' => $typeGroup1->name,
-                ],
-                [
-                    'id'   => $typeGroup2->id,
-                    'name' => $typeGroup2->name,
-                ],
-            ]);
+        $response->assertStatus(200);
+        $this->assertEquals(TypeGroup::all()->toArray(), $actual);
     }
 
     /**
@@ -41,6 +37,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testIndexEmptyTypeGroups()
     {
+        $this->login();
+
         // Envia uma solicitação para listar todos os tipos de grupos quando não há nenhum no banco de dados
         $response = $this->getJson('/api/group/type-group');
 
@@ -51,6 +49,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testShowTypeGroup()
     {
+        $this->login();
+
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
 
@@ -72,6 +72,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testShowNotExistsTypeGroup()
     {
+        $this->login();
+
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;
 
@@ -84,6 +86,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationSuccess()
     {
+        $this->login();
+
         $response = $this->postJson('/api/group/type-group', [
             'name' => 'Comitê', // Valor válido para o campo "name"
         ]);
@@ -96,6 +100,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedMissingName()
     {
+        $this->login();
+
         // Tenta criar um tipo de grupo sem fornecer o campo "name"
         $response = $this->postJson('/api/group/type-group', []);
 
@@ -105,6 +111,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedInvalidDataType()
     {
+        $this->login();
 
         $response = $this->postJson('/api/group/type-group', [
             "name" => 123,
@@ -116,6 +123,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedNameTooShort()
     {
+        $this->login();
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
         $response = $this->postJson('/api/group/type-group', [
             "name" => "abc",
@@ -127,6 +136,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedOnUpdate()
     {
+        $this->login();
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
         $data = [
             "name" => "abc",
@@ -152,6 +163,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testUpdateSuccess()
     {
+        $this->login();
+
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
@@ -177,6 +190,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testUpdateFailedMissingName()
     {
+        $this->login();
+
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
@@ -189,6 +204,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testDestroyTypeGroup()
     {
+        $this->login();
+
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
 
@@ -209,6 +226,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testDestroyNonExistingTypeGroup()
     {
+        $this->login();
+
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;
 
@@ -217,5 +236,12 @@ class TypeGroupControllerTest extends TestCase
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
+    }
+
+    private function login(): void
+    {
+        $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $user = User::where('type_user_id', $typeUser->id)->first();
+        Passport::actingAs($user);
     }
 }

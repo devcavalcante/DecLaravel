@@ -31,11 +31,11 @@ class UserRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
         $isForbidden = $method !== 'POST' ? 'prohibited' : 'required';
         return [
-            'name'       => sprintf('%s|min:4|string', $isRequired),
-            'email'      => sprintf('%s|email|string|unique:users', $isRequired),
-            'password'   => sprintf('%s|min:8|string', $isRequired),
-            'c_password' => sprintf('%s|same:password|min:8|string', $isRequired),
-            'type_user_id' => [$isForbidden, Rule::in(TypeUser::listOfKeysTypeUserEnum())]
+            'name'         => sprintf('%s|min:4|string', $isRequired),
+            'email'        => sprintf('%s|email|string|unique:users', $isRequired),
+            'password'     => sprintf('%s|min:8|string', $isRequired),
+            'c_password'   => sprintf('%s|same:password|min:8|string', $isRequired),
+            'type_user_id' => [$isForbidden, Rule::in(TypeUser::listOfKeysTypeUserEnum())],
         ];
     }
     /**
@@ -46,22 +46,22 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'       => 'O campo nome é obrigatório.',
-            'name.string'         => 'O campo nome deve ser uma string.',
-            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
-            'email.email'         => 'Email invalido.',
-            'email.required'      => 'O campo e-mail é obrigatório.',
-            'email.string'        => 'O campo email deve ser uma string.',
-            'password.required'   => 'O campo password é obrigatório.',
-            'password.min'        => 'O campo password deve ter no mínimo 8 caracteres.',
-            'password.string'     => 'O campo password deve ser uma string.',
-            'c_password.min'      => 'O campo password deve ter no mínimo 8 caracteres.',
-            'c_password.required' => 'O campo c_password é obrigatório.',
-            'c_password.same'     => 'O campo c_password deve ser igual ao campo password.',
-            'c_password.string'   => 'O campo c_password deve ser uma string.',
-            'type_user_id.in'     => 'O valor passado em type_user_id não existe',
-            'email.unique'        => 'Esse e-mail já está cadastrado',
-            'type_user_id.prohibited'  => 'Esse campo não pode ser atualizado'
+            'name.required'           => 'O campo nome é obrigatório.',
+            'name.string'             => 'O campo nome deve ser uma string.',
+            'name.min'                => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'email.email'             => 'Email invalido.',
+            'email.required'          => 'O campo e-mail e obrigatório.',
+            'email.string'            => 'O campo email deve ser uma string.',
+            'password.required'       => 'O campo password e obrigatório.',
+            'password.min'            => 'O campo password deve ter no mínimo 8 caracteres.',
+            'password.string'         => 'O campo password deve ser uma string.',
+            'c_password.min'          => 'O campo password deve ter no mínimo 8 caracteres.',
+            'c_password.required'     => 'O campo c_password e obrigatório.',
+            'c_password.same'         => 'O campo c_password deve ser igual ao campo password.',
+            'c_password.string'       => 'O campo c_password deve ser uma string.',
+            'type_user_id.in'         => 'O valor passado em type_user_id não existe',
+            'email.unique'            => 'Esse e-mail ja esta cadastrado',
+            'type_user_id.prohibited' => 'Esse campo não pode ser atualizado',
         ];
     }
     /**
