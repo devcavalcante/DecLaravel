@@ -18,8 +18,7 @@ class AuthService
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected TokenRepository $tokenRepository,
-    )
-    {
+    ) {
     }
 
     /**
