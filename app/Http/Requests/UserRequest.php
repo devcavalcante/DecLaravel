@@ -59,7 +59,7 @@ class UserRequest extends FormRequest
             'c_password.required'     => 'O campo c_password e obrigatório.',
             'c_password.same'         => 'O campo c_password deve ser igual ao campo password.',
             'c_password.string'       => 'O campo c_password deve ser uma string.',
-            'type_user_id.in'         => 'O valor passado em type_user_id não existe',
+            'type_user_id.in'         => 'O valor passado em type_user_id nao existe',
             'email.unique'            => 'Esse e-mail ja esta cadastrado',
             'type_user_id.prohibited' => 'Esse campo não pode ser atualizado',
         ];

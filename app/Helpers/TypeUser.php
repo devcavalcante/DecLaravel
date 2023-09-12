@@ -9,10 +9,10 @@ class TypeUser
     public static function listOfKeysTypeUserEnum(): array
     {
         $typeUsers = [
-            TypeUserEnum::MANAGER,
-            TypeUserEnum::VIEWER,
-            TypeUserEnum::REPRESENTATIVE,
-            TypeUserEnum::ADMIN,
+            1 => TypeUserEnum::MANAGER,
+            2 => TypeUserEnum::VIEWER,
+            3 => TypeUserEnum::REPRESENTATIVE,
+            4 => TypeUserEnum::ADMIN,
         ];
 
         return array_keys($typeUsers);

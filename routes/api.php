@@ -24,19 +24,17 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::group(['prefix' => '/group'], function () {
-        Route::post('type-user', [TypeUserController::class, 'store']);
-        Route::get('type-user/{id}', [TypeUserController::class, 'show']);
-        Route::put('type-user/{id}', [TypeUserController::class, 'update']);
-        Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
-        Route::get('type-user', [TypeUserController::class, 'index']);
+    Route::post('type-user', [TypeUserController::class, 'store']);
+    Route::get('type-user/{id}', [TypeUserController::class, 'show']);
+    Route::put('type-user/{id}', [TypeUserController::class, 'update']);
+    Route::delete('type-user/{id}', [TypeUserController::class, 'destroy']);
+    Route::get('type-user', [TypeUserController::class, 'index']);
 
-        Route::post('type-group', [TypeGroupController::class, 'store']);
-        Route::get('type-group/{id}', [TypeGroupController::class, 'show']);
-        Route::put('type-group/{id}', [TypeGroupController::class, 'update']);
-        Route::delete('type-group/{id}', [TypeGroupController::class, 'destroy']);
-        Route::get('type-group', [TypeGroupController::class, 'index']);
-    });
+    Route::post('type-group', [TypeGroupController::class, 'store']);
+    Route::get('type-group/{id}', [TypeGroupController::class, 'show']);
+    Route::put('type-group/{id}', [TypeGroupController::class, 'update']);
+    Route::delete('type-group/{id}', [TypeGroupController::class, 'destroy']);
+    Route::get('type-group', [TypeGroupController::class, 'index']);
 
     Route::group(['prefix' => '/users'], function () {
         Route::get('/', [UserController::class, 'index']);
