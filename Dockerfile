@@ -23,10 +23,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 COPY . /app
 
-RUN chown -R www:www /app && chmod -R 755 /app
+RUN chown -R www-data:www-data /app && chmod -R 755 /app
 
 RUN cp -R ./docker/gitHooks/ ./.git/hooks/
-RUN composer update --optimize-autoloader
+RUN composer clearcache && composer install --no-interaction --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
 
 EXPOSE 9000
