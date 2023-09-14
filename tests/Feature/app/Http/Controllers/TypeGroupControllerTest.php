@@ -2,36 +2,33 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeUserEnum;
 use App\Models\TypeGroup;
+use App\Models\TypeUser;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Passport\Passport;
+use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
 class TypeGroupControllerTest extends TestCase
 {
     use DatabaseTransactions;
+    use LoginUsersTrait;
 
     public function testIndexTypeGroups()
     {
-        // Cria dois tipos de grupos no banco de dados usando o model factory
-        $typeGroup1 = TypeGroup::factory()->create();
-        $typeGroup2 = TypeGroup::factory()->create();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+        // Cria 10 tipos de grupos no banco de dados usando o model factory
+        TypeGroup::factory(10)->create();
 
         // Envia uma solicitação para listar todos os tipos de grupos
-        $response = $this->getJson('/api/group/type-group');
+        $response = $this->getJson('/api/type-group');
+        $actual = json_decode($response->getContent(), true);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os tipos de grupos
-        $response->assertStatus(200)
-            ->assertJson([
-                [
-                    'id'   => $typeGroup1->id,
-                    'name' => $typeGroup1->name,
-                ],
-                [
-                    'id'   => $typeGroup2->id,
-                    'name' => $typeGroup2->name,
-                ],
-            ]);
+        $response->assertStatus(200);
+        $this->assertEquals(TypeGroup::all()->toArray(), $actual);
     }
 
     /**
@@ -41,8 +38,10 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testIndexEmptyTypeGroups()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Envia uma solicitação para listar todos os tipos de grupos quando não há nenhum no banco de dados
-        $response = $this->getJson('/api/group/type-group');
+        $response = $this->getJson('/api/type-group');
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia
         $response->assertStatus(200)
@@ -51,11 +50,13 @@ class TypeGroupControllerTest extends TestCase
 
     public function testShowTypeGroup()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
 
         // Envia uma solicitação para exibir o tipo de grupo criado
-        $response = $this->getJson('/api/group/type-group/' . $typeGroup->id);
+        $response = $this->getJson('/api/type-group/' . $typeGroup->id);
 
         // Verifica se a solicitação foi bem-sucedida e se os dados retornados são corretos
         $response->assertStatus(200)
@@ -72,11 +73,13 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testShowNotExistsTypeGroup()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;
 
         // Envia uma solicitação para exibir o tipo de grupo inexistente
-        $response = $this->getJson('/api/group/type-group/' . $invalidId);
+        $response = $this->getJson('/api/type-group/' . $invalidId);
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
@@ -84,7 +87,9 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationSuccess()
     {
-        $response = $this->postJson('/api/group/type-group', [
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $response = $this->postJson('/api/type-group', [
             'name' => 'Comitê', // Valor válido para o campo "name"
         ]);
 
@@ -96,8 +101,10 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedMissingName()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Tenta criar um tipo de grupo sem fornecer o campo "name"
-        $response = $this->postJson('/api/group/type-group', []);
+        $response = $this->postJson('/api/type-group', []);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -105,8 +112,9 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedInvalidDataType()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->postJson('/api/group/type-group', [
+        $response = $this->postJson('/api/type-group', [
             "name" => 123,
         ]);
 
@@ -116,8 +124,10 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedNameTooShort()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
-        $response = $this->postJson('/api/group/type-group', [
+        $response = $this->postJson('/api/type-group', [
             "name" => "abc",
         ]);
 
@@ -127,6 +137,8 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedOnUpdate()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
         $data = [
             "name" => "abc",
@@ -135,7 +147,7 @@ class TypeGroupControllerTest extends TestCase
         // Obtenha um tipo de grupo existente do banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
-        $response = $this->putJson('/api/group/type-group/' . $typeGroup->id, $data);
+        $response = $this->putJson('/api/type-group/' . $typeGroup->id, $data);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -152,6 +164,8 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testUpdateSuccess()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
@@ -160,7 +174,7 @@ class TypeGroupControllerTest extends TestCase
             "name" => "Novo Nome",
         ];
 
-        $response = $this->putJson('/api/group/type-group/' . $typeGroup->id, $data);
+        $response = $this->putJson('/api/type-group/' . $typeGroup->id, $data);
 
         // Verifica se a solicitação foi bem-sucedida
         $response->assertStatus(201);
@@ -177,11 +191,13 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testUpdateFailedMissingName()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
         // Tenta atualizar o tipo de grupo sem fornecer o campo "name"
-        $response = $this->putJson('/api/group/type-group/' . $typeGroup->id, []);
+        $response = $this->putJson('/api/type-group/' . $typeGroup->id, []);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -189,11 +205,13 @@ class TypeGroupControllerTest extends TestCase
 
     public function testDestroyTypeGroup()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
 
         // Envia uma solicitação para excluir o tipo de grupo criado
-        $response = $this->deleteJson('/api/group/type-group/' . $typeGroup->id);
+        $response = $this->deleteJson('/api/type-group/' . $typeGroup->id);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
         $response->assertStatus(204);
@@ -207,16 +225,57 @@ class TypeGroupControllerTest extends TestCase
      *
      * @return void
      */
-    public function testDestroyNonExistingTypeGroup()
+    public function testDestroyNotExistingTypeGroup()
     {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;
 
         // Envia uma solicitação para excluir o tipo de grupo inexistente
-        $response = $this->deleteJson('/api/group/type-group/' . $invalidId);
+        $response = $this->deleteJson('/api/type-group/' . $invalidId);
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
     }
-}
 
+    public function testShouldNotListWithoutPermission()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson('/api/type-group');
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotListOneWithoutPermission()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson(sprintf('/api/type-group/%s', 1));
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotUpdateWithoutPermission()
+    {
+        $data = [
+            "name" => "Novo Nome",
+        ];
+
+        $this->login(TypeUserEnum::ADMIN);
+        TypeUser::factory(10)->create();
+
+        $response = $this->put(sprintf('/api/type-group/%s', 1), $data);
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotDestroyWithoutPermission()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson(sprintf('/api/type-group/%s', 1));
+        $response->assertStatus(403);
+    }
+}

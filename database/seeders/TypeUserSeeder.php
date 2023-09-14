@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TypeUserEnum;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -13,10 +14,10 @@ class TypeUserSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            'Administrador',
-            'Gerente',
-            'Representante',
-            'Visualizador',
+            TypeUserEnum::ADMIN,
+            TypeUserEnum::MANAGER,
+            TypeUserEnum::REPRESENTATIVE,
+            TypeUserEnum::VIEWER,
         ];
 
         foreach ($types as $type) {

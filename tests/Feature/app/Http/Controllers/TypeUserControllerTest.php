@@ -2,35 +2,33 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeUserEnum;
 use App\Models\TypeUser;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Laravel\Passport\Passport;
+use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
 class TypeUserControllerTest extends TestCase
 {
     use DatabaseTransactions;
+    use LoginUsersTrait;
 
     public function testIndexTypeUsers()
     {
-        // Cria dois tipos de usuários no banco de dados usando o model factory
-        $typeUser1 = TypeUser::factory()->create();
-        $typeUser2 = TypeUser::factory()->create();
+        $this->login(TypeUserEnum::ADMIN);
+
+        // Cria 10 tipos de usuários no banco de dados usando o model factory
+        TypeUser::factory(10)->create();
 
         // Envia uma solicitação para listar todos os tipos de usuários
-        $response = $this->getJson('/api/group/type-user');
+        $response = $this->getJson('/api/type-user');
+        $actual = json_decode($response->getContent(), true);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os tipos de usuários
-        $response->assertStatus(200)
-            ->assertJson([
-                             [
-                                 'id'   => $typeUser1->id,
-                                 'name' => $typeUser1->name,
-                             ],
-                             [
-                                 'id'   => $typeUser2->id,
-                                 'name' => $typeUser2->name,
-                             ],
-                         ]);
+        $response->assertStatus(200);
+        $this->assertEquals(TypeUser::all()->toArray(), $actual);
     }
 
     /**
@@ -40,8 +38,10 @@ class TypeUserControllerTest extends TestCase
      */
     public function testIndexEmptyTypeUsers()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Envia uma solicitação para listar todos os tipos de usuários quando não há nenhum no banco de dados
-        $response = $this->getJson('/api/group/type-user');
+        $response = $this->getJson('/api/type-user');
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia
         $response->assertStatus(200)
@@ -50,11 +50,13 @@ class TypeUserControllerTest extends TestCase
 
     public function testShowTypeUser()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Cria um tipo de usuário no banco de dados usando o model factory
         $typeUser = TypeUser::factory()->create();
 
         // Envia uma solicitação para exibir o tipo de usuário criado
-        $response = $this->getJson('/api/group/type-user/' . $typeUser->id);
+        $response = $this->getJson('/api/type-user/' . $typeUser->id);
 
         // Verifica se a solicitação foi bem-sucedida e se os dados retornados são corretos
         $response->assertStatus(200)
@@ -71,11 +73,13 @@ class TypeUserControllerTest extends TestCase
      */
     public function testShowNotExistsTypeUser()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Cria um ID inválido para um tipo de usuário inexistente
         $invalidId = 999;
 
         // Envia uma solicitação para exibir o tipo de usuário inexistente
-        $response = $this->getJson('/api/group/type-user/' . $invalidId);
+        $response = $this->getJson('/api/type-user/' . $invalidId);
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
@@ -83,7 +87,9 @@ class TypeUserControllerTest extends TestCase
 
     public function testValidationSuccess()
     {
-        $response = $this->postJson('/api/group/type-user', [
+        $this->login(TypeUserEnum::ADMIN);
+
+        $response = $this->postJson('/api/type-user', [
             'name' => 'Administrador', // Valor válido para o campo "name"
         ]);
 
@@ -95,8 +101,10 @@ class TypeUserControllerTest extends TestCase
 
     public function testValidationFailedMissingName()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Tenta criar um tipo de usuário sem fornecer o campo "name"
-        $response = $this->postJson('/api/group/type-user', []);
+        $response = $this->postJson('/api/type-user', []);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -104,8 +112,9 @@ class TypeUserControllerTest extends TestCase
 
     public function testValidationFailedInvalidDataType()
     {
+        $this->login(TypeUserEnum::ADMIN);
 
-        $response = $this->postJson('/api/group/type-user', [
+        $response = $this->postJson('/api/type-user', [
             "name" => 123,
         ]);
 
@@ -115,8 +124,10 @@ class TypeUserControllerTest extends TestCase
 
     public function testValidationFailedNameTooShort()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
-        $response = $this->postJson('/api/group/type-user', [
+        $response = $this->postJson('/api/type-user', [
             "name" => "abc",
         ]);
 
@@ -126,6 +137,8 @@ class TypeUserControllerTest extends TestCase
 
     public function testValidationFailedOnUpdate()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Dados inválidos para o campo "name" (menos de 4 caracteres)
         $data = [
             "name" => "abc",
@@ -134,7 +147,7 @@ class TypeUserControllerTest extends TestCase
         // Obtenha um tipo de usuário existente do banco de dados
         $typeUser = TypeUser::factory()->create();
 
-        $response = $this->putJson('/api/group/type-user/' . $typeUser->id, $data);
+        $response = $this->putJson('/api/type-user/' . $typeUser->id, $data);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -151,6 +164,8 @@ class TypeUserControllerTest extends TestCase
      */
     public function testUpdateSuccess()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Cria um tipo de usuário no banco de dados
         $typeUser = TypeUser::factory()->create();
 
@@ -159,7 +174,7 @@ class TypeUserControllerTest extends TestCase
             "name" => "Novo Nome",
         ];
 
-        $response = $this->putJson('/api/group/type-user/' . $typeUser->id, $data);
+        $response = $this->putJson('/api/type-user/' . $typeUser->id, $data);
 
         // Verifica se a solicitação foi bem-sucedida
         $response->assertStatus(201);
@@ -176,11 +191,13 @@ class TypeUserControllerTest extends TestCase
      */
     public function testUpdateFailedMissingName()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Cria um tipo de usuário no banco de dados
         $typeUser = TypeUser::factory()->create();
 
         // Tenta atualizar o tipo de usuário sem fornecer o campo "name"
-        $response = $this->putJson('/api/group/type-user/' . $typeUser->id, []);
+        $response = $this->putJson('/api/type-user/' . $typeUser->id, []);
 
         // Verifica se a solicitação falhou devido à validação
         $response->assertStatus(422);
@@ -188,11 +205,13 @@ class TypeUserControllerTest extends TestCase
 
     public function testDestroyTypeUser()
     {
+        $this->login(TypeUserEnum::ADMIN);
+
         // Cria um tipo de usuário no banco de dados usando o model factory
         $typeUser = TypeUser::factory()->create();
 
         // Envia uma solicitação para excluir o tipo de usuário criado
-        $response = $this->deleteJson('/api/group/type-user/' . $typeUser->id);
+        $response = $this->deleteJson('/api/type-user/' . $typeUser->id);
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
         $response->assertStatus(204);
@@ -208,13 +227,54 @@ class TypeUserControllerTest extends TestCase
      */
     public function testDestroyNonExistingTypeUser()
     {
+        $this->login(TypeUserEnum::ADMIN);
         // Cria um ID inválido para um tipo de usuário inexistente
         $invalidId = 999;
 
         // Envia uma solicitação para excluir o tipo de usuário inexistente
-        $response = $this->deleteJson('/api/group/type-user/' . $invalidId);
+        $response = $this->deleteJson('/api/type-user/' . $invalidId);
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
+    }
+
+    public function testShouldNotListWithoutPermission()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson('/api/type-user');
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotListOneWithoutPermission()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson(sprintf('/api/type-user/%s', 1));
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotUpdateWithoutPermission()
+    {
+        $data = [
+            "name" => "Novo Nome",
+        ];
+
+        $this->login(TypeUserEnum::VIEWER);
+        TypeUser::factory(10)->create();
+
+        $response = $this->put(sprintf('/api/type-user/%s', 1), $data);
+        $response->assertStatus(403);
+    }
+
+    public function testShouldNotDestroyWithoutPermission()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        TypeUser::factory(10)->create();
+
+        $response = $this->getJson(sprintf('/api/type-user/%s', 1));
+        $response->assertStatus(403);
     }
 }

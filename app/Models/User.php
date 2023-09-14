@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(TypeUser::class);
     }
+
+    public function role(): string
+    {
+        return $this->typeUser->name;
+    }
 }

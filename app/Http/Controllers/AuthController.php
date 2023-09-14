@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AbilitiesEnum;
 use App\Exceptions\AuthorizedException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\User;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Throwable;
@@ -20,6 +22,8 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
+        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
+
         $data = $userRequest->all();
         $user = $this->authService->register($data);
         return response()->json($user, 201);

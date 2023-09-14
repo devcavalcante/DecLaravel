@@ -20,8 +20,10 @@ Route::get('health', function () {
     return response('ok');
 });
 
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::group(['prefix' => '/group'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::post('/register', [AuthController::class, 'register']);
     Route::post('type-user', [TypeUserController::class, 'store']);
     Route::get('type-user/{id}', [TypeUserController::class, 'show']);
     Route::put('type-user/{id}', [TypeUserController::class, 'update']);
@@ -33,15 +35,13 @@ Route::group(['prefix' => '/group'], function () {
     Route::put('type-group/{id}', [TypeGroupController::class, 'update']);
     Route::delete('type-group/{id}', [TypeGroupController::class, 'destroy']);
     Route::get('type-group', [TypeGroupController::class, 'index']);
-});
 
-Route::group(['prefix' => '/users'], function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/{id}', [UserController::class, 'show']);
-    Route::put('/{id}', [UserController::class, 'update']);
-    Route::delete('/{id}', [UserController::class, 'destroy']);
-    Route::get('/', [UserController::class, 'index']);
-    Route::put('/restore/{id}', [UserController::class, 'restore']);
+    Route::group(['prefix' => '/users'], function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+        Route::put('/restore/{id}', [UserController::class, 'restore']);
+    });
 });

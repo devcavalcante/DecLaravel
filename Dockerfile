@@ -12,7 +12,7 @@ ARG XDEBUG_PORT
 ENV XDEBUG_PORT $XDEBUG_PORT
 
 RUN apk add --y --no-cache openssl bash nodejs npm postgresql-dev
-RUN docker-php-ext-install bcmath pdo pdo_pgsql
+RUN docker-php-ext-install bcmath pdo pdo_pgsql opcache
 
 WORKDIR /app
 
@@ -23,16 +23,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 COPY . /app
 
-RUN if [ -z "`getent group 1000`" ]; then \
-  addgroup -g 1000 -S www ; \
-fi
-
-RUN if [ -z "`getent passwd 1000`" ]; then \
-  adduser -u 1000 -D -S -G www -h /app -g www www ; \
-fi
+RUN chown -R www-data:www-data /app && chmod -R 755 /app
 
 RUN cp -R ./docker/gitHooks/ ./.git/hooks/
-RUN composer update --optimize-autoloader
+RUN composer clearcache && composer install --no-interaction --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
 
 EXPOSE 9000
