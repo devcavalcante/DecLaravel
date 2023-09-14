@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TypeUserEnum;
-use App\Helpers\TypeUser;
+use App\Helpers\GetKeys;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
