@@ -13,6 +13,7 @@ class TypeGroupFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
+            'type_group' => $this->faker->word,
         ];
     }
 }

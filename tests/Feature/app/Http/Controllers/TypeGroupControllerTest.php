@@ -91,11 +91,13 @@ class TypeGroupControllerTest extends TestCase
 
         $response = $this->postJson('/api/type-group', [
             'name' => 'Comitê', // Valor válido para o campo "name"
+            'type_group' => 'Interno', //Valor válido para o campo "type_group"
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'name' => 'Comitê',
+                'type_group' => 'Interno',
             ]);
     }
 
