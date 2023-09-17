@@ -25,7 +25,7 @@ class UserControllerTest extends TestCase
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os usuários
         $response->assertStatus(200);
-        $this->assertEquals(User::all()->toArray(), $actual);
+        $response->assertJson(User::all()->toArray());
     }
 
     public function testShouldNotListUsersWithoutPermission()
@@ -66,13 +66,9 @@ class UserControllerTest extends TestCase
         // Envia uma solicitação para exibir o usuário criado
         $response = $this->getJson('/api/users/' . $user->id);
 
-        // Converte o objeto Carbon para string antes da asserção
-        $userArray = $user->toArray();
-        $userArray['email_verified_at'] = $user->email_verified_at->toISOString();
-
         // Verifica se a solicitação foi bem-sucedida e se os dados retornados são corretos
         $response->assertStatus(200)
-            ->assertJson($userArray);
+            ->assertJson($user->toArray());
     }
 
     /**
@@ -80,7 +76,7 @@ class UserControllerTest extends TestCase
      *
      * @return void
      */
-    public function testShowNotExistingUser()
+    public function testShowNotExistUser()
     {
         $this->login();
 

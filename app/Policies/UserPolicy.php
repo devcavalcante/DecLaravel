@@ -5,14 +5,14 @@ namespace App\Policies;
 use App\Enums\TypeUserEnum;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Repositories\TypeUserRepository;
+use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy extends AbstractPolicy
 {
     use HandlesAuthorization;
 
-    public function __construct(protected TypeUserRepository $typeUserRepository)
+    public function __construct(protected TypeUserRepositoryInterface $typeUserRepository)
     {
     }
 

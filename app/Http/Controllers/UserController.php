@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(private UserRepositoryInterface $userRepository)
     {
     }
 
@@ -22,14 +22,14 @@ class UserController extends Controller
     {
         $this->authorize(AbilitiesEnum::VIEW, User::class);
 
-        $users = $this->userRepository->listAll();
+        $users = $this->userRepository->listWithTypeUsers();
         return response()->json($users, 200);
     }
 
 
     public function show(string $id): JsonResponse
     {
-        $user = $this->userRepository->findById($id);
+        $user = $this->userRepository->findWithTypeUser($id);
         return response()->json($user);
     }
 
