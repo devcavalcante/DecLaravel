@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\TypeGroupRequest;
 use App\Models\TypeGroup;
-use App\Repositories\TypeGroupRepository;
+use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\TypeUserRequest;
 
 class TypeGroupController extends Controller
 {
-    public function __construct(private TypeGroupRepository $typeGroupsRepository)
+    public function __construct(private TypeGroupRepositoryInterface $typeGroupsRepository)
     {
     }
 

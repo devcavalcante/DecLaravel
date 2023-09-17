@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
 use App\Models\TypeUser;
-use App\Repositories\TypeUserRepository;
+use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\TypeUserRequest;
 
 class TypeUserController extends Controller
 {
-    public function __construct(private TypeUserRepository $typeUsersRepository)
+    public function __construct(private TypeUserRepositoryInterface $typeUsersRepository)
     {
     }
 

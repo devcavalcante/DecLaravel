@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Exceptions\AuthorizedException;
-use App\Helpers\Traits\AuthenticateTrait;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -45,8 +44,9 @@ class AuthService
      */
     public function login(array $data): array|Authenticatable
     {
-        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
-            $user = Auth::user();
+        $auth = Auth::guard('web');
+        if ($auth->attempt(['email' => $data['email'], 'password' => $data['password']])) {
+            $user = $auth->user();
             $user['token'] =  $user->createToken(env('APP_NAME'))-> accessToken;
             return $user;
         }
