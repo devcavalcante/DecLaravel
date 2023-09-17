@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\GetValues;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class TypeGroupRequest extends FormRequest
 {
@@ -19,12 +22,16 @@ class TypeGroupRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
+        $method = request()->method;
+        $isRequired = $method == 'POST' ? 'required':'sometimes';
+
         return [
-            'name' =>'required|string|min:4',
+            'name'       => sprintf('%s|min:4|string', $isRequired),
+            'type_group' => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
         ];
     }
    /**
@@ -35,9 +42,12 @@ class TypeGroupRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O campo nome é obrigatório.',
-            'name.string'   => 'O campo nome deve ser uma string.',
-            'name.min'      => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'name.required'       => 'O campo nome é obrigatório.',
+            'name.string'         => 'O campo nome deve ser uma string.',
+            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'type_group.required' => 'O campo tipo de grupo é obrigatório.',
+            'type_group.string'   => 'O campo tipo de grupo deve ser uma string.',
+            'type_group.in'       => 'O campo tipo de grupo deve ser interno ou externo',
         ];
     }
     /**

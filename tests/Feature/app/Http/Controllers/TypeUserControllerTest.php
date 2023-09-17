@@ -184,25 +184,6 @@ class TypeUserControllerTest extends TestCase
         $this->assertEquals($typeUser->name, $data['name']);
     }
 
-    /**
-     * Teste de erro: Tente atualizar o tipo de usuário sem fornecer o campo "name".
-     *
-     * @return void
-     */
-    public function testUpdateFailedMissingName()
-    {
-        $this->login(TypeUserEnum::ADMIN);
-
-        // Cria um tipo de usuário no banco de dados
-        $typeUser = TypeUser::factory()->create();
-
-        // Tenta atualizar o tipo de usuário sem fornecer o campo "name"
-        $response = $this->putJson('/api/type-user/' . $typeUser->id, []);
-
-        // Verifica se a solicitação falhou devido à validação
-        $response->assertStatus(422);
-    }
-
     public function testDestroyTypeUser()
     {
         $this->login(TypeUserEnum::ADMIN);

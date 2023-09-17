@@ -9,10 +9,11 @@ class TypeGroup extends Model
 {
     use HasFactory;
 
-    protected $table='type_groups';
-    protected $fillable= ['name'];
+    protected $table = 'type_groups';
 
-    public function getNotFoundMessage():string
+    protected $fillable = ['name', 'type_group'];
+
+    public function getNotFoundMessage(): string
     {
         return 'Tipo de grupo não encontrado';
     }

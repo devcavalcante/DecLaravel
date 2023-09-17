@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TypeGroupEnum;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class TypeGroupSeeder extends Seeder
 {
@@ -12,17 +14,21 @@ class TypeGroupSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            'Comitê',
-            'Comissão',
-        ];
-
-        foreach ($types as $type) {
-            DB::table('type_groups')->insert([
-                'name'       => $type,
-                'created_at' => date("Y-m-d H:i:s"),
-                'updated_at' => date("Y-m-d H:i:s"),
-            ]);
-        }
+        DB::Table('type_groups')->insertOrIgnore(
+            [
+                [
+                    'name'       => 'Comite',
+                    'type_group' => TypeGroupEnum::INTERNO,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+                [
+                    'name'       => 'Comissão',
+                    'type_group' => TypeGroupEnum::EXTERNO,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ]
+        );
     }
 }

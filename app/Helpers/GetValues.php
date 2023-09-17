@@ -2,9 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Enums\TypeGroupEnum;
 use App\Enums\TypeUserEnum;
 
-class TypeUser
+class GetValues
 {
     public static function listOfKeysTypeUserEnum(): array
     {
@@ -16,5 +17,14 @@ class TypeUser
         ];
 
         return array_keys($typeUsers);
+    }
+    public static function listOfValuesTypeGroupEnum(): array
+    {
+        $typeGroups = [
+            TypeGroupEnum::INTERNO,
+            TypeGroupEnum::EXTERNO,
+        ];
+
+        return array_values($typeGroups);
     }
 }

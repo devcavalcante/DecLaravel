@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeGroupEnum;
 use App\Enums\TypeUserEnum;
 use App\Models\TypeGroup;
 use App\Models\TypeUser;
@@ -90,12 +91,14 @@ class TypeGroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
-            'name' => 'Comitê', // Valor válido para o campo "name"
+            'name'       => 'Comitê', // Valor válido para o campo "name"
+            'type_group' => TypeGroupEnum::INTERNO, //Valor válido para o campo "type_group"
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
-                'name' => 'Comitê',
+                'name'       => 'Comitê',
+                'type_group' => TypeGroupEnum::INTERNO,
             ]);
     }
 
@@ -182,25 +185,6 @@ class TypeGroupControllerTest extends TestCase
         // Verifica se o modelo TypeGroup foi atualizado corretamente
         $typeGroup->refresh();
         $this->assertEquals($typeGroup->name, $data['name']);
-    }
-
-    /**
-     * Teste de erro: Tente atualizar o tipo de grupo sem fornecer o campo "name".
-     *
-     * @return void
-     */
-    public function testUpdateFailedMissingName()
-    {
-        $this->login(TypeUserEnum::REPRESENTATIVE);
-
-        // Cria um tipo de grupo no banco de dados
-        $typeGroup = TypeGroup::factory()->create();
-
-        // Tenta atualizar o tipo de grupo sem fornecer o campo "name"
-        $response = $this->putJson('/api/type-group/' . $typeGroup->id, []);
-
-        // Verifica se a solicitação falhou devido à validação
-        $response->assertStatus(422);
     }
 
     public function testDestroyTypeGroup()
