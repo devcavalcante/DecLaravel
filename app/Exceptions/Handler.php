@@ -77,9 +77,8 @@ class Handler extends ExceptionHandler
             if ($match[1] == '23503') {
                 return response([
                     'errors' => 'Nao e possivel deletar tipo de usuario ligado a um usuario',
-                    'code' => 400
-                ], 400
-                );
+                    'code'   => 400,
+                ], 400);
             }
             return response(['errors' => 'Nao é possivel executar essa ação'], 400);
         }
