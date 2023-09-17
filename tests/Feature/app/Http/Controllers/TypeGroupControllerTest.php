@@ -91,13 +91,13 @@ class TypeGroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
-            'name' => 'Comitê', // Valor válido para o campo "name"
+            'name'       => 'Comitê', // Valor válido para o campo "name"
             'type_group' => TypeGroupEnum::INTERNO, //Valor válido para o campo "type_group"
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
-                'name' => 'Comitê',
+                'name'       => 'Comitê',
                 'type_group' => TypeGroupEnum::INTERNO,
             ]);
     }

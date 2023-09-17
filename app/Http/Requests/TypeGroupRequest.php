@@ -30,7 +30,7 @@ class TypeGroupRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required':'sometimes';
 
         return [
-            'name'      => sprintf('%s|min:4|string', $isRequired),
+            'name'       => sprintf('%s|min:4|string', $isRequired),
             'type_group' => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
         ];
     }
@@ -42,12 +42,12 @@ class TypeGroupRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O campo nome é obrigatório.',
-            'name.string'   => 'O campo nome deve ser uma string.',
-            'name.min'      => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'name.required'       => 'O campo nome é obrigatório.',
+            'name.string'         => 'O campo nome deve ser uma string.',
+            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
             'type_group.required' => 'O campo tipo de grupo é obrigatório.',
             'type_group.string'   => 'O campo tipo de grupo deve ser uma string.',
-            'type_group.in'   => 'O campo tipo de grupo deve ser interno ou externo',
+            'type_group.in'       => 'O campo tipo de grupo deve ser interno ou externo',
         ];
     }
     /**
