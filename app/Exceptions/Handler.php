@@ -6,6 +6,7 @@ use Exception;
 use HttpException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,6 +70,18 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof UnauthorizedException || $exception instanceof AuthorizationException) {
             return response(['errors' => $exceptionMessage, 'code' => 403], 403);
+        }
+
+        if ($exception instanceof QueryException) {
+            preg_match('#\[(.*?)]#', $exception->getMessage(), $match);
+            if ($match[1] == '23503') {
+                return response([
+                    'errors' => 'Nao e possivel deletar tipo de usuario ligado a um usuario',
+                    'code' => 400
+                ], 400
+                );
+            }
+            return response(['errors' => 'Nao é possivel executar essa ação'], 400);
         }
 
         return parent::render($request, $exception);

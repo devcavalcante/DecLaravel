@@ -258,4 +258,17 @@ class TypeUserControllerTest extends TestCase
         $response = $this->getJson(sprintf('/api/type-user/%s', 1));
         $response->assertStatus(403);
     }
+
+    public function testShouldNotDestroyWhenConnectedToUser()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um tipo de usuário no banco de dados usando o model factory
+        $user = User::factory()->create();
+
+        // Envia uma solicitação para excluir o tipo de usuário criado
+        $response = $this->deleteJson('/api/type-user/' . $user->type_user_id);
+
+        $response->assertStatus(400);
+    }
 }
