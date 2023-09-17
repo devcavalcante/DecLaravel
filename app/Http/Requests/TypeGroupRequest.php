@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\GetKeys;
+use App\Helpers\GetValues;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -21,7 +22,7 @@ class TypeGroupRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -29,11 +30,8 @@ class TypeGroupRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required':'sometimes';
 
         return [
-            'name'         => sprintf('%s|min:4|string', $isRequired),
-            'type_group' => [
-                sprintf('%s|min:4|string', $isRequired),
-                Rule::in(GetKeys::listOfKeysTypeGroupEnum())
-            ]
+            'name'      => sprintf('%s|min:4|string', $isRequired),
+            'type_group' => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
         ];
     }
    /**

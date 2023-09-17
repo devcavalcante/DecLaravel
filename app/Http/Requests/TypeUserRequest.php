@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -19,12 +20,15 @@ class TypeUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
+        $method = request()->method;
+        $isRequired = $method == 'POST' ? 'required':'sometimes';
+
         return[
-            'name' => 'required|string|min:4',
+            'name' => sprintf('%s|min:4|string', $isRequired),
         ];
     }
     /**
@@ -32,6 +36,7 @@ class TypeUserRequest extends FormRequest
      *
      * @return array<string, string>
      */
+
     public function messages(): array
     {
         return [

@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TypeUserEnum;
-use App\Helpers\GetKeys;
+use App\Helpers\GetValues;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,7 +34,7 @@ class UserRequest extends FormRequest
             'email'        => sprintf('%s|email|string|unique:users', $isRequired),
             'password'     => sprintf('%s|min:8|string', $isRequired),
             'c_password'   => sprintf('%s|same:password|min:8|string', $isRequired),
-            'type_user_id' => [$isForbidden, Rule::in(TypeUser::listOfKeysTypeUserEnum())],
+            'type_user_id' => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],
         ];
     }
     /**
