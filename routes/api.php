@@ -33,7 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/', [TypeUserController::class, 'index']);
     });
 
-    Route::group(['prefix' => '/type-group'], function(){
+    Route::group(['prefix' => '/type-group'], function () {
         Route::post('/', [TypeGroupController::class, 'store']);
         Route::get('/{id}', [TypeGroupController::class, 'show']);
         Route::put('/{id}', [TypeGroupController::class, 'update']);

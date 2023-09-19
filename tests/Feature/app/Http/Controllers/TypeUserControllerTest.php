@@ -177,7 +177,7 @@ class TypeUserControllerTest extends TestCase
         $response = $this->putJson('/api/type-user/' . $typeUser->id, $data);
 
         // Verifica se a solicitação foi bem-sucedida
-        $response->assertStatus(201);
+        $response->assertStatus(200);
 
         // Verifica se o modelo TypeUser foi atualizado corretamente
         $typeUser->refresh();

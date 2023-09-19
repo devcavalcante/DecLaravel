@@ -9,10 +9,10 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 
 return [
-    'default' => 'default',
+    'default'        => 'default',
     'documentations' => [
         'default' => [
-            'api' => [
+            'api'    => [
                 'title' => 'L5 Swagger UI',
             ],
 
@@ -22,21 +22,21 @@ return [
                 */
                 'api' => 'api/documentation',
             ],
-            'paths' => [
+            'paths'  => [
                 /*
                  * Edit to include full URL in ui for assets
                 */
-                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+                'use_absolute_path'      => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
 
                 /*
                  * File name of the generated json documentation file
                 */
-                'docs_json' => 'api-docs.json',
+                'docs_json'              => 'api-docs.json',
 
                 /*
                  * File name of the generated YAML documentation file
                 */
-                'docs_yaml' => 'api-docs.yaml',
+                'docs_yaml'              => 'api-docs.yaml',
 
                 /*
                 * Set this to `json` or `yaml` to determine which documentation file to use in UI
@@ -46,19 +46,19 @@ return [
                 /*
                  * Absolute paths to directory containing the swagger annotations are stored.
                 */
-                'annotations' => [
+                'annotations'            => [
                     base_path('app'),
                 ],
 
             ],
         ],
     ],
-    'defaults' => [
-        'routes' => [
+    'defaults'       => [
+        'routes'                => [
             /*
              * Route for accessing parsed swagger annotations.
             */
-            'docs' => 'docs',
+            'docs'            => 'docs',
 
             /*
              * Route for Oauth2 authentication callback.
@@ -68,8 +68,8 @@ return [
             /*
              * Middleware allows to prevent unexpected access to API documentation
             */
-            'middleware' => [
-                'api' => [
+            'middleware'      => [
+                'api'             => [
 //                    EncryptCookies::class,
 //                    AddQueuedCookiesToResponse::class,
 //                    StartSession::class,
@@ -80,32 +80,32 @@ return [
 //                    'auth',
 //                    'title' => 'Integration Swagger in Laravel with Passport Auth',
                 ],
-                'asset' => [],
-                'docs' => [],
+                'asset'           => [],
+                'docs'            => [],
                 'oauth2_callback' => [],
             ],
 
             /*
              * Route Group options
             */
-            'group_options' => [],
+            'group_options'   => [],
         ],
 
-        'paths' => [
+        'paths'                 => [
             /*
              * Absolute path to location where parsed annotations will be stored
             */
-            'docs' => storage_path('api-docs'),
+            'docs'                   => storage_path('api-docs'),
 
             /*
              * Absolute path to directory where to export views
             */
-            'views' => base_path('resources/views/vendor/l5-swagger'),
+            'views'                  => base_path('resources/views/vendor/l5-swagger'),
 
             /*
              * Edit to set the api's base path
             */
-            'base' => env('L5_SWAGGER_BASE_PATH', null),
+            'base'                   => env('L5_SWAGGER_BASE_PATH', null),
 
             /*
              * Edit to set path where swagger ui assets should be stored
@@ -117,23 +117,23 @@ return [
              * @deprecated Please use `scanOptions.exclude`
              * `scanOptions.exclude` overwrites this
             */
-            'excludes' => [],
+            'excludes'               => [],
         ],
 
-        'scanOptions' => [
+        'scanOptions'           => [
             /**
              * analyser: defaults to \OpenApi\StaticAnalyser .
              *
              * @see \OpenApi\scan
              */
-            'analyser' => null,
+            'analyser'              => null,
 
             /**
              * analysis: defaults to a new \OpenApi\Analysis .
              *
              * @see \OpenApi\scan
              */
-            'analysis' => null,
+            'analysis'              => null,
 
             /**
              * Custom query path processors classes.
@@ -141,7 +141,7 @@ return [
              * @link https://github.com/zircote/swagger-php/tree/master/Examples/schema-query-parameter-processor
              * @see \OpenApi\scan
              */
-            'processors' => [
+            'processors'            => [
                 // new \App\SwaggerProcessors\SchemaQueryParameter(),
             ],
 
@@ -150,14 +150,14 @@ return [
              *
              * @see \OpenApi\scan
              */
-            'pattern' => null,
+            'pattern'               => null,
 
             /*
              * Absolute path to directories that should be excluded from scanning
              * @note This option overwrites `paths.excludes`
              * @see \OpenApi\scan
             */
-            'exclude' => [],
+            'exclude'               => [],
 
             /*
              * Allows to generate specs either for OpenAPI 3.0.0 or OpenAPI 3.1.0.
@@ -169,7 +169,7 @@ return [
         /*
          * API security definitions. Will be generated into documentation file.
         */
-        'securityDefinitions' => [
+        'securityDefinitions'   => [
             'securitySchemes' => [
                 /*
                  * Examples of Security schemes
@@ -236,18 +236,18 @@ return [
          * Set this to `true` in development mode so that docs would be regenerated on each request
          * Set this to `false` to disable swagger generation on production
         */
-        'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', false),
+        'generate_always'       => env('L5_SWAGGER_GENERATE_ALWAYS', false),
 
         /*
          * Set this to `true` to generate a copy of documentation in yaml format
         */
-        'generate_yaml_copy' => env('L5_SWAGGER_GENERATE_YAML_COPY', false),
+        'generate_yaml_copy'    => env('L5_SWAGGER_GENERATE_YAML_COPY', false),
 
         /*
          * Edit to trust the proxy's ip address - needed for AWS Load Balancer
          * string[]
         */
-        'proxy' => false,
+        'proxy'                 => false,
 
         /*
          * Configs plugin allows to fetch external configs instead of passing them to SwaggerUIBundle.
@@ -260,19 +260,19 @@ return [
          * 'method' (sort by HTTP method).
          * Default is the order returned by the server unchanged.
         */
-        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', null),
+        'operations_sort'       => env('L5_SWAGGER_OPERATIONS_SORT', null),
 
         /*
          * Pass the validatorUrl parameter to SwaggerUi init on the JS side.
          * A null value here disables validation.
         */
-        'validator_url' => null,
+        'validator_url'         => null,
 
         /*
          * Swagger UI configuration parameters
         */
-        'ui' => [
-            'display' => [
+        'ui'                    => [
+            'display'       => [
                 /*
                  * Controls the default expansion setting for the operations and tags. It can be :
                  * 'list' (expands only the tags),
@@ -289,7 +289,7 @@ return [
                  * is case-sensitive matching the filter expression anywhere inside
                  * the tag.
                  */
-                'filter' => env('L5_SWAGGER_UI_FILTERS', true), // true | false
+                'filter'        => env('L5_SWAGGER_UI_FILTERS', true), // true | false
             ],
 
             'authorization' => [
@@ -298,7 +298,7 @@ return [
                  */
                 'persist_authorization' => env('L5_SWAGGER_UI_PERSIST_AUTHORIZATION', false),
 
-                'oauth2' => [
+                'oauth2'                => [
                     /*
                     * If set to true, adds PKCE to AuthorizationCodeGrant flow
                     */
@@ -309,7 +309,7 @@ return [
         /*
          * Constants which can be used in annotations
          */
-        'constants' => [
+        'constants'             => [
             'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
         ],
     ],

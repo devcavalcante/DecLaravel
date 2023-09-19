@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
 use Throwable;
 
-
 /**
  * @OA\Tag(
  *     name="auth",
