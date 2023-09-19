@@ -9,6 +9,7 @@ use App\Repositories\TypeGroupRepository;
 use App\Repositories\TypeUserRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
+use L5Swagger\L5SwaggerServiceProvider;
 
 /**
  *
@@ -33,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
             TypeUserRepositoryInterface::class,
             TypeUserRepository::class
         );
+
+        $this->app->register(L5SwaggerServiceProvider::class);
     }
 
     /**
