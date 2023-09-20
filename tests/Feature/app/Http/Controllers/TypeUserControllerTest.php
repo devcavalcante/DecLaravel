@@ -90,7 +90,7 @@ class TypeUserControllerTest extends TestCase
         $this->login(TypeUserEnum::ADMIN);
 
         $response = $this->postJson('/api/type-user', [
-            'name' => 'Administrador', // Valor válido para o campo "name"
+            'name' => 'Administrador', // Valor válido para o campo 'name'
         ]);
 
         $response->assertStatus(201)
@@ -103,7 +103,7 @@ class TypeUserControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::ADMIN);
 
-        // Tenta criar um tipo de usuário sem fornecer o campo "name"
+        // Tenta criar um tipo de usuário sem fornecer o campo 'name'
         $response = $this->postJson('/api/type-user', []);
 
         // Verifica se a solicitação falhou devido à validação
@@ -115,7 +115,7 @@ class TypeUserControllerTest extends TestCase
         $this->login(TypeUserEnum::ADMIN);
 
         $response = $this->postJson('/api/type-user', [
-            "name" => 123,
+            'name' => 123,
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
@@ -126,9 +126,9 @@ class TypeUserControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::ADMIN);
 
-        // Dados inválidos para o campo "name" (menos de 4 caracteres)
+        // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $response = $this->postJson('/api/type-user', [
-            "name" => "abc",
+            'name' => 'abc',
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
@@ -139,9 +139,9 @@ class TypeUserControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::ADMIN);
 
-        // Dados inválidos para o campo "name" (menos de 4 caracteres)
+        // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $data = [
-            "name" => "abc",
+            'name' => 'abc',
         ];
 
         // Obtenha um tipo de usuário existente do banco de dados
@@ -158,7 +158,7 @@ class TypeUserControllerTest extends TestCase
     }
 
     /**
-     * Teste de sucesso: Atualizar o tipo de usuário com um valor válido para o campo "name".
+     * Teste de sucesso: Atualizar o tipo de usuário com um valor válido para o campo 'name'.
      *
      * @return void
      */
@@ -169,9 +169,9 @@ class TypeUserControllerTest extends TestCase
         // Cria um tipo de usuário no banco de dados
         $typeUser = TypeUser::factory()->create();
 
-        // Dados válidos para o campo "name"
+        // Dados válidos para o campo 'name'
         $data = [
-            "name" => "Novo Nome",
+            'name' => 'Novo Nome',
         ];
 
         $response = $this->putJson('/api/type-user/' . $typeUser->id, $data);
@@ -240,7 +240,7 @@ class TypeUserControllerTest extends TestCase
     public function testShouldNotUpdateWithoutPermission()
     {
         $data = [
-            "name" => "Novo Nome",
+            'name' => 'Novo Nome',
         ];
 
         $this->login(TypeUserEnum::VIEWER);
