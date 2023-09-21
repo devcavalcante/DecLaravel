@@ -130,7 +130,7 @@ class UserControllerTest extends TestCase
         $user->delete();
 
         // Envia uma solicitação para restaurar o usuário
-        $response = $this->putJson("/api/users/restore/{$user->id}");
+        $response = $this->patchJson("/api/users/restore/{$user->id}");
 
         // Verifica se a solicitação foi bem-sucedida
         $response->assertStatus(200);
@@ -150,7 +150,7 @@ class UserControllerTest extends TestCase
         $invalidId = 999;
 
         // Envia uma solicitação para restaurar o usuário inexistente
-        $response = $this->putJson("/api/users/restore/{$invalidId}");
+        $response = $this->patchJson("/api/users/restore/{$invalidId}");
 
         // Verifica se a solicitação retornou um erro 404
         $response->assertStatus(404);
@@ -190,7 +190,7 @@ class UserControllerTest extends TestCase
         $this->loginViewer();
         $user = User::factory()->create();
 
-        $response = $this->put(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
+        $response = $this->patch(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
     }

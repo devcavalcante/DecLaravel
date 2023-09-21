@@ -8,7 +8,14 @@ use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\TypeUserRequest;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="type-user",
+ *     description="Controle dos tipos de usuário: apenas usuários com o tipo de usuário ADMINISTRADOR tem acesso a esses endpoints"
+ * )
+ */
 class TypeUserController extends Controller
 {
     public function __construct(private TypeUserRepositoryInterface $typeUsersRepository)
@@ -16,6 +23,38 @@ class TypeUserController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *   path="/type-user",
+     *   tags={"type-user"},
+     *   summary="Criar novo tipo de usuário",
+     *   description="Cria novo tipo de usuário",
+     *   @OA\RequestBody(
+     *      @OA\MediaType(
+     *          mediaType="application/json",
+     *          @OA\Schema(
+     *              example={
+     *                  "name": "Nome do usuário",
+     *              }
+     *          )
+     *      )
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="Created"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="422",
+     *     description="Erro de validação"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function store(TypeUserRequest $request): JsonResponse
@@ -28,6 +67,33 @@ class TypeUserController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *   path="/type-user/{id}",
+     *   tags={"type-user"},
+     *   summary="Lista o registro de tipos de usuários por ID",
+     *   description="Lista o registro de tipos de usuários por ID de referência",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do tipo de usuário",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Tipo de usuário not found"
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Unauthorized"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function show(string $id): JsonResponse
@@ -39,6 +105,47 @@ class TypeUserController extends Controller
     }
 
     /**
+     * @OA\Put(
+     *   path="/type-user/{id}",
+     *   tags={"type-user"},
+     *   summary="Atualizar tipo de usuário",
+     *   description="Atualizar tipo de usuário",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do tipo de usuário",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\RequestBody(
+     *      @OA\MediaType(
+     *          mediaType="application/json",
+     *          @OA\Schema(
+     *              example={
+     *                  "name": "Nome do tipo de usuário",
+     *              }
+     *          )
+     *      )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Unauthorized"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Usuário not found"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function update(string $id, TypeUserRequest $request): JsonResponse
@@ -47,10 +154,41 @@ class TypeUserController extends Controller
 
         $payload = $request->validated();
         $typeUser = $this->typeUsersRepository->update($id, $payload);
-        return response()->json($typeUser, 201);
+        return response()->json($typeUser);
     }
 
     /**
+     * @OA\Delete(
+     *   path="/type-user/{id}",
+     *   tags={"type-user"},
+     *   summary="Deletar tipo de usuário",
+     *   description="Deletar tipo de usuário por ID de referência",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do tipo de usuário",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=204,
+     *     description="No Content"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Unauthorized"
+     *   ),
+     *  @OA\Response(
+     *     response=404,
+     *     description="Tipo de usuário Not Found"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function destroy(string $id): JsonResponse
@@ -62,6 +200,24 @@ class TypeUserController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *   path="/type-user",
+     *   tags={"type-user"},
+     *   summary="Listar todos os tipos de usuários",
+     *   description="Lista todos os tipos de usuários",
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function index(): JsonResponse

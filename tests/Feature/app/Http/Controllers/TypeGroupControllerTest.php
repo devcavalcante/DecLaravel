@@ -91,8 +91,8 @@ class TypeGroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
-            'name'       => 'Comitê', // Valor válido para o campo "name"
-            'type_group' => TypeGroupEnum::INTERNO, //Valor válido para o campo "type_group"
+            'name'       => 'Comitê', // Valor válido para o campo 'name'
+            'type_group' => TypeGroupEnum::INTERNO, //Valor válido para o campo 'type_group'
         ]);
 
         $response->assertStatus(201)
@@ -106,7 +106,7 @@ class TypeGroupControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        // Tenta criar um tipo de grupo sem fornecer o campo "name"
+        // Tenta criar um tipo de grupo sem fornecer o campo 'name'
         $response = $this->postJson('/api/type-group', []);
 
         // Verifica se a solicitação falhou devido à validação
@@ -118,7 +118,7 @@ class TypeGroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
-            "name" => 123,
+            'name' => 123,
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
@@ -129,9 +129,9 @@ class TypeGroupControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        // Dados inválidos para o campo "name" (menos de 4 caracteres)
+        // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $response = $this->postJson('/api/type-group', [
-            "name" => "abc",
+            'name' => 'abc',
         ]);
 
         // Verifica se a resposta JSON contém o fragmento de erro esperado
@@ -142,9 +142,9 @@ class TypeGroupControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        // Dados inválidos para o campo "name" (menos de 4 caracteres)
+        // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $data = [
-            "name" => "abc",
+            'name' => 'abc',
         ];
 
         // Obtenha um tipo de grupo existente do banco de dados
@@ -161,7 +161,7 @@ class TypeGroupControllerTest extends TestCase
     }
 
     /**
-     * Teste de sucesso: Atualizar o tipo de usuário com um valor válido para o campo "name".
+     * Teste de sucesso: Atualizar o tipo de usuário com um valor válido para o campo 'name'.
      *
      * @return void
      */
@@ -172,15 +172,15 @@ class TypeGroupControllerTest extends TestCase
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
 
-        // Dados válidos para o campo "name"
+        // Dados válidos para o campo 'name'
         $data = [
-            "name" => "Novo Nome",
+            'name' => 'Novo Nome',
         ];
 
         $response = $this->putJson('/api/type-group/' . $typeGroup->id, $data);
 
         // Verifica se a solicitação foi bem-sucedida
-        $response->assertStatus(201);
+        $response->assertStatus(200);
 
         // Verifica se o modelo TypeGroup foi atualizado corretamente
         $typeGroup->refresh();
@@ -244,7 +244,7 @@ class TypeGroupControllerTest extends TestCase
     public function testShouldNotUpdateWithoutPermission()
     {
         $data = [
-            "name" => "Novo Nome",
+            'name' => 'Novo Nome',
         ];
 
         $this->login(TypeUserEnum::ADMIN);
