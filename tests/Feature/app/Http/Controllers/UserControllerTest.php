@@ -7,15 +7,17 @@ use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Passport\Passport;
+use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use DatabaseTransactions;
+    use LoginUsersTrait;
 
     public function testIndexUsers()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
         // Cria 10 usuários no banco de dados usando o model factory
         User::factory(10)->create();
 
@@ -30,7 +32,7 @@ class UserControllerTest extends TestCase
 
     public function testShouldNotListUsersWithoutPermission()
     {
-        $this->loginViewer();
+        $this->login(TypeUserEnum::VIEWER);
         User::factory(10)->create();
 
         $response = $this->get('/api/users');
@@ -44,7 +46,7 @@ class UserControllerTest extends TestCase
      */
     public function testIndexNotExistsUser()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
 
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
@@ -58,7 +60,7 @@ class UserControllerTest extends TestCase
 
     public function testShowUser()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário no banco de dados usando o model factory
         $user = User::factory()->create();
@@ -78,7 +80,7 @@ class UserControllerTest extends TestCase
      */
     public function testShowNotExistUser()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
 
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
@@ -92,10 +94,10 @@ class UserControllerTest extends TestCase
 
     public function testDestroyUser()
     {
-        $this->login();
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário no banco de dados usando o model factory
-        $user = User::factory()->create();
+        $user = User::factory(['creator_user_id' => $userLogged->id])->create();
 
         // Envia uma solicitação para excluir o usuário criado
         $response = $this->deleteJson('/api/users/' . $user->id);
@@ -107,9 +109,23 @@ class UserControllerTest extends TestCase
         $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
+    public function testShouldNotDestroyUserWithoutPermission()
+    {
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um usuário no banco de dados usando o model factory
+        $user = User::factory()->create();
+
+        // Envia uma solicitação para excluir o usuário criado
+        $response = $this->deleteJson('/api/users/' . $user->id);
+
+        // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
+        $response->assertStatus(403);
+    }
+
     public function testDestroyNonExistingUser()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
 
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
@@ -123,11 +139,11 @@ class UserControllerTest extends TestCase
 
     public function testRestoreUser()
     {
-        $this->login();
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário e apaga ele
-        $user = User::factory()->create();
-        $user->delete();
+        $user = User::factory(['creator_user_id' => $userLogged])->create();
+        $this->delete("/api/users/delete/{$user->id}");
 
         // Envia uma solicitação para restaurar o usuário
         $response = $this->patchJson("/api/users/restore/{$user->id}");
@@ -144,7 +160,7 @@ class UserControllerTest extends TestCase
 
     public function testRestoreNotExistingUser()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
 
         // Cria um ID inválido para um usuário inexistente
         $invalidId = 999;
@@ -156,18 +172,44 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function testShouldNotRestoreUserWithoutPermission()
+    {
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um usuário e apaga ele
+        $user = User::factory(['creator_user_id' => $userLogged])->create();
+        $this->delete("/api/users/delete/{$user->id}");
+
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        // Envia uma solicitação para restaurar o usuário
+        $response = $this->patchJson("/api/users/restore/{$user->id}");
+
+        // Verifica se a solicitação foi bem-sucedida
+        $response->assertStatus(403);
+    }
+
     public function testShouldUpdate()
     {
-        $user = $this->login();
+        $user = $this->login(TypeUserEnum::ADMIN);
 
         $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testShouldNotUpdateWithoutPermission()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        $response = $this->put(sprintf('api/users/%s', 1), ['name' => 'outro nome']);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testShouldNotUpdateOthersUsers()
     {
-        $this->login();
+        $this->login(TypeUserEnum::ADMIN);
         $user = User::factory()->create();
 
         $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
@@ -177,7 +219,7 @@ class UserControllerTest extends TestCase
 
     public function testShouldNotDestroyWithoutPermissions()
     {
-        $this->loginViewer();
+        $this->login(TypeUserEnum::VIEWER);
         $user = User::factory()->create();
 
         $response = $this->delete(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
@@ -187,26 +229,11 @@ class UserControllerTest extends TestCase
 
     public function testShouldNotRestoreWithoutPermissions()
     {
-        $this->loginViewer();
+        $this->login(TypeUserEnum::VIEWER);
         $user = User::factory()->create();
 
         $response = $this->patch(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    private function login(): User
-    {
-        $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
-        $user = User::where('type_user_id', $typeUser->id)->first();
-        Passport::actingAs($user);
-        return $user;
-    }
-
-    private function loginViewer(): void
-    {
-        $typeUser = TypeUser::where('name', TypeUserEnum::VIEWER)->first();
-        $user = User::where('type_user_id', $typeUser->id)->first();
-        Passport::actingAs($user);
     }
 }

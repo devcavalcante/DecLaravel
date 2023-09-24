@@ -25,7 +25,10 @@ class User extends Authenticatable
         'email',
         'password',
         'type_user_id',
+        'creator_user_id',
     ];
+
+    protected $with = ['typeUser'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -36,6 +39,7 @@ class User extends Authenticatable
         'password',
         'c_password',
         'remember_token',
+        'type_user_id',
     ];
 
     /**
@@ -49,7 +53,7 @@ class User extends Authenticatable
 
     public function getNotFoundMessage(): string
     {
-        return 'Usuário não encontrado';
+        return 'Usuario nao encontrado';
     }
 
     public function typeUser(): BelongsTo

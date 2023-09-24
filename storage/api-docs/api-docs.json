@@ -1,0 +1,633 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "DEC",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8001/api/",
+            "description": "DEV"
+        }
+    ],
+    "paths": {
+        "/auth": {},
+        "/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Criar novo usuário",
+                "description": "Cria novo usuário: Administradores podem criar qualquer tipo de usuário, Gerentes podem criar REPRESENTANTES, Representantes podem criar MEMBROS E VISUALIZADORES",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do usuário",
+                                    "email": "Email do usuário",
+                                    "password": "Senha do usuário",
+                                    "c_password": "Confirmação de senha",
+                                    "type_user_id": "ID do tipo de usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login do usuário",
+                "description": "Usuário loga no sistema",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "email": "Email do usuário",
+                                    "password": "Senha do usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/users/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Desloga usuário",
+                "description": "Endpoint para revogar o token",
+                "operationId": "4d05b3b4c4627a89a3d62ea61d7aff88",
+                "responses": {
+                    "204": {
+                        "description": "Not Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
+        "/type-group": {
+            "get": {
+                "tags": [
+                    "type-group"
+                ],
+                "summary": "Listar todos os tipos de grupos",
+                "description": "Lista todos os tipos de grupos",
+                "operationId": "bb4211d238dc2ccef7e751e0f0ab53fa",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "type-group"
+                ],
+                "summary": "Criar novo tipo de grupo",
+                "description": "Cria novo tipo de grupo",
+                "operationId": "681c9bc3e5c6e6fd9d969ffe21b64589",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do grupo",
+                                    "type_group": "Tipo de grupo: Interno ou Externo"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/type-group/{id}": {
+            "get": {
+                "tags": [
+                    "type-group"
+                ],
+                "summary": "Lista o registro de tipos de grupos por ID",
+                "description": "Lista o registro de tipos de grupos por ID de referência",
+                "operationId": "e0a9ca31b284b1126b3c325b0a0ce29f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Tipo de grupo not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "type-group"
+                ],
+                "summary": "Atualizar tipo de grupo",
+                "description": "Atualizar tipo de grupo",
+                "operationId": "c430e30b45e1fca42948eb45fc36a01e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do tipo de grupo",
+                                    "type_group": "Tipo de grupo: Interno ou Externo"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Usuário not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "type-group"
+                ],
+                "summary": "Deletar tipo de grupo",
+                "description": "Deletar tipo de grupo por ID de referência",
+                "operationId": "cdd2cec033d8dae6ddf3854290fbc3cf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Tipo de grupo Not Found"
+                    }
+                }
+            }
+        },
+        "/type-user": {
+            "get": {
+                "tags": [
+                    "type-user"
+                ],
+                "summary": "Listar todos os tipos de usuários",
+                "description": "Lista todos os tipos de usuários",
+                "operationId": "0658c79559e5f956adaf53d86cd7aae8",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "type-user"
+                ],
+                "summary": "Criar novo tipo de usuário",
+                "description": "Cria novo tipo de usuário",
+                "operationId": "9b51073d4a14a8a9b77a1f80502b5397",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/type-user/{id}": {
+            "get": {
+                "tags": [
+                    "type-user"
+                ],
+                "summary": "Lista o registro de tipos de usuários por ID",
+                "description": "Lista o registro de tipos de usuários por ID de referência",
+                "operationId": "8b966620ece503726bb2622036470b76",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Tipo de usuário not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "type-user"
+                ],
+                "summary": "Atualizar tipo de usuário",
+                "description": "Atualizar tipo de usuário",
+                "operationId": "e3915ed9a4f9caca167f43217a4ac7e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do tipo de usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Usuário not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "type-user"
+                ],
+                "summary": "Deletar tipo de usuário",
+                "description": "Deletar tipo de usuário por ID de referência",
+                "operationId": "ac413f3a4d4d6b72726009645f379fe0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do tipo de usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Tipo de usuário Not Found"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Listar todos os usuários",
+                "description": "Lista todos os usuários: 3 tipos de usuários obtem o acesso desse endpoint: ADMINISTRADOR, REPRESENTANTE E GERENTE",
+                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Lista o registro de usuários por ID",
+                "description": "Lista o registro de usuários por ID de referência",
+                "operationId": "910a0c7cf580e1c605648d82a4e57f46",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Usuário not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Atualizar usuário",
+                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
+                "operationId": "ddfe232db1870b82493bf8bd25596d37",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "name": "Nome do usuário",
+                                    "email": "Email do usuário",
+                                    "password": "Senha do usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Usuário not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Deletar usuário",
+                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
+                "operationId": "43dd20becb1f47444e484cbb18ce345c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Usuario Not Found"
+                    }
+                }
+            }
+        },
+        "/users/restore/{id}": {
+            "patch": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Restaurar usuário",
+                "description": "Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
+                "operationId": "282df5354ee2b04bf7ac4bbc6d5fb515",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "404": {
+                        "description": "Usuário not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "Authorization": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "security": [
+        {
+            "Authorization": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Autenticação dos usuários"
+        },
+        {
+            "name": "type-group",
+            "description": "Controle dos tipos de grupo: apenas usuários com o tipo de usuário REPRESENTANTE tem acesso a esses endpoints"
+        },
+        {
+            "name": "type-user",
+            "description": "Controle dos tipos de usuário: apenas usuários com o tipo de usuário ADMINISTRADOR tem acesso a esses endpoints"
+        },
+        {
+            "name": "users",
+            "description": "CRUD dos usuários"
+        }
+    ]
+}

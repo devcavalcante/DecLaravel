@@ -16,7 +16,7 @@ class TypeUser extends Model
 
     public function getNotFoundMessage():string
     {
-        return 'Tipo de usuário não encontrado';
+        return 'Tipo de usuario não encontrado';
     }
 
     public function user(): HasMany

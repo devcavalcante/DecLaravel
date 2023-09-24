@@ -6,14 +6,17 @@ use App\Enums\TypeUserEnum;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy extends AbstractPolicy
 {
     use HandlesAuthorization;
 
-    public function __construct(protected TypeUserRepositoryInterface $typeUserRepository)
-    {
+    public function __construct(
+        protected TypeUserRepositoryInterface $typeUserRepository,
+        protected UserRepositoryInterface $userRepository
+    ) {
     }
 
     /**
@@ -37,23 +40,23 @@ class UserPolicy extends AbstractPolicy
      */
     public function update(User $user, string $id): bool
     {
-        return $this->isAuthorized($user->typeUser->id) && $user->id == $id;
+        return $this->canModifiedUser($user->id, $id) || $user->id == $id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, string $id): bool
     {
-        return $this->isAuthorized($user->typeUser->id);
+        return $this->canModifiedUser($user->id, $id) || $user->id == $id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user): bool
+    public function restore(User $user, string $id): bool
     {
-        return $this->isAuthorized($user->typeUser->id);
+        return $this->canModifiedUser($user->id, $id) || $user->id == $id;
     }
 
     private function isAuthorized(string $typeUserId): bool
@@ -66,5 +69,11 @@ class UserPolicy extends AbstractPolicy
         return $isAdmin
             || ($isManager && $typeUser->name == TypeUserEnum::REPRESENTATIVE)
             || ($isRepresentative && $typeUser->name == TypeUserEnum::VIEWER);
+    }
+
+    private function canModifiedUser(string $userId, string $id): bool
+    {
+        $user = $this->userRepository->findById($id);
+        return $user->creator_user_id == $userId;
     }
 }
