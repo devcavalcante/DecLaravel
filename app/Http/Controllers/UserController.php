@@ -92,7 +92,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Atualizar usuário",
-     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
+     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -146,7 +146,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Deletar usuário",
-     *   description="Deletar usuário por ID de referência",
+     *   description="Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -187,7 +187,7 @@ class UserController extends Controller
      *   path="/users/restore/{id}",
      *   tags={"users"},
      *   summary="Restaurar usuário",
-     *   description="Restaurar usuário",
+     *   description="Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",

@@ -63,7 +63,8 @@
         "test": [
             "./vendor/bin/phpunit --colors=always"
         ],
-        "swagger": "@php artisan swagger-lume:generate"
+        "swagger": "@php artisan l5-swagger:generate",
+        "passport": "@php artisan passport:install"
     },
     "extra": {
         "laravel": {

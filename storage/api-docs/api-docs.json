@@ -490,7 +490,7 @@
                     "users"
                 ],
                 "summary": "Atualizar usuário",
-                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
+                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
                 "operationId": "ddfe232db1870b82493bf8bd25596d37",
                 "parameters": [
                     {
@@ -536,7 +536,7 @@
                     "users"
                 ],
                 "summary": "Deletar usuário",
-                "description": "Deletar usuário por ID de referência",
+                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
                 "operationId": "43dd20becb1f47444e484cbb18ce345c",
                 "parameters": [
                     {
@@ -571,7 +571,7 @@
                     "users"
                 ],
                 "summary": "Restaurar usuário",
-                "description": "Restaurar usuário",
+                "description": "Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
                 "operationId": "282df5354ee2b04bf7ac4bbc6d5fb515",
                 "parameters": [
                     {
