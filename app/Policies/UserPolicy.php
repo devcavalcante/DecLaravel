@@ -16,8 +16,7 @@ class UserPolicy extends AbstractPolicy
     public function __construct(
         protected TypeUserRepositoryInterface $typeUserRepository,
         protected UserRepositoryInterface $userRepository
-    )
-    {
+    ) {
     }
 
     /**

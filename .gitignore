@@ -1,9 +1,6 @@
 /vendor
 /docker/dbdata
 .env
-/storage/app
-/storage/framework
-/storage/logs
 /storage/oauth-private.key
 /storage/oauth-public.key
 Homestead.json

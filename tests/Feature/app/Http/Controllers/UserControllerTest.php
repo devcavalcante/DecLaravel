@@ -109,6 +109,20 @@ class UserControllerTest extends TestCase
         $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
+    public function testShouldNotDestroyUserWithoutPermission()
+    {
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um usuário no banco de dados usando o model factory
+        $user = User::factory()->create();
+
+        // Envia uma solicitação para excluir o usuário criado
+        $response = $this->deleteJson('/api/users/' . $user->id);
+
+        // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
+        $response->assertStatus(403);
+    }
+
     public function testDestroyNonExistingUser()
     {
         $this->login(TypeUserEnum::ADMIN);
@@ -158,6 +172,23 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function testShouldNotRestoreUserWithoutPermission()
+    {
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um usuário e apaga ele
+        $user = User::factory(['creator_user_id' => $userLogged])->create();
+        $this->delete("/api/users/delete/{$user->id}");
+
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        // Envia uma solicitação para restaurar o usuário
+        $response = $this->patchJson("/api/users/restore/{$user->id}");
+
+        // Verifica se a solicitação foi bem-sucedida
+        $response->assertStatus(403);
+    }
+
     public function testShouldUpdate()
     {
         $user = $this->login(TypeUserEnum::ADMIN);
@@ -165,6 +196,15 @@ class UserControllerTest extends TestCase
         $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testShouldNotUpdateWithoutPermission()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        $response = $this->put(sprintf('api/users/%s', 1), ['name' => 'outro nome']);
+
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testShouldNotUpdateOthersUsers()
