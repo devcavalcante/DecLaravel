@@ -55,3 +55,9 @@ Criando chaves de acesso
   docker exec -it plataforma.dev php artisan passport:install
 ```
 
+Gerando documentação
+
+```bash
+  docker exec -it plataforma.dev composer swagger
+```
+

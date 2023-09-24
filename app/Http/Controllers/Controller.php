@@ -20,7 +20,7 @@ use OpenApi\Annotations as OA;
  *     )
  * )
  * @OA\SecurityScheme(
- *     type="apiKey",
+ *     type="Authorization",
  *     name="Authorization",
  *     in="header",
  *     securityScheme="Authorization"

@@ -28,7 +28,7 @@ class AuthService
         try {
             DB::beginTransaction();
             $data['password'] = bcrypt($data['password']);
-            $user = $this->userRepository->findByFilters(Arr::only($data, 'email'));
+            $data['creator_user_id'] = Auth::id();
             $user = $this->userRepository->create($data);
             $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
             DB::commit();

@@ -19,20 +19,4 @@ class UserRepository implements UserRepositoryInterface
     {
         $this->model = $model;
     }
-
-    public function listWithTypeUsers(): Collection
-    {
-        return $this->model->with('typeUser')->get();
-    }
-
-    public function findWithTypeUser(string $id): Model
-    {
-        $model = $this->model->with('typeUser')->find($id);
-
-        if (!$model) {
-            throw new NotFoundHttpException($this->model->getNotFoundMessage());
-        }
-
-        return $model;
-    }
 }

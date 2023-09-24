@@ -1,7 +1,11 @@
 /vendor
 /docker/dbdata
 .env
-/storage
+/storage/app
+/storage/framework
+/storage/logs
+/storage/oauth-private.key
+/storage/oauth-public.key
 Homestead.json
 Homestead.yaml
 .phpunit.result.cache

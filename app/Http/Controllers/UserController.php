@@ -47,7 +47,7 @@ class UserController extends Controller
     {
         $this->authorize(AbilitiesEnum::VIEW, User::class);
 
-        $users = $this->userRepository->listWithTypeUsers();
+        $users = $this->userRepository->listAll();
         return response()->json($users, 200);
     }
 
@@ -83,7 +83,7 @@ class UserController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $user = $this->userRepository->findWithTypeUser($id);
+        $user = $this->userRepository->findById($id);
         return response()->json($user);
     }
 
@@ -177,7 +177,7 @@ class UserController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, User::class);
+        $this->authorize(AbilitiesEnum::DELETE, [User::class, $id]);
         $this->userRepository->delete($id);
         return response()->json([], 204);
     }
@@ -214,7 +214,7 @@ class UserController extends Controller
      */
     public function restore(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::RESTORE, User::class);
+        $this->authorize(AbilitiesEnum::RESTORE, [User::class, $id]);
         $user = $this->userRepository->restore($id);
         return response()->json($user);
     }
