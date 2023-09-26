@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->string('name');
                 $table->string('email')->unique();
                 $table->timestamp('email_verified_at')->nullable();
-                $table->string('password');
+                $table->string('password')->nullable();
                 $table->unsignedBigInteger('type_user_id');
                 $table->unsignedBigInteger('creator_user_id')->nullable(); // Novo campo para o criador do usuário
                 $table->rememberToken();

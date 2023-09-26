@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\GetValues;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
-class UserRequest extends FormRequest
+class VerifyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +24,11 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $method = request()->method;
-        $isRequired = $method == 'POST' ? 'required' : 'sometimes';
-        $isForbidden = $method !== 'POST' ? 'prohibited' : 'required';
         return [
-            'name'         => sprintf('%s|min:4|string', $isRequired),
-            'email'        => sprintf('%s|email|string|unique:users', $isRequired),
-            'type_user_id' => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],
+            'token' => 'required',
+            'email' => 'required|email|string',
+            'password'     => 'required|min:8|string',
+            'c_password'   => 'required|same:password|min:8|string',
         ];
     }
     /**
@@ -43,15 +39,17 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'           => 'O campo nome é obrigatório.',
-            'name.string'             => 'O campo nome deve ser uma string.',
-            'name.min'                => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'token.required' => 'O campo token é obrigatório.',
             'email.email'             => 'Email invalido.',
             'email.required'          => 'O campo e-mail e obrigatório.',
             'email.string'            => 'O campo email deve ser uma string.',
-            'type_user_id.in'         => 'O valor passado em type_user_id nao existe',
-            'email.unique'            => 'Esse e-mail ja esta cadastrado',
-            'type_user_id.prohibited' => 'Esse campo não pode ser atualizado',
+            'password.required'       => 'O campo password e obrigatório.',
+            'password.min'            => 'O campo password deve ter no mínimo 8 caracteres.',
+            'password.string'         => 'O campo password deve ser uma string.',
+            'c_password.min'          => 'O campo password deve ter no mínimo 8 caracteres.',
+            'c_password.required'     => 'O campo c_password e obrigatório.',
+            'c_password.same'         => 'O campo c_password deve ser igual ao campo password.',
+            'c_password.string'       => 'O campo c_password deve ser uma string.'
         ];
     }
     /**

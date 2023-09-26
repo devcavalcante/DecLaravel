@@ -46,9 +46,9 @@ trait CRUDTrait
         return $model;
     }
 
-    public function findByFilters(array $data): Model|null
+    public function findByFilters(array $data)
     {
-        return $this->model->where($data)->first();
+        return $this->model->where($data)->get();
     }
 
     public function restore(string $id): Model

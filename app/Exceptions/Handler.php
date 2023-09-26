@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof UnauthorizedException || $exception instanceof AuthorizationException) {
-            return response(['errors' => $exceptionMessage, 'code' => 403], 403);
+            return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], $exceptionCode);
         }
 
         if ($exception instanceof QueryException) {

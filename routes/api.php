@@ -21,10 +21,9 @@ Route::get('health', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::post('email/verify', [AuthController::class, 'verify']);
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/register', [AuthController::class, 'register']);
-
     Route::group(['prefix' => '/type-user'], function () {
         Route::post('/', [TypeUserController::class, 'store']);
         Route::get('/{id}', [TypeUserController::class, 'show']);

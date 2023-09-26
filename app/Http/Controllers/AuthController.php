@@ -6,6 +6,7 @@ use App\Enums\AbilitiesEnum;
 use App\Exceptions\AuthorizedException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Models\User;
 use App\Services\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -139,5 +140,15 @@ class AuthController extends Controller
     {
         $this->authService->logout();
         return response()->json([], 204);
+    }
+
+    /**
+     * @throws AuthorizedException
+     * @throws Throwable
+     */
+    public function verify(VerifyRequest $request): JsonResponse
+    {
+        $this->authService->verifyEmail($request->all());
+        return response()->json(['success' => true, 'message' => "Email verificado com sucesso"]);
     }
 }
