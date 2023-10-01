@@ -170,9 +170,9 @@ class AuthControllerTest extends TestCase
         $token = '123456';
         PasswordResetToken::factory(['email' => $user->email, 'token' => $token])->create();
         $payload = [
-            'email' => $user->email,
-            'token' => $token,
-            'password' => '12345678',
+            'email'      => $user->email,
+            'token'      => $token,
+            'password'   => '12345678',
             'c_password' => '12345678',
         ];
 
@@ -189,9 +189,9 @@ class AuthControllerTest extends TestCase
         $token = '123456';
         PasswordResetToken::factory(['email' => $user->email, 'token' => '654321'])->create();
         $payload = [
-            'email' => $user->email,
-            'token' => $token,
-            'password' => '12345678',
+            'email'      => $user->email,
+            'token'      => $token,
+            'password'   => '12345678',
             'c_password' => '12345678',
         ];
 
@@ -208,9 +208,9 @@ class AuthControllerTest extends TestCase
         $token = '123456';
         PasswordResetToken::factory(['email' => $user->email, 'token' => $token, 'created_at' => Carbon::yesterday()])->create();
         $payload = [
-            'email' => $user->email,
-            'token' => $token,
-            'password' => '12345678',
+            'email'      => $user->email,
+            'token'      => $token,
+            'password'   => '12345678',
             'c_password' => '12345678',
         ];
 

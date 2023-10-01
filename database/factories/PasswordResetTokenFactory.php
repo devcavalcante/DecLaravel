@@ -19,9 +19,9 @@ class PasswordResetTokenFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => $this->faker->unique()->safeEmail(),
-            'token' => rand(100000, 999999),
-            'created_at' => Carbon::now()
+            'email'      => $this->faker->unique()->safeEmail(),
+            'token'      => rand(100000, 999999),
+            'created_at' => Carbon::now(),
         ];
     }
 }

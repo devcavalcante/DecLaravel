@@ -126,4 +126,3 @@ class AuthService
         $this->userRepository->update($user->id, $payload);
     }
 }
-
