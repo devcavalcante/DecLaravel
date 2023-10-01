@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\AuthorizedException;
+use App\Repositories\Interfaces\PasswordResetTokenRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -20,6 +21,7 @@ class AuthService
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected TokenRepository $tokenRepository,
+        protected PasswordResetTokenRepositoryInterface $passwordResetTokenRepository
     ) {
     }
 
@@ -32,7 +34,9 @@ class AuthService
             DB::beginTransaction();
             $data['creator_user_id'] = Auth::id();
             $user = $this->userRepository->create($data);
+
             $this->createPin($data['email']);
+
             $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
             DB::commit();
             return $user;
@@ -73,12 +77,9 @@ class AuthService
     {
         try {
             DB::beginTransaction();
-
-            $email = Arr::get($data, 'email');
-            $token = Arr::get($data, 'token');
-
-            $this->verifyPin($email, $token);
-            $this->userRepository->deletePasswordResetToken($email, $token);
+            $dataPasswordToken = Arr::only($data, ['email', 'token']);
+            $this->verifyPin($dataPasswordToken);
+            $this->passwordResetTokenRepository->deletePasswordResetByToken($dataPasswordToken);
             $this->saveCredentialsUser($data);
 
             DB::commit();
@@ -90,26 +91,21 @@ class AuthService
 
     private function createPin(string $email): void
     {
-        $verify = $this->userRepository->findPasswordResetTokenByEmail($email);
-
-        if ($verify->exists()) {
-            $verify->delete();
-        }
-
         $pin = rand(100000, 999999);
-        $this->userRepository->createPasswordResetToken($email, $pin);
+        $data = ['email' => $email, 'pin' => $pin, 'created_at' => Carbon::now()];
+        $this->passwordResetTokenRepository->create($data);
         Mail::to($email)->send(new VerifyEmail($pin));
     }
 
     /**
      * @throws AuthorizedException
      */
-    public function verifyPin(string $email, string $token): bool
+    public function verifyPin(array $data): bool
     {
-        $check = $this->userRepository->findPasswordResetTokenByEmailAndToken($email, $token);
+        $check = $this->passwordResetTokenRepository->findByFilters($data)->first();
 
-        if ($check->isEmpty()) {
-            throw new AuthorizedException('Invalid PIN', 400);
+        if (empty($check)) {
+            throw new AuthorizedException('PIN invalido', 400);
         }
 
         $difference = Carbon::now()->diffInSeconds($check->first()->created_at);
@@ -125,8 +121,9 @@ class AuthService
         $user = $this->userRepository->findByFilters(['email' => $data['email']])->first();
         $payload = [
             'email_verified_at' => Carbon::now(),
-            'password' =>  bcrypt($data['password']),
+            'password'          =>  bcrypt($data['password']),
         ];
         $this->userRepository->update($user->id, $payload);
     }
 }
+

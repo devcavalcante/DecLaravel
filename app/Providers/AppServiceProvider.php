@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Repositories\Interfaces\PasswordResetTokenRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\PasswordResetTokenRepository;
 use App\Repositories\TypeGroupRepository;
 use App\Repositories\TypeUserRepository;
 use App\Repositories\UserRepository;
@@ -33,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             TypeUserRepositoryInterface::class,
             TypeUserRepository::class
+        );
+        $this->app->bind(
+            PasswordResetTokenRepositoryInterface::class,
+            PasswordResetTokenRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);

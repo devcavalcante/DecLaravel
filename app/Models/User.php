@@ -27,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'type_user_id',
         'creator_user_id',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     protected $with = ['typeUser'];
@@ -51,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'deleted_at' => 'datetime'
     ];
 
     public function getNotFoundMessage(): string

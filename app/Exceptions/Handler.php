@@ -68,8 +68,12 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], 404);
         }
 
-        if ($exception instanceof UnauthorizedException || $exception instanceof AuthorizationException) {
+        if ($exception instanceof UnauthorizedException) {
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], $exceptionCode);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return response(['errors' => $exceptionMessage, 'code' => 403], 403);
         }
 
         if ($exception instanceof QueryException) {

@@ -20,33 +20,4 @@ class UserRepository implements UserRepositoryInterface
     {
         $this->model = $model;
     }
-
-    public function findPasswordResetTokenByEmail(string $email): Builder
-    {
-        return DB::table('password_reset_tokens')->where([['email', $email]]);
-    }
-
-    public function createPasswordResetToken(string $email, string $pin): bool
-    {
-        return DB::table('password_reset_tokens')->insert(
-            [
-                'email' => $email,
-                'token' => $pin,
-                'created_at' => Carbon::now()
-            ]
-        );
-    }
-
-    public function findPasswordResetTokenByEmailAndToken(string $email, string $token): Collection
-    {
-        return DB::table('password_reset_tokens')
-            ->where('email', $email)
-            ->where('token', $token)
-            ->get();
-    }
-
-    public function deletePasswordResetToken(string $email, string $token): void
-    {
-        DB::table('password_reset_tokens')->where('email', $email)->where('token', $token)->delete();
-    }
 }

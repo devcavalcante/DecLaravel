@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\Env;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,15 +20,23 @@ class VerifyEmail
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        if (Auth::user()->email_verified_at === null) {
+        if (Auth::user()->email_verified_at === null || !$this->checkEnvIsEnvironmentDevelopment()) {
             return response(
                 [
                     'success' => false,
-                    'message' => 'Please verify your email before you can continue'
+                    'message' => 'Verifique seu email antes de continuar',
                 ],
                 401
             );
         }
         return $next($request);
+    }
+
+    private function checkEnvIsEnvironmentDevelopment(): bool
+    {
+        if (env('APP_ENV') == 'dev' || env('APP_ENV') == 'testing') {
+            return true;
+        }
+        return false;
     }
 }

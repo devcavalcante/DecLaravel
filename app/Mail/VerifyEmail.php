@@ -13,7 +13,7 @@ class VerifyEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public String $pin;
+    public string $pin;
 
     /**
      * Create a new message instance.

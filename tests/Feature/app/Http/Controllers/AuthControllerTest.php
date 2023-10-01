@@ -3,10 +3,14 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
+use App\Mail\VerifyEmail;
+use App\Models\PasswordResetToken;
 use App\Models\TypeUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Passport\Passport;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
@@ -139,6 +143,82 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
         $actual = json_decode($response->getContent(), true);
         $this->assertEquals('Unauthorized.', $actual['errors']);
+    }
+
+    public function testShouldSendEmailWhenCreate()
+    {
+        Mail::fake();
+
+        $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
+        $user = User::factory(['type_user_id' => $typeUser->id])->create();
+        $payload = $this->getFakePayload($typeUser->id);
+
+        Passport::actingAs($user);
+
+        $response = $this->post('/api/register', $payload);
+        $actual = json_decode($response->getContent(), true);
+
+        $this->assertNull(User::find($actual['id'])->email_verified_at);
+        Mail::assertSent(VerifyEmail::class, function ($mail) use ($payload) {
+            return $mail->hasTo($payload['email']);
+        });
+    }
+
+    public function testShouldVerifyEmail()
+    {
+        $user = User::factory()->create();
+        $token = '123456';
+        PasswordResetToken::factory(['email' => $user->email, 'token' => $token])->create();
+        $payload = [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => '12345678',
+            'c_password' => '12345678',
+        ];
+
+        $response = $this->post('/api/email/verify', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals('Email verificado com sucesso', $actual['message']);
+        $this->assertDatabaseMissing('password_reset_tokens', ['email' => $user->email, 'token' => $token]);
+        $this->assertNotNull(User::find($user->id)->email_verified_at);
+    }
+
+    public function testShouldThrowableWhenPinIsInvalid()
+    {
+        $user = User::factory(['email_verified_at' => null])->create();
+        $token = '123456';
+        PasswordResetToken::factory(['email' => $user->email, 'token' => '654321'])->create();
+        $payload = [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => '12345678',
+            'c_password' => '12345678',
+        ];
+
+        $response = $this->post('/api/email/verify', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals('PIN invalido', $actual['errors']);
+        $this->assertEquals(400, $actual['code']);
+        $this->assertNull(User::find($user->id)->email_verified_at);
+    }
+
+    public function testShouldThrowableWhenPinIsExpired()
+    {
+        $user = User::factory(['email_verified_at' => null])->create();
+        $token = '123456';
+        PasswordResetToken::factory(['email' => $user->email, 'token' => $token, 'created_at' => Carbon::yesterday()])->create();
+        $payload = [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => '12345678',
+            'c_password' => '12345678',
+        ];
+
+        $response = $this->post('/api/email/verify', $payload);
+        $actual = json_decode($response->getContent(), true);
+        $this->assertEquals('Token expirado', $actual['errors']);
+        $this->assertEquals(400, $actual['code']);
+        $this->assertNull(User::find($user->id)->email_verified_at);
     }
 
     private function getFakePayload(string $typeUserId): array
