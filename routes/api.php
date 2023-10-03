@@ -21,6 +21,8 @@ Route::get('health', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/redirect', [AuthController::class, 'redirect']);
+Route::get('/callback', [AuthController::class, 'handleCallback']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/register', [AuthController::class, 'register']);

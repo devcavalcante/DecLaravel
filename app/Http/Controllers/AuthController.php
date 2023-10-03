@@ -8,8 +8,14 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\AuthService;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redirect;
 use OpenApi\Annotations as OA;
 use Throwable;
 
@@ -139,5 +145,22 @@ class AuthController extends Controller
     {
         $this->authService->logout();
         return response()->json([], 204);
+    }
+
+    public function redirect(): RedirectResponse
+    {
+        $authorizationUrl = $this->authService->getAuthorizationUrl();
+        return Redirect::away($authorizationUrl);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function handleCallback(): array|string|null
+    {
+        // Obtém o código da query string
+        $code = request()->query('code');
+        $response = $this->authService->handleCallback($code);
+        dd($response);
     }
 }
