@@ -11,5 +11,4 @@ class UserRepository implements UserRepositoryInterface
     use CRUDTrait;
 
     protected User $model;
-
 }

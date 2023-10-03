@@ -73,9 +73,9 @@ class AuthService
             '%s/authorize?%s',
             $baseUrl,
             http_build_query([
-                'client_id' => env('CLIENT_ID'),
+                'client_id'     => env('CLIENT_ID'),
                 'response_type' => 'code',
-                'redirect_uri' =>  env('REDIRECT_URI')
+                'redirect_uri'  =>  env('REDIRECT_URI'),
             ])
         );
     }
@@ -89,11 +89,11 @@ class AuthService
 
         $response = $client->post(env('AUTH_SERVER_URL') . '/token', [
             'form_params' => [
-                'client_id' => env('CLIENT_ID'),
+                'client_id'     => env('CLIENT_ID'),
                 'client_secret' => env('CLIENT_SECRET'),
-                'redirect_uri' => env('REDIRECT_URI'),
-                'grant_type' => 'authorization_code',
-                'code' => $code,
+                'redirect_uri'  => env('REDIRECT_URI'),
+                'grant_type'    => 'authorization_code',
+                'code'          => $code,
             ],
         ]);
 
