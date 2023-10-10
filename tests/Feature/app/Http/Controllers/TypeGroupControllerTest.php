@@ -19,7 +19,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testIndexTypeGroups()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
         // Cria 10 tipos de grupos no banco de dados usando o model factory
         TypeGroup::factory(10)->create();
 
@@ -39,7 +39,7 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testIndexEmptyTypeGroups()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Envia uma solicitação para listar todos os tipos de grupos quando não há nenhum no banco de dados
         $response = $this->getJson('/api/type-group');
@@ -51,7 +51,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testShowTypeGroup()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
@@ -74,7 +74,7 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testShowNotExistsTypeGroup()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;
@@ -88,7 +88,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationSuccess()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
             'name'       => 'Comitê', // Valor válido para o campo 'name'
@@ -104,7 +104,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedMissingName()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Tenta criar um tipo de grupo sem fornecer o campo 'name'
         $response = $this->postJson('/api/type-group', []);
@@ -115,7 +115,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedInvalidDataType()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->postJson('/api/type-group', [
             'name' => 123,
@@ -127,7 +127,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedNameTooShort()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $response = $this->postJson('/api/type-group', [
@@ -140,7 +140,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testValidationFailedOnUpdate()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Dados inválidos para o campo 'name' (menos de 4 caracteres)
         $data = [
@@ -167,7 +167,7 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testUpdateSuccess()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Cria um tipo de grupo no banco de dados
         $typeGroup = TypeGroup::factory()->create();
@@ -189,7 +189,7 @@ class TypeGroupControllerTest extends TestCase
 
     public function testDestroyTypeGroup()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Cria um tipo de grupo no banco de dados usando o model factory
         $typeGroup = TypeGroup::factory()->create();
@@ -211,7 +211,7 @@ class TypeGroupControllerTest extends TestCase
      */
     public function testDestroyNotExistingTypeGroup()
     {
-        $this->login(TypeUserEnum::MANAGER);
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         // Cria um ID inválido para um tipo de grupo inexistente
         $invalidId = 999;

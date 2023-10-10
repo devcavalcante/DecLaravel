@@ -12,7 +12,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function view(): bool
     {
-        return $this->isManager();
+        return $this->isRepresentative();
     }
 
     /**
@@ -20,7 +20,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function create(): bool
     {
-        return $this->isManager();
+        return $this->isRepresentative();
     }
 
     /**
@@ -28,7 +28,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function update(): bool
     {
-        return $this->isManager();
+        return $this->isRepresentative();
     }
 
     /**
@@ -36,6 +36,6 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function delete(): bool
     {
-        return $this->isManager();
+        return $this->isRepresentative();
     }
 }
