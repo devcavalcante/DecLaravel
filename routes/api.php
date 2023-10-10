@@ -5,7 +5,7 @@ use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\MemberController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,5 +48,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('/{id}', [UserController::class, 'update']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::patch('/restore/{id}', [UserController::class, 'restore']);
+    });
+
+    Route::group(['prefix' => '/members'], function () {
+        Route::get('/', [MemberController::class, 'index']);
+        Route::post('/', [MemberController::class, 'store']);
+        Route::get('/{id}', [MemberController::class, 'show']);
+        Route::put('/{id}', [MemberController::class, 'update']);
+        Route::delete('/{id}', [MemberController::class, 'destroy']);
     });
 });
