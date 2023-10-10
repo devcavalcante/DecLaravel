@@ -8,7 +8,7 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [QSA,L]
 
-    Header add Access-Control-Allow-Origin "http://localhost:3000"
+    Header add Access-Control-Allow-Origin "*"
     Header add Access-Control-Allow-Credentials true
     Header add Access-Control-Allow-Headers "authorization,language,Content-Type"
     Header add Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
