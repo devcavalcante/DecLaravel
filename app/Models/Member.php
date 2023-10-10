@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Member extends Model
 {
@@ -14,10 +14,13 @@ class Member extends Model
         'role',
         'phone',
         'user_id',
+        'entry_date',
+        'departure_date',
     ];
 
     protected $casts = [
         'entry_date' => 'datetime',
+        'departure_date' => 'datetime'
     ];
 
     public function getNotFoundMessage(): string
@@ -25,8 +28,8 @@ class Member extends Model
         return 'Membro não encontrado';
     }
 
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

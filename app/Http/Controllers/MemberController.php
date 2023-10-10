@@ -144,6 +144,8 @@ class MemberController extends Controller
      */
     public function show(string $id): JsonResponse
     {
+        $this->authorize(AbilitiesEnum::VIEW, Member::class);
+
         $user = $this->memberRepository->findWithUser($id);
         return response()->json($user);
     }
@@ -213,7 +215,7 @@ class MemberController extends Controller
 
     public function update(string $id, MemberRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
+        $this->authorize(AbilitiesEnum::UPDATE, Member::class);
         $payload = $request->validated();
         $user = $this->memberRepository->update($id, $payload);
         return response()->json($user, 200);

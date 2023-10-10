@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('role');
             $table->string('phone');
-            $table->timestamp('entry_date')->default(now());
-            $table->date('departure_date')->nullable();
+            $table->date('entry_date');
+            $table->date('departure_date');
             $table->unsignedBigInteger('user_id');
 
             $table->foreign('user_id')->references('id')->on('users');

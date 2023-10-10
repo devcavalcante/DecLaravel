@@ -34,10 +34,12 @@ class MemberRequest extends FormRequest
         return array(
             'role'           => sprintf('%s|string', $isRequired),
             'phone'          => sprintf('%s|min:11|string', $isRequired),
-            'departure_date' => 'date',
+            'entry_date'     => sprintf('%s|date', $isRequired),
+            'departure_date' => sprintf('%s|date|after_or_equal:entry_date', $isRequired),
             'user_id'        => sprintf('%s|string|exists:App\Models\User,id', $isForbidden),
         );
     }
+
     /**
      * Get the error messages for the defined validation rules.
      *
@@ -46,18 +48,23 @@ class MemberRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'role.required'       => 'O campo papel é obrigatório.',
-            'role.string'         => 'O campo papel deve ser uma string.',
-            'phone.required'      => 'O campo telefone é obrigatório.',
-            'phone.string'        => 'O campo telefone deve ser uma string.',
-            'phone.min'           => 'O campo telefone deve ter pelo menos 11 caracteres.',
-            'departure_date.date' => 'O campo data de partida deve ser uma data válida.',
-            'user_id.prohibited'  => 'Esse campo não pode ser atualizado',
-            'user_id.required'    => 'O campo user_id é obrigatório.',
-            'user_id.string'      => 'O campo user_id deve ser uma string.',
-            'user_id.exists'      => 'O campo user_id não existe na tabela de usuários.',
+            'role.required'           => 'O campo papel é obrigatório.',
+            'role.string'             => 'O campo papel deve ser uma string.',
+            'phone.required'          => 'O campo telefone é obrigatório.',
+            'phone.string'            => 'O campo telefone deve ser uma string.',
+            'phone.min'               => 'O campo telefone deve ter pelo menos 11 caracteres.',
+            'departure_date.date'     => 'O campo data de saida deve ser uma data válida.',
+            'departure_date.required' => 'O campo de saida deve ser obrigatório',
+            'entry_date.date'         => 'O campo data de entrada deve ser uma data válida.',
+            'entry_date.required'     => 'O campo data de entrada deve ser obrigatório.',
+            'user_id.prohibited'      => 'Esse campo não pode ser atualizado',
+            'user_id.required'        => 'O campo user_id é obrigatório.',
+            'user_id.string'          => 'O campo user_id deve ser uma string.',
+            'user_id.exists'          => 'O campo user_id não existe na tabela de usuários.',
+            //after_or_equal:entry_date mensagem colocar
         ];
     }
+
     /**
      * Handle a failed validation attempt.
      *
