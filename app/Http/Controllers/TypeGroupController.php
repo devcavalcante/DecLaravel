@@ -13,7 +13,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="type-group",
- *     description="Controle dos tipos de grupo: apenas usuários com o tipo de usuário REPRESENTANTE tem acesso a esses endpoints"
+ *     description="Controle dos tipos de grupo: apenas usuários com o tipo de usuário GERENTE tem acesso a esses endpoints"
  * )
  */
 class TypeGroupController extends Controller
