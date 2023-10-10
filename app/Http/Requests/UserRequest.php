@@ -41,8 +41,8 @@ class UserRequest extends FormRequest
                     ->min(1024) // Tamanho mínimo do arquivo em kilobytes (1MB)
                     ->max(12 * 1024) // Tamanho máximo do arquivo em kilobytes (12MB)
                     ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)), // Dimensões máximas da imagem
-        ]
-            ];
+            ]
+        ];
     }
     /**
      * Get the error messages for the defined validation rules.
