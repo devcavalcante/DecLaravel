@@ -55,7 +55,7 @@ class MemberController extends Controller
      *   path="/members",
      *   tags={"members"},
      *   summary="Criar novo membro",
-     *   description="Cria um novo membro",
+     *   description="Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="application/json",
@@ -118,7 +118,8 @@ class MemberController extends Controller
      *   path="/members/{id}",
      *   tags={"members"},
      *   summary="Lista o registro de membro por ID",
-     *   description="Lista o registro de membro por ID de referência",
+     *   description="Lista o registro de membro por ID de referência,
+     *   somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -155,7 +156,8 @@ class MemberController extends Controller
      *   path="/members/{id}",
      *   tags={"members"},
      *   summary="Atualizar membro",
-     *   description="Atualizar membro: Apenas o membro pode atualizar suas próprias informações",
+     *   description="Atualizar membro: Apenas o membro pode atualizar suas próprias informações,
+     *   somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -226,7 +228,7 @@ class MemberController extends Controller
      *   path="/members/{id}",
      *   tags={"members"},
      *   summary="Deletar membro",
-     *   description="Deletar membro por ID de referência",
+     *   description="Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
