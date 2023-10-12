@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
+use App\Http\Requests\GroupRequest;
 use App\Http\Requests\TypeGroupRequest;
+use App\Models\Group;
 use App\Models\TypeGroup;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
+use App\Services\GroupService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use Throwable;
 
 /**
  * @OA\Tag(
@@ -16,9 +21,9 @@ use OpenApi\Annotations as OA;
  *     description="Controle dos tipos de grupo: apenas usuários com o tipo de usuário GERENTE tem acesso a esses endpoints"
  * )
  */
-class TypeGroupController extends Controller
+class GroupController extends Controller
 {
-    public function __construct(private TypeGroupRepositoryInterface $typeGroupsRepository)
+    public function __construct(private readonly GroupRepositoryInterface $groupRepository, private  GroupService $groupService)
     {
     }
 
@@ -45,10 +50,10 @@ class TypeGroupController extends Controller
      */
     public function index(): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, TypeGroup::class);
+        $this->authorize(AbilitiesEnum::VIEW, Group::class);
 
-        $typeGroup = $this->typeGroupsRepository->listAll();
-        return response()->json($typeGroup, 200);
+        $groups = $this->groupRepository->listAll();
+        return response()->json($groups);
     }
 
     /**
@@ -86,14 +91,15 @@ class TypeGroupController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws Throwable
      */
-    public function store(TypeGroupRequest $request): JsonResponse
+    public function store(GroupRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, TypeGroup::class);
+        $this->authorize(AbilitiesEnum::CREATE, Group::class);
 
-        $payload = $request->validated();
-        $typeGroup = $this->typeGroupsRepository->create($payload);
-        return response()->json($typeGroup, 201);
+        $payload = $request->all();
+        $group = $this->groupService->create($payload);
+        return response()->json($group, 201);
     }
 
     /**
@@ -130,8 +136,8 @@ class TypeGroupController extends Controller
     {
         $this->authorize(AbilitiesEnum::VIEW, TypeGroup::class);
 
-        $typeGroup = $this->typeGroupsRepository->findById($id);
-        return response()->json($typeGroup, 200);
+        $group = $this->groupRepository->findById($id);
+        return response()->json($group);
     }
 
     /**
@@ -178,14 +184,15 @@ class TypeGroupController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function update(string $id, TypeGroupRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, TypeGroup::class);
+        $this->authorize(AbilitiesEnum::UPDATE, Group::class);
 
-        $payload = $request->validated();
-        $typeGroup = $this->typeGroupsRepository->update($id, $payload);
-        return response()->json($typeGroup);
+        $payload = $request->all();
+        $group = $this->groupService->edit($id, $payload);
+        return response()->json($group);
     }
 
     /**
@@ -221,12 +228,13 @@ class TypeGroupController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function destroy(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, TypeGroup::class);
+        $this->authorize(AbilitiesEnum::DELETE, Group::class);
 
-        $this->typeGroupsRepository->delete($id);
+        $this->groupService->delete($id);
         return response()->json([], 204);
     }
 }

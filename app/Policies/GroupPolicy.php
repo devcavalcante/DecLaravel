@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-class TypeGroupPolicy extends AbstractPolicy
+class GroupPolicy extends AbstractPolicy
 {
     /**
      * Determine whether the user can view the model.

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
 use Illuminate\Support\Facades\Route;
@@ -48,5 +49,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('/{id}', [UserController::class, 'update']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::patch('/restore/{id}', [UserController::class, 'restore']);
+    });
+
+    Route::group(['prefix' => '/group'], function () {
+        Route::get('/', [GroupController::class, 'index']);
+        Route::post('/', [GroupController::class, 'store']);
+        Route::get('/{id}', [GroupController::class, 'show']);
+        Route::put('/{id}', [GroupController::class, 'update']);
+        Route::delete('/{id}', [GroupController::class, 'destroy']);
     });
 });
