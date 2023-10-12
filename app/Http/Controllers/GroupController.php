@@ -23,7 +23,9 @@ use Throwable;
  */
 class GroupController extends Controller
 {
-    public function __construct(private readonly GroupRepositoryInterface $groupRepository, private  GroupService $groupService)
+    public function __construct(
+        private readonly GroupRepositoryInterface $groupRepository,
+        private GroupService $groupService)
     {
     }
 

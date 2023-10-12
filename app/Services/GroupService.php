@@ -52,8 +52,7 @@ class GroupService
             $representatives = Arr::get($data, 'representatives');
 
             $group = $this->groupRepository->update($groupId, $data);
-            if(!empty($representatives))
-            {
+            if (!empty($representatives)) {
                 $this->updateGroupHasRepresentatives($representatives, $groupId);
             }
             DB::commit();
@@ -69,18 +68,17 @@ class GroupService
      */
     public function delete(string $id): void
     {
-        try{
+        try {
             DB::beginTransaction();
             $group = $this->groupRepository->findById($id);
             $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters(['group_id' => $group->id]);
 
-            foreach ($groupRepresentatives->toArray() as $groupRepresentative)
-            {
+            foreach ($groupRepresentatives->toArray() as $groupRepresentative) {
                 $this->groupHasRepresentativeRepository->delete($groupRepresentative['id']);
             }
             $this->groupRepository->delete($id);
             DB::commit();
-        } catch (Throwable $throwable){
+        } catch (Throwable $throwable) {
             DB::rollBack();
             throw $throwable;
         }
@@ -91,15 +89,13 @@ class GroupService
      */
     private function createGroupHasRepresentatives(array $representatives, string $groupId): void
     {
-        foreach ($representatives as $representative)
-        {
-            if(!$this->checkIfIsRepresentative($representative))
-            {
+        foreach ($representatives as $representative) {
+            if (!$this->checkIfIsRepresentative($representative)) {
                 throw new OnlyRepresentativesException();
             }
             $data = [
-                'user_id' => $representative,
-                'group_id' => $groupId
+                'user_id'  => $representative,
+                'group_id' => $groupId,
             ];
             $this->groupHasRepresentativeRepository->create($data);
         }
@@ -111,10 +107,8 @@ class GroupService
     private function updateGroupHasRepresentatives(array $representatives, string $groupId): void
     {
         $groupRepresentativeId = $this->groupHasRepresentativeRepository->findByFilters(['group_id' => $groupId])->id;
-        foreach ($representatives as $representative)
-        {
-            if(!$this->checkIfIsRepresentative($representative))
-            {
+        foreach ($representatives as $representative) {
+            if (!$this->checkIfIsRepresentative($representative)) {
                 throw new OnlyRepresentativesException();
             }
 

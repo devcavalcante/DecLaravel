@@ -26,12 +26,12 @@ class Group extends Model
         'internal_concierge',
         'observations',
         'type_group_id',
-        'creator_user_id'
+        'creator_user_id',
     ];
 
     protected $hidden = [
         'type_group_id',
-        'creator_user_id'
+        'creator_user_id',
     ];
 
     protected $with = ['typeGroup', 'user', 'representative'];
