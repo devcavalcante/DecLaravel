@@ -26,7 +26,7 @@ class MemberControllerTest extends TestCase
     // Teste que um usuário sem permissão não pode listar membros
     public function testShouldNotListMembersWithoutPermission()
     {
-        $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador (sem permissão para listar membros)
+        $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
         Member::factory(10)->create(); // Cria 10 membros no banco de dados
 
         // Envia uma solicitação para listar membros e espera uma resposta proibida
@@ -75,18 +75,20 @@ class MemberControllerTest extends TestCase
     public function testDestroyMember()
     {
         $userLogged = $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
-        $member = Member::factory(['creator_user_id' => $userLogged->id])->create(); // Cria um membro com o usuário logado como criador
+        $member = Member::factory(['user_id' => $userLogged->id])->create(); // Cria um membro com o usuário logado como criador
 
         // Envia uma solicitação para excluir o membro
         $response = $this->deleteJson('/api/members/' . $member->id);
         $response->assertStatus(204); // Verifica se a resposta é bem-sucedida (status HTTP 204)
-        $this->assertSoftDeleted('members', ['id' => $member->id]); // Verifica se o membro foi excluído logicamente no banco de dados
+
+        // Verifica se o membro foi excluído fisicamente do banco de dados
+        $this->assertDatabaseMissing('members', ['id' => $member->id]);
     }
 
     // Teste que um usuário sem permissão não pode excluir um membro
-    public function testShouldNotDestroyUserWithoutPermission()
+    public function testShouldNotDestroyMemberWithoutPermission()
     {
-        $userLogged = $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $userLogged = $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
         $member = Member::factory()->create(); // Cria um membro
 
         // Envia uma solicitação para excluir o membro e espera uma resposta proibida
@@ -112,7 +114,7 @@ class MemberControllerTest extends TestCase
         $user = $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
 
         // Cria um membro com o usuário logado como criador
-        $member = Member::factory(['creator_user_id' => $user->id])->create();
+        $member = Member::factory(['user_id' => $user->id])->create();
 
         // Envia uma solicitação para atualizar a função do membro
         $response = $this->put(sprintf('api/members/%s', $member->id), ['role' => 'nova_funcao']);
@@ -123,7 +125,7 @@ class MemberControllerTest extends TestCase
     // Teste que um usuário sem permissão não pode atualizar um membro
     public function testShouldNotUpdateWithoutPermission()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
         $member = Member::factory()->create(); // Cria um membro
 
         // Envia uma solicitação para atualizar a função do membro e espera uma resposta proibida
@@ -134,7 +136,7 @@ class MemberControllerTest extends TestCase
     // Teste que um usuário não pode atualizar outros membros
     public function testShouldNotUpdateOthersMembers()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $this->login(TypeUserEnum::VIEWER); // Faz login visualizador
         $member = Member::factory()->create(); // Cria um membro
 
         // Envia uma solicitação para atualizar a função de outro membro e espera uma resposta proibida

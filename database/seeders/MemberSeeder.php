@@ -17,18 +17,17 @@ class MemberSeeder extends Seeder
             [
                 'role'           => 'Professor',
                 'phone'          => '1234567890',
-                'departure_date' => now(),
+                'entry_date'     => Carbon::now(),
+                'departure_date' => Carbon::now(),
                 'user_id'        => 1,
-                'created_at'     => Carbon::now(),
-                'updated_at'     => Carbon::now(),
             ],
             [
                 'role'           => 'Professor',
                 'phone'          => '9876543210',
-                'departure_date' => now(),
+                'entry_date'     => Carbon::now(),
+                'departure_date' => Carbon::now(),
                 'user_id'        => 2,
-                'created_at'     => Carbon::now(),
-                'updated_at'     => Carbon::now(),
+
             ],
         ]);
     }
