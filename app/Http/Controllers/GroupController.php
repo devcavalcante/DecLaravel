@@ -6,8 +6,6 @@ use App\Enums\AbilitiesEnum;
 use App\Http\Requests\GroupRequest;
 use App\Http\Requests\TypeGroupRequest;
 use App\Models\Group;
-use App\Models\TypeGroup;
-use App\Models\User;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Services\GroupService;
 use App\Transformer\GroupTransformer;
@@ -18,8 +16,8 @@ use Throwable;
 
 /**
  * @OA\Tag(
- *     name="type-group",
- *     description="Controle dos tipos de grupo: apenas usuários com o tipo de usuário GERENTE tem acesso a esses endpoints"
+ *     name="group",
+ *     description="Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
  * )
  */
 class GroupController extends Controller
@@ -32,10 +30,10 @@ class GroupController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/type-group",
-     *   tags={"type-group"},
-     *   summary="Listar todos os tipos de grupos",
-     *   description="Lista todos os tipos de grupos",
+     *   path="/group",
+     *   tags={"group"},
+     *   summary="Listar todos os grupos",
+     *   description="Lista todos os grupos",
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -59,17 +57,34 @@ class GroupController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/type-group",
-     *   tags={"type-group"},
-     *   summary="Criar novo tipo de grupo",
-     *   description="Cria novo tipo de grupo",
+     *   path="/group",
+     *   tags={"group"},
+     *   summary="Criar novo grupo",
+     *   description="Cria novo grupo",
      *   @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="application/json",
      *          @OA\Schema(
+     *             @OA\Property(
+     *                 property="representatives",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={2, 4}
+     *             ),
      *              example={
-     *                  "name": "Nome do grupo",
-     *                  "type_group": "Tipo de grupo: Interno ou Externo"
+     *                 "entity": "exercitationem",
+     *                 "organ": "architecto",
+     *                 "council": "voluptates",
+     *                 "acronym": "nesciunt",
+     *                 "team": "ut",
+     *                 "unit": "occaecati",
+     *                 "email": "amanda24@hotmail.com",
+     *                 "office_requested": "accusamus",
+     *                 "office_indicated": "incidunt",
+     *                 "internal_concierge": "corrupti",
+     *                 "type_group_id": 1,
+     *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
+     *                 "representatives": {2,4},
      *              }
      *          )
      *      )
@@ -89,6 +104,10 @@ class GroupController extends Controller
      *   @OA\Response(
      *     response="403",
      *     description="Unauthorized"
+     *   ),
+     * @OA\Response(
+     *     response="400",
+     *     description="Apenas usuarios do tipo representante sao permitidos"
      *   )
      * )
      * @throws AuthorizationException
@@ -105,14 +124,14 @@ class GroupController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/type-group/{id}",
-     *   tags={"type-group"},
-     *   summary="Lista o registro de tipos de grupos por ID",
-     *   description="Lista o registro de tipos de grupos por ID de referência",
+     *   path="/group/{id}",
+     *   tags={"group"},
+     *   summary="Lista o registro de grupos por ID",
+     *   description="Lista o registro de grupos por ID de referência",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
-     *     description="Id do tipo de grupo",
+     *     description="Id do grupo",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -120,7 +139,7 @@ class GroupController extends Controller
      *   ),
      *   @OA\Response(
      *     response=404,
-     *     description="Tipo de grupo not found"
+     *     description="grupo not found"
      *   ),
      *   @OA\Response(
      *     response=200,
@@ -140,14 +159,14 @@ class GroupController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/type-group/{id}",
-     *   tags={"type-group"},
-     *   summary="Atualizar tipo de grupo",
-     *   description="Atualizar tipo de grupo",
+     *   path="/group/{id}",
+     *   tags={"group"},
+     *   summary="Atualizar grupo",
+     *   description="Atualizar grupo",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
-     *     description="Id do tipo de grupo",
+     *     description="Id do grupo",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -157,9 +176,26 @@ class GroupController extends Controller
      *      @OA\MediaType(
      *          mediaType="application/json",
      *          @OA\Schema(
+     *                 @OA\Property(
+     *                 property="representatives",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={2, 4}
+     *             ),
      *              example={
-     *                  "name": "Nome do tipo de grupo",
-     *                  "type_group": "Tipo de grupo: Interno ou Externo"
+     *                 "entity": "exercitationem",
+     *                 "organ": "architecto",
+     *                 "council": "voluptates",
+     *                 "acronym": "nesciunt",
+     *                 "team": "ut",
+     *                 "unit": "occaecati",
+     *                 "email": "amanda24@hotmail.com",
+     *                 "office_requested": "accusamus",
+     *                 "office_indicated": "incidunt",
+     *                 "internal_concierge": "corrupti",
+     *                 "type_group_id": 1,
+     *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
+     *                 "representatives": {2,4},
      *              }
      *          )
      *      )
@@ -179,6 +215,10 @@ class GroupController extends Controller
      *   @OA\Response(
      *     response=404,
      *     description="Usuário not found"
+     *   ),
+     *   @OA\Response(
+     *     response="400",
+     *     description="Apenas usuarios do tipo representante sao permitidos"
      *   )
      * )
      * @throws AuthorizationException
@@ -195,14 +235,14 @@ class GroupController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/type-group/{id}",
-     *   tags={"type-group"},
-     *   summary="Deletar tipo de grupo",
-     *   description="Deletar tipo de grupo por ID de referência",
+     *   path="/group/{id}",
+     *   tags={"group"},
+     *   summary="Deletar grupo",
+     *   description="Deletargrupo por ID de referência",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
-     *     description="Id do tipo de grupo",
+     *     description="Id do grupo",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -222,7 +262,7 @@ class GroupController extends Controller
      *   ),
      *  @OA\Response(
      *     response=404,
-     *     description="Tipo de grupo Not Found"
+     *     description="grupo Not Found"
      *   )
      * )
      * @throws AuthorizationException
