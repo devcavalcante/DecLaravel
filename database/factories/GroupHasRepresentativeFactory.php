@@ -17,8 +17,8 @@ class GroupHasRepresentativeFactory extends Factory
         $user = User::where(['type_user_id' => 3])->first();
 
         return [
-            'group_id'           => $group->id,
-            'user_id'            => $user->id,
+            'group_id' => $group->id,
+            'user_id'  => $user->id,
         ];
     }
 }

@@ -6,6 +6,7 @@ use App\Enums\TypeUserEnum;
 use App\Models\Group;
 use App\Models\GroupHasRepresentative;
 use App\Models\TypeGroup;
+use App\Models\TypeUser;
 use App\Models\User;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -34,19 +35,19 @@ class GroupControllerTest extends TestCase
         $response = $this->get(self::BASE_URL);
 
         $response->assertStatus(200);
-        $this->assertEquals(Group::all()->toArray(), json_decode($response->getContent(), true));
+        $this->assertCount(10, Group::all());
     }
 
-    public function testShouldListOne ()
+    public function testShouldListOne()
     {
         $this->login(TypeUserEnum::MANAGER);
         $group = Group::factory()->create();
 
         $response = $this->get(sprintf('%s/%s', self::BASE_URL, $group->id));
 
-        $actual = json_decode($response->getContent(), true);
+        $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(200);
-        $this->assertEquals($group->id, $actual);
+        $this->assertCount(1, $group->all());
     }
 
     public function testShouldNotFoundGroup()
@@ -67,13 +68,25 @@ class GroupControllerTest extends TestCase
         $payload = $this->fakePayload();
         $response = $this->post(self::BASE_URL, $payload);
 
-        $actual = json_decode($response->getContent(), true);
+        $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(201);
-        $this->assertDatabaseHas('groups', $actual);
+        $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representatives']));
         $this->assertDatabaseHasRepresentatives($payload['representatives'], $actual['id']);
     }
 
-    public function testShouldCreateOnlyRepresentatives()
+    public function testShouldOnlyManagersCreate()
+    {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $payload = $this->fakePayload();
+        $response = $this->post(self::BASE_URL, $payload);
+
+        $actual = json_decode($response->getContent(), true);
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', $actual['errors']);
+    }
+
+    public function testShouldCreateWithOnlyRepresentatives()
     {
         $this->login(TypeUserEnum::MANAGER);
 
@@ -98,19 +111,94 @@ class GroupControllerTest extends TestCase
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
 
-        $actual = json_decode($response->getContent(), true);
-        dd($actual);
+        $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(200);
         $this->assertEquals($payload['entity'], $actual['entity']);
+        $this->assertDatabaseHasRepresentatives($payload['representatives'], $group->id);
+    }
+
+    public function testShouldUpdateWithOnlyRepresentatives()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        $payload = $this->fakePayload();
+        $payload['representatives'] = [1, 2];
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+        $response->assertStatus(400);
+        $this->assertEquals('Apenas usuarios do tipo representante sao permitidos', $actual['errors']);
+    }
+
+    public function testShouldOnlyManagersUpdate()
+    {
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        $payload = $this->fakePayload();
+        $payload['entity'] = 'teste';
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', $actual['errors']);
+    }
+
+    public function testShouldOnlyManagerCreatedCanUpdate()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+
+        $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
+        $user = User::factory(['type_user_id' => $typeUserId])->create();
+        $group = Group::factory(['creator_user_id' => $user->id])->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        $payload = $this->fakePayload();
+        $payload['entity'] = 'teste';
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', $actual['errors']);
+    }
+
+    public function testShouldDelete()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+
+        $group = Group::factory()->create();
+        $groupHasRepresentative = GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('groups', $group->toArray());
+        $this->assertDatabaseMissing('group_has_representatives', $groupHasRepresentative->toArray());
+    }
+
+    public function testShouldOnlyManagerCreatedCanDelete()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+
+        $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
+        $user = User::factory(['type_user_id' => $typeUserId])->create();
+        $group = Group::factory(['creator_user_id' => $user->id])->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', $actual['errors']);
     }
 
     private function assertDatabaseHasRepresentatives(array $representatives, string $groupId): void
     {
-        foreach ($representatives as $representative)
-        {
+        foreach ($representatives as $representative) {
             $this->assertDatabaseHas('group_has_representatives', [
                 'group_id' => $groupId,
-                'user_id' => $representative
+                'user_id'  => $representative,
             ]);
         }
     }

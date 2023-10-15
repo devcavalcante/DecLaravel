@@ -9,7 +9,8 @@ use App\Repositories\Interfaces\GroupRepositoryInterface;
 class GroupPolicy extends AbstractPolicy
 {
 
-    public function __construct(private readonly GroupRepositoryInterface $groupRepository){
+    public function __construct(private readonly GroupRepositoryInterface $groupRepository)
+    {
     }
     /**
      * Determine whether the user can create models.

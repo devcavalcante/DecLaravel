@@ -110,7 +110,7 @@ class GroupService
             return !$this->checkIfIsRepresentative($representative);
         });
 
-        if(!empty($isNotRepresentative)) {
+        if (!empty($isNotRepresentative)) {
             throw new OnlyRepresentativesException();
         }
 
