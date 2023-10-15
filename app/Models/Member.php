@@ -20,8 +20,8 @@ class Member extends Model
     protected $table = 'members';
 
     protected $casts = [
-        'entry_date' => 'datetime',
-        'departure_date' => 'datetime'
+        'entry_date'     => 'datetime',
+        'departure_date' => 'datetime',
     ];
 
     public function getNotFoundMessage(): string

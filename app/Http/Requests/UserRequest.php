@@ -36,12 +36,12 @@ class UserRequest extends FormRequest
             'password'     => sprintf('%s|min:8|string', $isRequired),
             'c_password'   => sprintf('%s|same:password|min:8|string', $isRequired),
             'type_user_id' => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],
-            'file_url' => [
+            'file_url'     => [
                 File::image()
                     ->min(1024) // Tamanho mínimo do arquivo em kilobytes (1MB)
                     ->max(12 * 1024) // Tamanho máximo do arquivo em kilobytes (12MB)
                     ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)), // Dimensões máximas da imagem
-            ]
+            ],
         ];
     }
     /**
@@ -87,5 +87,3 @@ class UserRequest extends FormRequest
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }
-
-

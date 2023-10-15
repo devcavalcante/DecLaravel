@@ -12,7 +12,7 @@ class MemberPolicy extends AbstractPolicy
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected TypeUserRepositoryInterface $typeUserRepository
-    ){
+    ) {
     }
 
     /**
