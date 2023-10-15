@@ -2,16 +2,15 @@
 
 namespace App\Policies;
 
+use App\Models\Group;
+use App\Models\User;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
+
 class GroupPolicy extends AbstractPolicy
 {
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(): bool
-    {
-        return $this->isManager();
-    }
 
+    public function __construct(private readonly GroupRepositoryInterface $groupRepository){
+    }
     /**
      * Determine whether the user can create models.
      */
@@ -23,16 +22,16 @@ class GroupPolicy extends AbstractPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(): bool
+    public function update(User $user, string $groupId): bool
     {
-        return $this->isManager();
+        return $this->groupRepository->findById($groupId)->creator_user_id == $user->id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(): bool
+    public function delete(User $user, string $groupId): bool
     {
-        return $this->isManager();
+        return $this->groupRepository->findById($groupId)->creator_user_id == $user->id;
     }
 }

@@ -7,9 +7,10 @@ use App\Http\Requests\GroupRequest;
 use App\Http\Requests\TypeGroupRequest;
 use App\Models\Group;
 use App\Models\TypeGroup;
+use App\Models\User;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
-use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
 use App\Services\GroupService;
+use App\Transformer\GroupTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -25,8 +26,8 @@ class GroupController extends Controller
 {
     public function __construct(
         private readonly GroupRepositoryInterface $groupRepository,
-        private GroupService $groupService)
-    {
+        private readonly GroupService $groupService
+    ) {
     }
 
     /**
@@ -48,14 +49,12 @@ class GroupController extends Controller
      *     description="Unauthorized"
      *   )
      * )
-     * @throws AuthorizationException
      */
     public function index(): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, Group::class);
-
         $groups = $this->groupRepository->listAll();
-        return response()->json($groups);
+
+        return response()->json($this->transform(new GroupTransformer(), $groups));
     }
 
     /**
@@ -101,7 +100,7 @@ class GroupController extends Controller
 
         $payload = $request->all();
         $group = $this->groupService->create($payload);
-        return response()->json($group, 201);
+        return response()->json($this->transform(new GroupTransformer(), $group), 201);
     }
 
     /**
@@ -132,14 +131,11 @@ class GroupController extends Controller
      *     description="Unauthorized"
      *   )
      * )
-     * @throws AuthorizationException
      */
     public function show(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, TypeGroup::class);
-
         $group = $this->groupRepository->findById($id);
-        return response()->json($group);
+        return response()->json($this->transform(new GroupTransformer(), $group));
     }
 
     /**
@@ -190,11 +186,11 @@ class GroupController extends Controller
      */
     public function update(string $id, TypeGroupRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, Group::class);
+        $this->authorize(AbilitiesEnum::UPDATE, [Group::class, $id]);
 
         $payload = $request->all();
         $group = $this->groupService->edit($id, $payload);
-        return response()->json($group);
+        return response()->json($this->transform(new GroupTransformer(), $group));
     }
 
     /**
@@ -234,7 +230,7 @@ class GroupController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, Group::class);
+        $this->authorize(AbilitiesEnum::DELETE, [Group::class, $id]);
 
         $this->groupService->delete($id);
         return response()->json([], 204);

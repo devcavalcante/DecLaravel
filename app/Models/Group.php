@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Group extends Model
 {
@@ -34,16 +34,16 @@ class Group extends Model
         'creator_user_id',
     ];
 
-    protected $with = ['typeGroup', 'user', 'representative'];
+    protected $with = ['typeGroup', 'user', 'representatives'];
 
     public function getNotFoundMessage(): string
     {
         return 'Grupo nao encontrado';
     }
 
-    public function representative(): HasMany
+    public function representatives(): BelongsToMany
     {
-        return $this->hasMany(GroupHasRepresentative::class);
+        return $this->belongsToMany(User::class, 'group_has_representatives', 'group_id', 'user_id')->withTimestamps();
     }
 
     public function typeGroup(): BelongsTo

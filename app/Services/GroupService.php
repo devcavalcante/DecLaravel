@@ -50,13 +50,12 @@ class GroupService
         try {
             DB::beginTransaction();
             $representatives = Arr::get($data, 'representatives');
-
             $group = $this->groupRepository->update($groupId, $data);
             if (!empty($representatives)) {
                 $this->updateGroupHasRepresentatives($representatives, $groupId);
             }
             DB::commit();
-            return $group;
+            return $group->load('representatives');
         } catch (Throwable $throwable) {
             DB::rollBack();
             throw $throwable;
@@ -76,6 +75,7 @@ class GroupService
             foreach ($groupRepresentatives->toArray() as $groupRepresentative) {
                 $this->groupHasRepresentativeRepository->delete($groupRepresentative['id']);
             }
+
             $this->groupRepository->delete($id);
             DB::commit();
         } catch (Throwable $throwable) {
@@ -106,14 +106,17 @@ class GroupService
      */
     private function updateGroupHasRepresentatives(array $representatives, string $groupId): void
     {
-        $groupRepresentativeId = $this->groupHasRepresentativeRepository->findByFilters(['group_id' => $groupId])->id;
-        foreach ($representatives as $representative) {
-            if (!$this->checkIfIsRepresentative($representative)) {
-                throw new OnlyRepresentativesException();
-            }
+        $isNotRepresentative = array_filter($representatives, function ($representative) {
+            return !$this->checkIfIsRepresentative($representative);
+        });
 
-            $this->groupHasRepresentativeRepository->update($groupRepresentativeId, ['user_id' => $representative]);
+        if(!empty($isNotRepresentative)) {
+            throw new OnlyRepresentativesException();
         }
+
+        $group = $this->groupRepository->findById($groupId);
+        $group->representatives()->sync($representatives);
+        $group->refresh();
     }
 
     private function checkIfIsRepresentative(string $userId): bool

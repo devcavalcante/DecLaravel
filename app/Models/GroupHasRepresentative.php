@@ -12,18 +12,10 @@ class GroupHasRepresentative extends Model
 
     protected $table = 'group_has_representatives';
 
+    public $timestamps = true;
+
     protected $fillable = [
         'user_id',
         'group_id',
     ];
-
-    public function group(): BelongsTo
-    {
-        return $this->belongsTo(Group::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(Group::class);
-    }
 }
