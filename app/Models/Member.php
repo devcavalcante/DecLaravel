@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Member extends Model
 {
@@ -18,6 +17,8 @@ class Member extends Model
         'departure_date',
     ];
 
+    protected $table = 'members';
+
     protected $casts = [
         'entry_date' => 'datetime',
         'departure_date' => 'datetime'
@@ -26,10 +27,5 @@ class Member extends Model
     public function getNotFoundMessage(): string
     {
         return 'Membro não encontrado';
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

@@ -8,11 +8,12 @@ use App\Models\Member;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
  *     name="Members",
- *     description="CRUD dos membros"
+ *     description="CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
  * )
  */
 class MemberController extends Controller
@@ -40,14 +41,11 @@ class MemberController extends Controller
      *     description="Não autorizado"
      *   )
      * )
-     * @throws AuthorizationException
      */
     public function index(): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, Member::class);
-
-        $members = $this->memberRepository->listWithUsers();
-        return response()->json($members, 200);
+        $members = $this->memberRepository->listAll();
+        return response()->json($members);
     }
 
     /**
@@ -145,9 +143,7 @@ class MemberController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, Member::class);
-
-        $user = $this->memberRepository->findWithUser($id);
+        $user = $this->memberRepository->findById($id);
         return response()->json($user);
     }
 

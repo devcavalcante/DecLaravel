@@ -21,20 +21,4 @@ class MemberRepository implements MemberRepositoryInterface
     {
         $this->model = $model;
     }
-
-    public function listWithUsers(): Collection
-    {
-        return $this->model->with('user')->get();
-    }
-
-    public function findWithUser(string $id): Model
-    {
-        $model = $this->model->with('user')->find($id);
-
-        if (!$model) {
-            throw new NotFoundHttpException($this->model->getNotFoundMessage());
-        }
-
-        return $model;
-    }
 }

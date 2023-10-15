@@ -105,6 +105,206 @@
                 }
             }
         },
+        "/members": {
+            "get": {
+                "tags": [
+                    "members"
+                ],
+                "summary": "Listar todos os membros",
+                "description": "Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "operationId": "0a7045fbb9a3c713742cb2ed937a0105",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "members"
+                ],
+                "summary": "Criar novo membro",
+                "description": "Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "12f9b39fa3aa25f4cf13f278ddd11ef9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role",
+                                    "phone",
+                                    "departure_date",
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "description": "O papel do membro.",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "O número de telefone do membro (deve ter pelo menos 11 caracteres).",
+                                        "type": "string"
+                                    },
+                                    "departure_date": {
+                                        "description": "A data de partida do membro (formato YYYY-MM-DD).",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "user_id": {
+                                        "description": "O ID do usuário associado ao membro.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/members/{id}": {
+            "get": {
+                "tags": [
+                    "members"
+                ],
+                "summary": "Lista o registro de membro por ID",
+                "description": "Lista o registro de membro por ID de referência,\n     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "1fd856fdfaaf1e386c20f99e657e1904",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do membro",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Membro not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "members"
+                ],
+                "summary": "Atualizar membro",
+                "description": "Atualizar membro: Apenas o membro pode atualizar suas próprias informações,\n     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "abf8609c946a1cf6b1fc64a55b707dc6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do membro",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "role": {
+                                        "description": "O papel do membro.",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "O número de telefone do membro (deve ter pelo menos 11 caracteres).",
+                                        "type": "string"
+                                    },
+                                    "departure_date": {
+                                        "description": "A data de partida do membro (formato YYYY-MM-DD).",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "user_id": {
+                                        "description": "O ID do usuário associado ao membro.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Membro not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "members"
+                ],
+                "summary": "Deletar membro",
+                "description": "Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "e25e55c105f2af69b64400db071eb19d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do membro",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
         "/type-group": {
             "get": {
                 "tags": [
@@ -616,6 +816,10 @@
         {
             "name": "auth",
             "description": "Autenticação dos usuários"
+        },
+        {
+            "name": "Members",
+            "description": "CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
         },
         {
             "name": "type-group",
