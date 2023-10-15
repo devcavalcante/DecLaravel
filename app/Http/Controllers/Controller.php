@@ -38,8 +38,7 @@ class Controller extends BaseController
     public function transform(
         TransformerAbstract $transformerAbstract,
         \Illuminate\Database\Eloquent\Collection|Model $data
-    ): ?array
-    {
+    ): ?array {
         $manager = new Manager();
         $resource = $this->prepareData($data, $transformerAbstract);
         return $manager->createData($resource)->toArray();
