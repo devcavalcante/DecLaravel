@@ -25,8 +25,7 @@ class MemberController extends Controller
     public function __construct(
         private MemberRepositoryInterface $memberRepository,
         private MemberService $memberService
-    )
-    {
+    ) {
     }
 
     /**

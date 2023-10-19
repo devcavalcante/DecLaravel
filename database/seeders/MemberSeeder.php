@@ -22,7 +22,7 @@ class MemberSeeder extends Seeder
                 'entry_date'     => Carbon::now(),
                 'departure_date' => Carbon::now(),
                 'user_id'        => 1,
-                'group_id'      => $group->id
+                'group_id'       => $group->id,
             ],
             [
                 'role'           => 'Professor',
@@ -30,7 +30,7 @@ class MemberSeeder extends Seeder
                 'entry_date'     => Carbon::now(),
                 'departure_date' => Carbon::now(),
                 'user_id'        => 2,
-                'group_id'      => $group->id
+                'group_id'       => $group->id,
             ],
         ]);
     }

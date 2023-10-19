@@ -16,15 +16,15 @@ class MemberTransformer extends TransformerAbstract
     private function getTransformUser(User $user): array
     {
         return [
-            'id' => $user->pivot->id,
-            'role' => $user->pivot->role,
-            'phone' => $user->pivot->phone,
-            'entry_date' => $user->pivot->entry_date,
+            'id'             => $user->pivot->id,
+            'role'           => $user->pivot->role,
+            'phone'          => $user->pivot->phone,
+            'entry_date'     => $user->pivot->entry_date,
             'departure_date' => $user->pivot->departure_date,
-            'created_at' => $user->pivot->created_at,
-            'updated_at' => $user->pivot->updated_at,
-            'group_id' => $user->pivot->group_id,
-            'user' => [
+            'created_at'     => $user->pivot->created_at,
+            'updated_at'     => $user->pivot->updated_at,
+            'group_id'       => $user->pivot->group_id,
+            'user'           => [
                 'id'        => $user->id,
                 'name'      => $user->name,
                 'email'     => $user->email,
@@ -38,15 +38,15 @@ class MemberTransformer extends TransformerAbstract
         $user = $member->user;
 
         return [
-            'id' => $member->id,
-            'role' => $member->role,
-            'phone' => $member->phone,
-            'entry_date' => $member->entry_date,
+            'id'             => $member->id,
+            'role'           => $member->role,
+            'phone'          => $member->phone,
+            'entry_date'     => $member->entry_date,
             'departure_date' => $member->departure_date,
-            'created_at' => $member->created_at,
-            'updated_at' => $member->updated_at,
-            'group_id' =>$member->group_id,
-            'user' => [
+            'created_at'     => $member->created_at,
+            'updated_at'     => $member->updated_at,
+            'group_id'       =>$member->group_id,
+            'user'           => [
                 'id'        => $user->id,
                 'name'      => $user->name,
                 'email'     => $user->email,

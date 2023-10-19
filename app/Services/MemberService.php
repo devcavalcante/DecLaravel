@@ -16,8 +16,7 @@ class MemberService
     public function __construct(
         private GroupRepositoryInterface $groupRepository,
         private MemberRepositoryInterface $memberRepository,
-    )
-    {
+    ) {
     }
 
     public function list(string $groupId)
@@ -36,8 +35,7 @@ class MemberService
             DB::beginTransaction();
             $group = $this->groupRepository->findById($groupId);
 
-            foreach ($data as $payload)
-            {
+            foreach ($data as $payload) {
                 $this->checkIfGroupExistsUser($payload['user_id'], $groupId);
                 $this->memberRepository->create(array_merge($payload, ['group_id' => $groupId]));
             }
@@ -72,7 +70,7 @@ class MemberService
     {
         $member = $this->memberRepository->findByFilters(['user_id' => $userId, 'group_id' => $groupId]);
 
-        if(!$member->isEmpty()){
+        if (!$member->isEmpty()) {
             throw new MembersExists();
         }
     }
