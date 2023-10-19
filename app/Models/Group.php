@@ -34,7 +34,7 @@ class Group extends Model
         'creator_user_id',
     ];
 
-    protected $with = ['typeGroup', 'user', 'representatives', 'userMember'];
+    protected $with = ['typeGroup', 'user', 'representatives', 'userMembers'];
 
     public function getNotFoundMessage(): string
     {
@@ -46,7 +46,7 @@ class Group extends Model
         return $this->belongsToMany(User::class, 'group_has_representatives', 'group_id', 'user_id')->withTimestamps();
     }
 
-    public function userMember(): BelongsToMany
+    public function userMembers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id')
             ->withTimestamps()

@@ -22,7 +22,7 @@ class MemberService
     public function list(string $groupId)
     {
         $group = $this->groupRepository->findById($groupId);
-        return $group->userMember;
+        return $group->userMembers;
     }
 
     /**

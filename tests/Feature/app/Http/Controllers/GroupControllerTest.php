@@ -70,7 +70,7 @@ class GroupControllerTest extends TestCase
 
         $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(201);
-        $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representatives']));
+        $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representatives', 'members']));
         $this->assertDatabaseHasRepresentatives($payload['representatives'], $actual['id']);
     }
 

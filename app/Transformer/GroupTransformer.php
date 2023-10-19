@@ -36,6 +36,7 @@ class GroupTransformer extends TransformerAbstract
                 'type' => $group->typeGroup->type_group,
             ],
             'representatives'    => $this->transformRepresentatives($group->representatives->toArray()),
+            'members'           => $this->transformMembers($group->userMembers->toArray())
         ];
     }
 
@@ -53,5 +54,30 @@ class GroupTransformer extends TransformerAbstract
         }
 
         return $transformedRepresentatives;
+    }
+
+    protected function transformMembers(array $members): array
+    {
+        $transformedMembers = [];
+
+        foreach ($members as $member) {
+            $transformedMembers[] = [
+                'id'             => $member['pivot']['id'],
+                'role'           => $member['pivot']['role'],
+                'phone'          => $member['pivot']['phone'],
+                'entry_date'     => $member['pivot']['entry_date'],
+                'departure_date' => $member['pivot']['departure_date'],
+                'created_at'     => $member['pivot']['created_at'],
+                'updated_at'     => $member['pivot']['updated_at'],
+                'user'           => [
+                    'id'        => $member['id'],
+                    'name'      => $member['name'],
+                    'email'     => $member['email'],
+                    'type_user' => $member['type_user']['name']
+                ],
+            ];
+        }
+
+        return $transformedMembers;
     }
 }
