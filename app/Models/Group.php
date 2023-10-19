@@ -38,7 +38,7 @@ class Group extends Model
 
     public function getNotFoundMessage(): string
     {
-        return 'Grupo nao encontrado';
+        return 'Grupo não encontrado';
     }
 
     public function representatives(): BelongsToMany

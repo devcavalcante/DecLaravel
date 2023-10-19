@@ -58,7 +58,7 @@ class GroupControllerTest extends TestCase
 
         $actual = json_decode($response->getContent(), true);
         $response->assertStatus(404);
-        $this->assertEquals('Grupo nao encontrado', $actual['errors']);
+        $this->assertEquals('Grupo não encontrado', $actual['errors']);
     }
 
     public function testShouldCreate()

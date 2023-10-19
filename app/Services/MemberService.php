@@ -29,11 +29,11 @@ class MemberService
      * @throws MembersExists
      * @throws Throwable
      */
-    public function createMany(string $groupId, array $data): Collection
+    public function createMany(string $groupId, array $data): void
     {
         try {
             DB::beginTransaction();
-            $group = $this->groupRepository->findById($groupId);
+            $this->groupRepository->findById($groupId);
 
             foreach ($data as $payload) {
                 $this->checkIfGroupExistsUser($payload['user_id'], $groupId);
@@ -41,7 +41,6 @@ class MemberService
             }
 
             DB::commit();
-            return $group->userMember;
         } catch (Throwable $throwable) {
             DB::rollBack();
             throw $throwable;

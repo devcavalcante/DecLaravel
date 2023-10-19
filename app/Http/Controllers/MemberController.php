@@ -23,8 +23,8 @@ use Throwable;
 class MemberController extends Controller
 {
     public function __construct(
-        private MemberRepositoryInterface $memberRepository,
-        private MemberService $memberService
+        private readonly MemberRepositoryInterface $memberRepository,
+        private readonly MemberService $memberService
     ) {
     }
 
@@ -112,9 +112,8 @@ class MemberController extends Controller
     public function store(MemberRequest $request, string $groupId): JsonResponse
     {
         $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
-
-        $members = $this->memberService->createMany($groupId, $request->all());
-        return response()->json($this->transform(new MemberTransformer(), $members), 201);
+        $this->memberService->createMany($groupId, $request->all());
+        return response()->json([], 201);
     }
 
     /**

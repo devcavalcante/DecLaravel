@@ -1,146 +1,317 @@
 <?php
-use Tests\TestCase;
-use App\Models\Member;
-use App\Http\Controllers\MemberController;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\Feature\Utils\LoginUsersTrait;
+
+namespace Tests\Feature\app\Http\Controllers;
+
 use App\Enums\TypeUserEnum;
-use Illuminate\Support\Facades\Passport;
+use App\Models\Group;
+use App\Models\GroupHasRepresentative;
+use App\Models\Member;
+use App\Models\TypeUser;
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Arr;
+use Tests\Feature\Utils\LoginUsersTrait;
+use Tests\TestCase;
 
 class MemberControllerTest extends TestCase
 {
     use DatabaseTransactions;
     use LoginUsersTrait;
 
-    // Teste de listagem de membros
-    public function testIndexMembers()
+    public function testShouldListAll()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
-        Member::factory(10)->create(); // Cria 10 membros no banco de dados
+        $group = Group::factory()->create();
+        $user = User::factory()->create();
+        Member::factory(['group_id' => $group->id])->create();
+        Member::factory(['user_id' => $user->id, 'group_id' => $group->id])->create();
 
-        // Envia uma solicitação para listar todos os membros
-        $response = $this->get('/api/members');
-        $response->assertStatus(200); // Verifica se a resposta é bem-sucedida (status HTTP 200)
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $response = $this->get('api/members');
+
+        $response->assertStatus(200);
+        $this->assertCount(2, json_decode($response->getContent(), true)['data']);
     }
 
-    // Teste que um usuário sem permissão não pode listar membros
-    public function testShouldNotListMembersWithoutPermission()
+    public function testShouldListOne()
     {
-        $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
-        Member::factory(10)->create(); // Cria 10 membros no banco de dados
+        $group = Group::factory()->create();
+        $member = Member::factory(['group_id' => $group->id])->create();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        // Envia uma solicitação para listar membros e espera uma resposta proibida
-        $response = $this->get('/api/members');
-        $response->assertStatus(403); // Verifica se a resposta é proibida (status HTTP 403)
+        $response = $this->get(sprintf('api/members/%s', $member->id));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure($this->getJsonStructure());
     }
 
-    // Teste para recuperar um membro que não existe
-    public function testIndexNotExistsMember()
+    public function testNotShouldListOneWhenNotFoundMember()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $invalidId = 999; // Cria um ID de membro inválido
+        $response = $this->get(sprintf('api/members/%s', 100));
 
-        // Envia uma solicitação para recuperar um membro que não existe
-        $response = $this->getJson('/api/members/' . $invalidId);
-        $response->assertStatus(404); // Verifica se a resposta é um erro de não encontrado (status HTTP 404)
+        $response->assertStatus(404);
+        $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    // Teste de exibição de um membro
-    public function testShowMember()
+    public function testShouldCreate()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
-        // Cria um membro no banco de dados usando a fábrica de modelos
-        $member = Member::factory()->create();
+        $payload = [
+            [
+                'phone' => '93991167653',
+                'role' => 'professor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user1->id
+            ],
+            [
+                'phone' => '93991778765',
+                'role' => 'reitor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user2->id
+            ]
+        ];
 
-        // Envia uma solicitação para exibir o membro
-        $response = $this->getJson('/api/members/' . $member->id);
-        $response->assertStatus(200); // Verifica se a resposta é bem-sucedida (status HTTP 200)
+        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+
+        Arr::set($payload, '0.entry_date', '2023-10-01');
+        Arr::set($payload, '0.departure_date', '2023-11-01"');
+        Arr::set($payload, '1.entry_date', '2023-10-01');
+        Arr::set($payload, '1.departure_date', '2023-11-01"');
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('members', array_merge($payload[0], ['group_id' => $group->id]));
+        $this->assertDatabaseHas('members', array_merge($payload[1], ['group_id' => $group->id]));
     }
 
-    // Teste para exibir um membro que não existe
-    public function testShowNotExistMember()
+    public function testShouldNotCreateWhenGroupNotFound()
     {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
-        $invalidId = 999; // Cria um ID de membro inválido
+        $payload = [
+            [
+                'phone' => '93991167653',
+                'role' => 'professor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user1->id
+            ],
+            [
+                'phone' => '93991778765',
+                'role' => 'reitor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user2->id
+            ]
+        ];
 
-        // Envia uma solicitação para exibir um membro que não existe
-        $response = $this->getJson('/api/members/' . $invalidId);
-        $response->assertStatus(404); // Verifica se a resposta é um erro de não encontrado (status HTTP 404)
+        $response = $this->post(sprintf('/api/group/%s/members', 100), $payload);
+
+        $response->assertStatus(404);
+        $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    // Teste de exclusão de um membro
-    public function testDestroyMember()
+    public function testShouldNotCreateWhenMembersExistsInGroup()
     {
-        $userLogged = $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
-        $member = Member::factory(['user_id' => $userLogged->id])->create(); // Cria um membro com o usuário logado como criador
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
-        // Envia uma solicitação para excluir o membro
-        $response = $this->deleteJson('/api/members/' . $member->id);
-        $response->assertStatus(204); // Verifica se a resposta é bem-sucedida (status HTTP 204)
+        $payload = [
+            [
+                'phone' => '93991167653',
+                'role' => 'professor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user1->id
+            ],
+            [
+                'phone' => '93991778765',
+                'role' => 'reitor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user2->id
+            ]
+        ];
 
-        // Verifica se o membro foi excluído fisicamente do banco de dados
-        $this->assertDatabaseMissing('members', ['id' => $member->id]);
+        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+
+        $response->assertStatus(400);
+        $this->assertEquals('Membro ja cadastrado no grupo', json_decode($response->getContent(), true)['errors']);
     }
 
-    // Teste que um usuário sem permissão não pode excluir um membro
-    public function testShouldNotDestroyMemberWithoutPermission()
+    public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
-        $userLogged = $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
-        $member = Member::factory()->create(); // Cria um membro
+        $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
-        // Envia uma solicitação para excluir o membro e espera uma resposta proibida
-        $response = $this->deleteJson('/api/members/' . $member->id);
-        $response->assertStatus(403); // Verifica se a resposta é proibida (status HTTP 403)
+        $payload = [
+            [
+                'phone' => '93991167653',
+                'role' => 'professor',
+                'entry_date' => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'user_id' => (string) $user2->id
+            ],
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    // Teste de exclusão de um membro que não existe
-    public function testDestroyNonExistingMember()
-    {
-        $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
-
-        $invalidId = 999; // Cria um ID de membro inválido
-
-        // Envia uma solicitação para excluir um membro que não existe e espera um erro de não encontrado
-        $response = $this->deleteJson('/api/members/' . $invalidId);
-        $response->assertStatus(404); // Verifica se a resposta é um erro de não encontrado (status HTTP 404)
-    }
-
-    // Teste de atualização de um membro
     public function testShouldUpdate()
     {
-        $user = $this->login(TypeUserEnum::REPRESENTATIVE); // Faz login como representante
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
-        // Cria um membro com o usuário logado como criador
-        $member = Member::factory(['user_id' => $user->id])->create();
+        $payload = [
+            'phone' => '9391919191',
+        ];
 
-        // Envia uma solicitação para atualizar a função do membro
-        $response = $this->put(sprintf('api/members/%s', $member->id), ['role' => 'nova_funcao']);
+        $response = $this->put(sprintf('api/members/%s', $member->id), $payload);
 
-        $response->assertStatus(200); // Verifica se a resposta é bem-sucedida (status HTTP 200)
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(200);
+        $this->assertEquals($payload['phone'], $actual['phone']);
     }
 
-    // Teste que um usuário sem permissão não pode atualizar um membro
-    public function testShouldNotUpdateWithoutPermission()
+    public function testShouldNotUpdateWhenMemberNotFound()
     {
-        $this->login(TypeUserEnum::VIEWER); // Faz login como visualizador
-        $member = Member::factory()->create(); // Cria um membro
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
-        // Envia uma solicitação para atualizar a função do membro e espera uma resposta proibida
-        $response = $this->put(sprintf('api/members/%s', $member->id), ['role' => 'nova_funcao']);
-        $response->assertStatus(403); // Verifica se a resposta é proibida (status HTTP 403)
+        $payload = [
+            'phone' => '9391919191',
+        ];
+
+        $response = $this->put(sprintf('api/members/%s', 100), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(404);
+        $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    // Teste que um usuário não pode atualizar outros membros
-    public function testShouldNotUpdateOthersMembers()
+    public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
     {
-        $this->login(TypeUserEnum::VIEWER); // Faz login visualizador
-        $member = Member::factory()->create(); // Cria um membro
+        $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
 
-        // Envia uma solicitação para atualizar a função de outro membro e espera uma resposta proibida
-        $response = $this->put(sprintf('api/members/%s', $member->id), ['role' => 'nova_funcao']);
-        $response->assertStatus(403); // Verifica se a resposta é proibida (status HTTP 403)
+        $payload = [
+            'phone' => '9391919191',
+        ];
+
+        $response = $this->put(sprintf('api/members/%s', $member->id), $payload);
+
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldDelete()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id,$member->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('members', $member->toArray());
+    }
+
+    public function testShouldNotDeleteWhenGroupNotFound()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/members/%s', 100, $member->id));
+
+        $response->assertStatus(404);
+        $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldNotDeleteWhenMemberNotFound()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, 100));
+
+        $response->assertStatus(404);
+        $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldNotDeleteWhenIsNotTheRepresentativeOfGroup()
+    {
+        $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
+        $user2 = User::factory()->create();
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
+
+        $response->assertStatus(403);
+        $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
+    }
+
+    private function getJsonStructure(): array
+    {
+        return [
+            'data' => [
+                'id',
+                'role',
+                'phone',
+                'entry_date',
+                'departure_date',
+                'created_at',
+                'updated_at',
+                'group_id',
+                'user'
+            ],
+        ];
     }
 }
