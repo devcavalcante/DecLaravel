@@ -47,8 +47,8 @@ class TypeGroupController extends Controller
     {
         $this->authorize(AbilitiesEnum::VIEW, TypeGroup::class);
 
-        $typeUser = $this->typeGroupsRepository->listAll();
-        return response()->json($typeUser, 200);
+        $typeGroup = $this->typeGroupsRepository->listAll();
+        return response()->json($typeGroup, 200);
     }
 
     /**

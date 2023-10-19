@@ -105,6 +105,231 @@
                 }
             }
         },
+        "/group": {
+            "get": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "Listar todos os grupos",
+                "description": "Lista todos os grupos",
+                "operationId": "e8330ffe5396478cbf1a2fb8a8cf0536",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "Criar novo grupo",
+                "description": "Cria novo grupo",
+                "operationId": "e4177fdb8c798f4607f383faade958a2",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "representatives": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2,
+                                            4
+                                        ]
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "entity": "exercitationem",
+                                    "organ": "architecto",
+                                    "council": "voluptates",
+                                    "acronym": "nesciunt",
+                                    "team": "ut",
+                                    "unit": "occaecati",
+                                    "email": "amanda24@hotmail.com",
+                                    "office_requested": "accusamus",
+                                    "office_indicated": "incidunt",
+                                    "internal_concierge": "corrupti",
+                                    "type_group_id": 1,
+                                    "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
+                                    "representatives": [
+                                        2,
+                                        4
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "400": {
+                        "description": "Apenas usuarios do tipo representante sao permitidos"
+                    }
+                }
+            }
+        },
+        "/group/{id}": {
+            "get": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "Lista o registro de grupos por ID",
+                "description": "Lista o registro de grupos por ID de referência",
+                "operationId": "493ecdf27d6748ca0f27a2647e91c9dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "grupo not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "Atualizar grupo",
+                "description": "Atualizar grupo",
+                "operationId": "f75f2cc8da4d387333b87c85e463dcf4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "representatives": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2,
+                                            4
+                                        ]
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "entity": "exercitationem",
+                                    "organ": "architecto",
+                                    "council": "voluptates",
+                                    "acronym": "nesciunt",
+                                    "team": "ut",
+                                    "unit": "occaecati",
+                                    "email": "amanda24@hotmail.com",
+                                    "office_requested": "accusamus",
+                                    "office_indicated": "incidunt",
+                                    "internal_concierge": "corrupti",
+                                    "type_group_id": 1,
+                                    "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
+                                    "representatives": [
+                                        2,
+                                        4
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Usuário not found"
+                    },
+                    "400": {
+                        "description": "Apenas usuarios do tipo representante sao permitidos"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "Deletar grupo",
+                "description": "Deletargrupo por ID de referência",
+                "operationId": "46eb6481112edc002da8139e138951b2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "grupo Not Found"
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": [
@@ -816,6 +1041,10 @@
         {
             "name": "auth",
             "description": "Autenticação dos usuários"
+        },
+        {
+            "name": "group",
+            "description": "Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
         },
         {
             "name": "Members",

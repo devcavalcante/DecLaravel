@@ -62,13 +62,18 @@ class User extends Authenticatable
         return $this->belongsTo(TypeUser::class);
     }
 
-    public function members(): BelongsToMany
+    public function groupsMembers(): BelongsToMany
     {
-        return $this->belongsToMany(Member::class, 'members', 'member_id');
+        return $this->belongsToMany(Member::class, 'members', 'user_id', 'group_id');
     }
 
     public function role(): string
     {
         return $this->typeUser->name;
+    }
+
+    public function groupsRepresentatives(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_has_representatives', 'user_id', 'group_id');
     }
 }

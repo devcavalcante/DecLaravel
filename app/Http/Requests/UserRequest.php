@@ -36,12 +36,13 @@ class UserRequest extends FormRequest
             'password'     => sprintf('%s|min:8|string', $isRequired),
             'c_password'   => sprintf('%s|same:password|min:8|string', $isRequired),
             'type_user_id' => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],
-            'file_url'     => [
+            'file_url' => [
                 File::image()
                     ->min(1024) // Tamanho mínimo do arquivo em kilobytes (1MB)
                     ->max(12 * 1024) // Tamanho máximo do arquivo em kilobytes (12MB)
                     ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)), // Dimensões máximas da imagem
             ],
+            'creator_user_id' => 'exists:users,id',
         ];
     }
     /**
@@ -54,7 +55,7 @@ class UserRequest extends FormRequest
         return [
             'name.required'           => 'O campo nome é obrigatório.',
             'name.string'             => 'O campo nome deve ser uma string.',
-            'name.min'                => 'O campo nome deve ter no mínimo 4 caracteres.',
+            'name.min'                => 'O campo nome deve ter no mínimo 2 caracteres.',
             'email.email'             => 'Email invalido.',
             'email.required'          => 'O campo e-mail e obrigatório.',
             'email.string'            => 'O campo email deve ser uma string.',
@@ -69,6 +70,7 @@ class UserRequest extends FormRequest
             'email.unique'            => 'Esse e-mail ja esta cadastrado',
             'type_user_id.prohibited' => 'Esse campo não pode ser atualizado',
             'file_url.image'          => 'O campo deve ser uma imagem',
+            'creator_user_id.exists'  => 'O campo de criador de usuario deve existir na base de dados.',
         ];
     }
 
@@ -87,3 +89,5 @@ class UserRequest extends FormRequest
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }
+
+

@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\MemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,11 +52,22 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::patch('/restore/{id}', [UserController::class, 'restore']);
     });
 
-    Route::group(['prefix' => '/members'], function () {
-        Route::get('/', [MemberController::class, 'index']);
-        Route::post('/', [MemberController::class, 'store']);
-        Route::get('/{id}', [MemberController::class, 'show']);
+    Route::group(['prefix' => 'members'], function () {
         Route::put('/{id}', [MemberController::class, 'update']);
-        Route::delete('/{id}', [MemberController::class, 'destroy']);
+        Route::get('/', [MemberController::class, 'index']);
+        Route::get('/{id}', [MemberController::class, 'show']);
+    });
+
+    Route::group(['prefix' => '/group'], function () {
+        Route::get('/', [GroupController::class, 'index']);
+        Route::post('/', [GroupController::class, 'store']);
+        Route::get('/{id}', [GroupController::class, 'show']);
+        Route::put('/{id}', [GroupController::class, 'update']);
+        Route::delete('/{id}', [GroupController::class, 'destroy']);
+
+        Route::group(['prefix' => '{groupId}/members'], function () {
+            Route::post('/', [MemberController::class, 'store']);
+            Route::delete('/{id}', [MemberController::class, 'destroy']);
+        });
     });
 });

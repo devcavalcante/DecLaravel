@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Traits\CRUDTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MemberRepository implements MemberRepositoryInterface

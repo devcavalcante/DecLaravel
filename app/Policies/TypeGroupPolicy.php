@@ -2,9 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\TypeGroup;
-use App\Models\User;
-
 class TypeGroupPolicy extends AbstractPolicy
 {
     /**

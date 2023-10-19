@@ -6,7 +6,6 @@ use App\Exceptions\AuthorizedException;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\TokenRepository;

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
+use App\Exceptions\MembersExists;
 use App\Http\Requests\MemberRequest;
 use App\Models\Member;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Services\MemberService;
+use App\Transformer\MemberTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use Throwable;
 
 /**
  * @OA\Tag(
@@ -18,7 +22,10 @@ use OpenApi\Annotations as OA;
  */
 class MemberController extends Controller
 {
-    public function __construct(private MemberRepositoryInterface $memberRepository)
+    public function __construct(
+        private MemberRepositoryInterface $memberRepository,
+        private MemberService $memberService
+    )
     {
     }
 
@@ -45,7 +52,7 @@ class MemberController extends Controller
     public function index(): JsonResponse
     {
         $members = $this->memberRepository->listAll();
-        return response()->json($members);
+        return response()->json($this->transform(new MemberTransformer(), $members));
     }
 
     /**
@@ -101,14 +108,14 @@ class MemberController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws MembersExists|Throwable
      */
-    public function store(MemberRequest $request): JsonResponse
+    public function store(MemberRequest $request, string $groupId): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, Member::class);
+        $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
 
-        $payload = $request->validated();
-        $typeGroup = $this->memberRepository->create($payload);
-        return response()->json($typeGroup, 201);
+        $members = $this->memberService->createMany($groupId, $request->all());
+        return response()->json($this->transform(new MemberTransformer(), $members), 201);
     }
 
     /**
@@ -144,7 +151,7 @@ class MemberController extends Controller
     public function show(string $id): JsonResponse
     {
         $user = $this->memberRepository->findById($id);
-        return response()->json($user);
+        return response()->json($this->transform(new MemberTransformer(), $user));
     }
 
     /**
@@ -210,13 +217,12 @@ class MemberController extends Controller
      * )
      * @throws AuthorizationException
      */
-
     public function update(string $id, MemberRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, Member::class);
-        $payload = $request->validated();
-        $user = $this->memberRepository->update($id, $payload);
-        return response()->json($user, 200);
+        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
+        $payload = $request->all();
+        $user = $this->memberService->edit($id, $payload);
+        return response()->json($user);
     }
 
     /**
@@ -248,10 +254,11 @@ class MemberController extends Controller
      *   ),
      *)
      * @throws AuthorizationException
+     * @throws Throwable
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, Member::class);
+        $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
         $this->memberRepository->delete($id);
         return response()->json([], 204);
     }

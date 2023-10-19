@@ -6,6 +6,7 @@ use App\Enums\AbilitiesEnum;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Transformer\UserTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -48,7 +49,7 @@ class UserController extends Controller
         $this->authorize(AbilitiesEnum::VIEW, User::class);
 
         $users = $this->userRepository->listAll();
-        return response()->json($users, 200);
+        return response()->json($this->transform(new UserTransformer(), $users));
     }
 
 
@@ -84,7 +85,7 @@ class UserController extends Controller
     public function show(string $id): JsonResponse
     {
         $user = $this->userRepository->findById($id);
-        return response()->json($user);
+        return response()->json($this->transform(new UserTransformer(), $user));
     }
 
     /**
@@ -138,7 +139,7 @@ class UserController extends Controller
         $this->authorize(AbilitiesEnum::UPDATE, [User::class, $id]);
         $payload = $request->validated();
         $user = $this->userRepository->update($id, $payload);
-        return response()->json($user, 200);
+        return response()->json($this->transform(new UserTransformer(), $user));
     }
 
     /**
@@ -216,6 +217,6 @@ class UserController extends Controller
     {
         $this->authorize(AbilitiesEnum::RESTORE, [User::class, $id]);
         $user = $this->userRepository->restore($id);
-        return response()->json($user);
+        return response()->json($this->transform(new UserTransformer(), $user));
     }
 }

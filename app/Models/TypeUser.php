@@ -12,7 +12,7 @@ class TypeUser extends Model
 
     protected $table = 'type_users';
 
-    protected $fillable= ['name'];
+    protected $fillable = ['name'];
 
     public function getNotFoundMessage():string
     {
