@@ -65,19 +65,19 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
-                'phone' => '93991167653',
-                'role' => 'professor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user1->id
+                'user_id'        => (string) $user1->id,
             ],
             [
-                'phone' => '93991778765',
-                'role' => 'reitor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991778765',
+                'role'           => 'reitor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user2->id
-            ]
+                'user_id'        => (string) $user2->id,
+            ],
         ];
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
@@ -102,19 +102,19 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
-                'phone' => '93991167653',
-                'role' => 'professor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user1->id
+                'user_id'        => (string) $user1->id,
             ],
             [
-                'phone' => '93991778765',
-                'role' => 'reitor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991778765',
+                'role'           => 'reitor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user2->id
-            ]
+                'user_id'        => (string) $user2->id,
+            ],
         ];
 
         $response = $this->post(sprintf('/api/group/%s/members', 100), $payload);
@@ -134,19 +134,19 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
-                'phone' => '93991167653',
-                'role' => 'professor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user1->id
+                'user_id'        => (string) $user1->id,
             ],
             [
-                'phone' => '93991778765',
-                'role' => 'reitor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991778765',
+                'role'           => 'reitor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user2->id
-            ]
+                'user_id'        => (string) $user2->id,
+            ],
         ];
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
@@ -166,11 +166,11 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
-                'phone' => '93991167653',
-                'role' => 'professor',
-                'entry_date' => '01-10-2023',
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id' => (string) $user2->id
+                'user_id'        => (string) $user2->id,
             ],
         ];
 
@@ -248,7 +248,7 @@ class MemberControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id,$member->id));
+        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('members', $member->toArray());
@@ -310,7 +310,7 @@ class MemberControllerTest extends TestCase
                 'created_at',
                 'updated_at',
                 'group_id',
-                'user'
+                'user',
             ],
         ];
     }
