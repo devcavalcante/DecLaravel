@@ -16,7 +16,7 @@ use Throwable;
 
 /**
  * @OA\Tag(
- *     name="Members",
+ *     name="members",
  *     description="CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
  * )
  */
@@ -56,36 +56,39 @@ class MemberController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/members",
+     *   path="group/{groupId}/members",
      *   tags={"members"},
      *   summary="Criar novo membro",
      *   description="Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
-     *   @OA\RequestBody(
+     *  @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="Id do grupo que o membro sera associado",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *  @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="application/json",
      *          @OA\Schema(
-     *              type="object",
-     *              required={"role", "phone", "departure_date", "user_id"},
-     *              @OA\Property(
-     *                  property="role",
-     *                  type="string",
-     *                  description="O papel do membro."
-     *              ),
-     *              @OA\Property(
-     *                  property="phone",
-     *                  type="string",
-     *                  description="O número de telefone do membro (deve ter pelo menos 11 caracteres)."
-     *              ),
-     *              @OA\Property(
-     *                  property="departure_date",
-     *                  type="date",
-     *                  description="A data de partida do membro (formato YYYY-MM-DD)."
-     *              ),
-     *              @OA\Property(
-     *                  property="user_id",
-     *                  type="string",
-     *                  description="O ID do usuário associado ao membro."
-     *              )
+     *              example={
+     *                          {
+     *                              "role": "bar",
+     *                              "phone": "93991185489",
+     *                              "entry_date": "23-10-1998",
+     *                              "departure_date": "23-10-2023",
+     *                              "user_id": "1"
+     *                          },
+     *                          {
+     *                              "role": "bar",
+     *                              "phone": "93991185489",
+     *                              "entry_date": "23-10-1998",
+     *                              "departure_date": "23-10-2023",
+     *                              "user_id": "2"
+     *                          }
+     *                     }
      *          )
      *      )
      *   ),
@@ -225,12 +228,21 @@ class MemberController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/members/{id}",
+     *   path="/group/{groupId}/members/{memberID}",
      *   tags={"members"},
      *   summary="Deletar membro",
      *   description="Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
-     *     name="id",
+     *     name="groupId",
+     *     in="path",
+     *     description="Id do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="memberId",
      *     in="path",
      *     description="Id do membro",
      *     required=true,

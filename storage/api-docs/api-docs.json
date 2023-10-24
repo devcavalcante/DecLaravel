@@ -349,44 +349,47 @@
                         "description": "Não autorizado"
                     }
                 }
-            },
+            }
+        },
+        "group/{groupId}/members": {
             "post": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Criar novo membro",
                 "description": "Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "12f9b39fa3aa25f4cf13f278ddd11ef9",
+                "operationId": "ad654c006dc3975a8f3c127a5c2ede51",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o membro sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "role",
-                                    "phone",
-                                    "departure_date",
-                                    "user_id"
-                                ],
-                                "properties": {
-                                    "role": {
-                                        "description": "O papel do membro.",
-                                        "type": "string"
+                                "example": [
+                                    {
+                                        "role": "bar",
+                                        "phone": "93991185489",
+                                        "entry_date": "23-10-1998",
+                                        "departure_date": "23-10-2023",
+                                        "user_id": "1"
                                     },
-                                    "phone": {
-                                        "description": "O número de telefone do membro (deve ter pelo menos 11 caracteres).",
-                                        "type": "string"
-                                    },
-                                    "departure_date": {
-                                        "description": "A data de partida do membro (formato YYYY-MM-DD).",
-                                        "type": "string",
-                                        "format": "date"
-                                    },
-                                    "user_id": {
-                                        "description": "O ID do usuário associado ao membro.",
-                                        "type": "string"
+                                    {
+                                        "role": "bar",
+                                        "phone": "93991185489",
+                                        "entry_date": "23-10-1998",
+                                        "departure_date": "23-10-2023",
+                                        "user_id": "2"
                                     }
-                                },
-                                "type": "object"
+                                ]
                             }
                         }
                     }
@@ -498,17 +501,28 @@
                         "description": "Membro not found"
                     }
                 }
-            },
+            }
+        },
+        "/group/{groupId}/members/{memberID}": {
             "delete": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Deletar membro",
                 "description": "Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "e25e55c105f2af69b64400db071eb19d",
+                "operationId": "b6a3e4aad017899e4a380903c4192d66",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "memberId",
                         "in": "path",
                         "description": "Id do membro",
                         "required": true,
@@ -1047,7 +1061,7 @@
             "description": "Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
         },
         {
-            "name": "Members",
+            "name": "members",
             "description": "CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
         },
         {
