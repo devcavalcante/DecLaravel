@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -61,8 +62,18 @@ class User extends Authenticatable
         return $this->belongsTo(TypeUser::class);
     }
 
+    public function groupsMembers(): BelongsToMany
+    {
+        return $this->belongsToMany(Member::class, 'members', 'user_id', 'group_id');
+    }
+
     public function role(): string
     {
         return $this->typeUser->name;
+    }
+
+    public function groupsRepresentatives(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_has_representatives', 'user_id', 'group_id');
     }
 }

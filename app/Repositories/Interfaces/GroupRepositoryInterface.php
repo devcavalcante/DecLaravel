@@ -5,7 +5,7 @@ namespace App\Repositories\Interfaces;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-interface TypeGroupRepositoryInterface
+interface GroupRepositoryInterface
 {
     public function create(array $data): Model;
     public function listAll(): Collection;

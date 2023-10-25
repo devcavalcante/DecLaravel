@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('type_groups', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('type_group');
-
-            $table->timestamps();
+        Schema::table('group_has_representatives', function (Blueprint $table) {
+            $table->primary(['group_id', 'user_id']);
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('type_groups');
+        Schema::table('group_has_representatives', function (Blueprint $table) {
+            //
+        });
     }
 };
