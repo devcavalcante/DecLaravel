@@ -1,0 +1,266 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\AbilitiesEnum;
+use App\Http\Requests\MeetingRequest;
+use App\Models\Meeting;
+use App\Repositories\Interfaces\MeetingRepositoryInterface;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\JsonResponse;
+
+/**
+ * @OA\Tag(
+ *     name="meetings",
+ *     description="CRUD das reuniões"
+ * )
+ */
+class MeetingController extends Controller
+{
+    public function __construct(private MeetingRepositoryInterface $meetingRepository)
+    {
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/group/{groupId}/meeting-history",
+     *   tags={"meetings"},
+     *   summary="Listar todos os históricos de reuniões do grupo",
+     *   description="Lista todos os históricos de reuniões do grupo especificado: somente o REPRESENTANTE obtem acesso a esse endpoint",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function index(): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::VIEW, Meeting::class);
+
+        $meetings = $this->meetingRepository->listAll();
+        return response()->json($meetings, 200);
+    }
+    /**
+     * @OA\Post(
+     *   path="/group/{groupId}/meeting-history",
+     *   tags={"meetings"},
+     *   summary="Criar um novo histórico de reunião para o grupo especificado",
+     *   description="Cria um novo histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="application/json",
+     *       @OA\Schema(
+     *         type="object",
+     *         required={"content", "summary", "ata"},
+     *         @OA\Property(
+     *           property="content",
+     *           description="O conteúdo da reunião",
+     *           type="string",
+     *           minLength=5
+     *         ),
+     *         @OA\Property(
+     *           property="summary",
+     *           description="O resumo da reunião",
+     *           type="string",
+     *           minLength=5
+     *         ),
+     *         @OA\Property(
+     *           property="ata",
+     *           description="A ata da reunião",
+     *           type="string",
+     *           minLength=5
+     *         )
+     *       )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="Created"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function store(MeetingRequest $request): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::CREATE, Meeting::class);
+
+        $payload = $request->validated();
+        $meeting = $this->meetingRepository->create($payload);
+        return response()->json($meeting, 201);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/group/{groupId}/meeting-history/{id}",
+     *   tags={"meetings"},
+     *   summary="Exibir o histórico de uma reunião",
+     *   description="Exibe uma reunião no grupo especificado",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     required=true,
+     *     description="O ID do grupo",
+     *   ),
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     required=true,
+     *     description="O ID da reunião.",
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok",
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   ),
+     *   @OA\Response(
+     *     response="404",
+     *     description="Not Found"
+     *   )
+     * )
+     */
+    public function show(string $id): JsonResponse
+    {
+        $meeting = $this->meetingRepository->findById($id);
+        return response()->json($meeting);
+    }
+
+    /**
+     * @OA\Post(
+     *   path="/group/{groupId}/meeting-history",
+     *   tags={"meetings"},
+     *   summary="Atualizar o histórico de reunião para o grupo especificado",
+     *   description="Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\RequestBody(
+     *     @OA\MediaType(
+     *       mediaType="application/json",
+     *       @OA\Schema(
+     *         type="object",
+     *         required={"content", "summary", "ata"},
+     *         @OA\Property(
+     *           property="content",
+     *           description="O conteúdo da reunião",
+     *           type="string",
+     *           minLength=5
+     *         ),
+     *         @OA\Property(
+     *           property="summary",
+     *           description="O resumo da reunião",
+     *           type="string",
+     *           minLength=5
+     *         ),
+     *         @OA\Property(
+     *           property="ata",
+     *           description="A ata da reunião",
+     *           type="string",
+     *           minLength=5
+     *         )
+     *       )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Updated"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function update(string $id, MeetingRequest $request): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::UPDATE, [Meeting::class, $id]);
+        $payload = $request->validated();
+        $meeting = $this->meetingRepository->update($id, $payload);
+        return response()->json($meeting, 200);
+    }
+
+    /**
+     * @OA\Delete(
+     *   path="/group/{groupId}/meeting-history",
+     *   tags={"meetings"},
+     *   summary="Excluir histórico de reunião",
+     *   description="Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=204,
+     *     description="Deleted"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Unauthorized"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::DELETE, [Meeting::class, $id]);
+        $this->meetingRepository->delete($id);
+        return response()->json([], 204);
+    }
+}

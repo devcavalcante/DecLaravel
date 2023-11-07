@@ -6,7 +6,7 @@ use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MemberPolicy extends AbstractPolicy
+class MeetingPolicy extends AbstractPolicy
 {
     use HandlesAuthorization;
 
