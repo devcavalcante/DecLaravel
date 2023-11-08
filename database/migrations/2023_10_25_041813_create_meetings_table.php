@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('content');
             $table->string('summary');
             $table->string('ata');
+
             $table->unsignedBigInteger('groups_id');
             $table->foreign('groups_id')->references('id')->on('groups');
             $table->timestamps();
