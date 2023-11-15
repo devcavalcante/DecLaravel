@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\DocumentRepository;
+use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\GroupHasRepresentativeRepository;
 use App\Repositories\GroupRepository;
@@ -48,10 +50,13 @@ class AppServiceProvider extends ServiceProvider
             GroupHasRepresentativeRepositoryInterface::class,
             GroupHasRepresentativeRepository::class
         );
-
         $this->app->bind(
             MemberRepositoryInterface::class,
             MemberRepository::class
+        );
+        $this->app->bind(
+            DocumentRepositoryInterface::class,
+            DocumentRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);

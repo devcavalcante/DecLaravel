@@ -11,7 +11,7 @@ ENV XDEBUG_HANDLER $XDEBUG_HANDLER
 ARG XDEBUG_PORT
 ENV XDEBUG_PORT $XDEBUG_PORT
 
-RUN apk add --y --no-cache openssl bash nodejs npm postgresql-dev
+RUN apk --update add --no-cache openssl bash nodejs npm postgresql-dev
 RUN docker-php-ext-install bcmath pdo pdo_pgsql opcache
 
 WORKDIR /app

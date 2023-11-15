@@ -124,8 +124,7 @@ class MemberController extends Controller
      *   path="/members/{id}",
      *   tags={"members"},
      *   summary="Lista o registro de membro por ID",
-     *   description="Lista o registro de membro por ID de referência,
-     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Lista o registro de membro por ID de referência.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -160,8 +159,7 @@ class MemberController extends Controller
      *   path="/members/{id}",
      *   tags={"members"},
      *   summary="Atualizar membro",
-     *   description="Atualizar membro: Apenas o membro pode atualizar suas próprias informações,
-     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -222,8 +220,8 @@ class MemberController extends Controller
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
         $payload = $request->all();
-        $user = $this->memberService->edit($id, $payload);
-        return response()->json($user);
+        $member = $this->memberService->edit($id, $payload);
+        return response()->json($member);
     }
 
     /**
