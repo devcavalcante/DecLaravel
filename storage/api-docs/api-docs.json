@@ -575,7 +575,9 @@
                                     "representatives": [
                                         2,
                                         4
-                                    ]
+                                    ],
+                                    "name": "comissão",
+                                    "type_group": "interno"
                                 }
                             }
                         }
@@ -1173,171 +1175,6 @@
                 }
             }
         },
-        "/type-group": {
-            "get": {
-                "tags": [
-                    "type-group"
-                ],
-                "summary": "Listar todos os tipos de grupos",
-                "description": "Lista todos os tipos de grupos",
-                "operationId": "bb4211d238dc2ccef7e751e0f0ab53fa",
-                "responses": {
-                    "200": {
-                        "description": "Ok"
-                    },
-                    "500": {
-                        "description": "Error"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "type-group"
-                ],
-                "summary": "Criar novo tipo de grupo",
-                "description": "Cria novo tipo de grupo",
-                "operationId": "681c9bc3e5c6e6fd9d969ffe21b64589",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "example": {
-                                    "name": "Nome do grupo",
-                                    "type_group": "Tipo de grupo: Interno ou Externo"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "500": {
-                        "description": "Error"
-                    },
-                    "422": {
-                        "description": "Erro de validação"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
-                    }
-                }
-            }
-        },
-        "/type-group/{id}": {
-            "get": {
-                "tags": [
-                    "type-group"
-                ],
-                "summary": "Lista o registro de tipos de grupos por ID",
-                "description": "Lista o registro de tipos de grupos por ID de referência",
-                "operationId": "e0a9ca31b284b1126b3c325b0a0ce29f",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id do tipo de grupo",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "404": {
-                        "description": "Tipo de grupo not found"
-                    },
-                    "200": {
-                        "description": "Ok"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "type-group"
-                ],
-                "summary": "Atualizar tipo de grupo",
-                "description": "Atualizar tipo de grupo",
-                "operationId": "c430e30b45e1fca42948eb45fc36a01e",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id do tipo de grupo",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "example": {
-                                    "name": "Nome do tipo de grupo",
-                                    "type_group": "Tipo de grupo: Interno ou Externo"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Ok"
-                    },
-                    "500": {
-                        "description": "Error"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Usuário not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "type-group"
-                ],
-                "summary": "Deletar tipo de grupo",
-                "description": "Deletar tipo de grupo por ID de referência",
-                "operationId": "cdd2cec033d8dae6ddf3854290fbc3cf",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id do tipo de grupo",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Error"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Tipo de grupo Not Found"
-                    }
-                }
-            }
-        },
         "/type-user": {
             "get": {
                 "tags": [
@@ -1704,10 +1541,6 @@
         {
             "name": "members",
             "description": "CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
-        },
-        {
-            "name": "type-group",
-            "description": "Controle dos tipos de grupo: apenas usuários com o tipo de usuário GERENTE tem acesso a esses endpoints"
         },
         {
             "name": "type-user",

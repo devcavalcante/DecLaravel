@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\GroupRequest;
-use App\Http\Requests\TypeGroupRequest;
 use App\Models\Group;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Services\GroupService;
@@ -93,6 +92,8 @@ class GroupController extends Controller
      *                 "type_group_id": 1,
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
      *                 "representatives": {2,4},
+     *                 "name": "comissão",
+     *                 "type_group": "interno"
      *              }
      *          )
      *      )
@@ -232,7 +233,7 @@ class GroupController extends Controller
      * @throws AuthorizationException
      * @throws Throwable
      */
-    public function update(string $id, TypeGroupRequest $request): JsonResponse
+    public function update(string $id, GroupRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Group::class, $id]);
 
