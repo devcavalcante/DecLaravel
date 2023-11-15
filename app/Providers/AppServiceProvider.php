@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use App\Repositories\DocumentRepository;
 use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
@@ -12,6 +13,7 @@ use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\MeetingRepository;
 use App\Repositories\MemberRepository;
 use App\Repositories\TypeGroupRepository;
 use App\Repositories\TypeUserRepository;
@@ -57,6 +59,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DocumentRepositoryInterface::class,
             DocumentRepository::class
+        );
+
+        $this->app->bind(
+            MeetingRepositoryInterface::class,
+            MeetingRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);

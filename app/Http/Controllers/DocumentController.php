@@ -10,7 +10,6 @@ use App\Services\DocumentService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
-use Throwable;
 
 /**
  * @OA\Tag(
@@ -148,7 +147,7 @@ class DocumentController extends Controller
     }
 
     /**
-     * @OA\Put(
+     * @OA\Post(
      *   path="/documents/{id}",
      *   tags={"documents"},
      *   summary="Atualiza documentos",

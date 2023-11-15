@@ -157,13 +157,13 @@
                     }
                 }
             },
-            "put": {
+            "post": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Atualiza documentos",
                 "description": "Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "8340a1a99f82c944b6c7b45b0794505f",
+                "operationId": "0cdcb423f75df2b1325512d25a4f3dbe",
                 "parameters": [
                     {
                         "name": "id",
@@ -526,6 +526,225 @@
                     },
                     "404": {
                         "description": "grupo Not Found"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/meeting-history": {
+            "get": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Listar todos os históricos de reuniões do grupo",
+                "description": "Lista todos os históricos de reuniões do grupo especificado",
+                "operationId": "f30ccf2bcbd2fca719790a8767ac2eda",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Atualizar o histórico de reunião para o grupo especificado",
+                "description": "Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "24558a53d4f777bb0e4ed8babd4655a1",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "summary",
+                                    "ata"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "O conteúdo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "summary": {
+                                        "description": "O resumo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "ata": {
+                                        "description": "A ata da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Criar um novo histórico de reunião para o grupo especificado",
+                "description": "Cria um novo histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "8780f16fcb540ebde6c005d88f159339",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "summary",
+                                    "ata"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "O conteúdo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "summary": {
+                                        "description": "O resumo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "ata": {
+                                        "description": "A ata da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Excluir histórico de reunião",
+                "description": "Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "4785815b973d75b19e07e28b518c655d",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Deleted"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/meeting-history/{id}": {
+            "get": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Exibir o histórico de uma reunião",
+                "description": "Exibe uma reunião no grupo especificado",
+                "operationId": "dab2ed89d7e0e6d95fd51c8b0f6229e7",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "O ID da reunião.",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     }
                 }
             }
@@ -1263,6 +1482,10 @@
         {
             "name": "group",
             "description": "Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
+        },
+        {
+            "name": "meetings",
+            "description": "CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membross"
         },
         {
             "name": "members",

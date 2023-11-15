@@ -68,4 +68,9 @@ class Group extends Model
     {
         return $this->hasMany(Document::class);
     }
+
+    public function meeting(): HasMany
+    {
+        return $this->hasMany(Meeting::class);
+    }
 }

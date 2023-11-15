@@ -46,7 +46,6 @@ class DocumentService
     public function delete(string $groupId, string $documentId): void
     {
         $this->groupRepository->findById($groupId);
-
         $document = $this->documentRepository->findById($documentId);
         Storage::delete($document->file);
         $this->documentRepository->delete($documentId);

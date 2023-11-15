@@ -3,21 +3,24 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
-use App\Models\Document;
-use App\Models\Group;
 use App\Models\GroupHasRepresentative;
+use App\Models\Meeting;
+use App\Models\Group;
+use App\Models\Member;
 use App\Models\TypeUser;
 use App\Models\User;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
-class DocumentControllerTest extends TestCase
+class MeetingControllerTest extends TestCase
 {
     use DatabaseTransactions;
     use LoginUsersTrait;
+
+    const BASE_URL = 'api/meeting-history';
 
     public function setUp(): void
     {
@@ -27,11 +30,13 @@ class DocumentControllerTest extends TestCase
 
     public function testShouldListAll()
     {
-        Document::factory(2)->create();
+        $group = Group::factory()->create();
+        Meeting::factory(['group_id' => $group->id])->create();
+        Meeting::factory(['group_id' => $group->id])->create();
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get('api/documents');
+        $response = $this->get(self::BASE_URL);
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));
@@ -39,23 +44,24 @@ class DocumentControllerTest extends TestCase
 
     public function testShouldListOne()
     {
-        $document = Document::factory()->create();
+        $group = Group::factory()->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/documents/%s', $document->id));
+        $response = $this->get(sprintf('%s/%s', self::BASE_URL, $meeting->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
     }
 
-    public function testNotShouldListOneWhenNotFoundDocument()
+    public function testNotShouldListOneWhenNotFoundMeeting()
     {
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/documents/%s', 100));
+        $response = $this->get(sprintf('%s/%s', self::BASE_URL, 100));
 
         $response->assertStatus(404);
-        $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldCreate()
@@ -64,17 +70,16 @@ class DocumentControllerTest extends TestCase
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
-        $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => $file,
+            'content' => 'teste teste',
+            'summary' => $this->faker->text,
+            'ata'     => 'ata numero 20020',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+
         $response->assertStatus(201);
-        $response->assertJsonStructure(['file']);
-        $response = json_decode($response->getContent(), true);
-        $this->assertDatabaseHas('documents', $response);
+        $this->assertDatabaseHas('meetings', array_merge($payload, ['group_id' => $group->id]));
     }
 
     public function testShouldNotCreateWhenGroupNotFound()
@@ -84,15 +89,17 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'content' => 'tetstststs',
+            'summary' => $this->faker->text,
+            'ata'     => 'ata numero 20',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', 100), $payload);
+        $response = $this->post(sprintf('/api/group/%s/meeting-history', 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
+
 
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
@@ -103,11 +110,12 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'content' => 'tetstststs',
+            'summary' => $this->faker->text,
+            'ata'     => 'ata numero 20',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -118,19 +126,38 @@ class DocumentControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'content' => 'tetstststs',
+            'summary' => $this->faker->text,
+            'ata'     => 'ata numero 20',
         ];
 
-        $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);
+        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+
+        $actual = json_decode($response->getContent(), true);
 
         $response->assertStatus(200);
-        $response->assertJsonStructure(['file']);
-        $response = json_decode($response->getContent(), true);
-        $this->assertDatabaseHas('documents', $response);
+        $this->assertEquals($payload, Arr::only($actual, ['content', 'ata', 'summary']));
+    }
+
+    public function testShouldNotUpdateWhenMeetingNotFound()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+
+        $payload = [
+            'summary' => $this->faker->text,
+        ];
+
+        $response = $this->put(sprintf('api/meeting-history/%s', 100), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(404);
+        $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
@@ -140,14 +167,13 @@ class DocumentControllerTest extends TestCase
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'summary' => $this->faker->text,
         ];
 
-        $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);
+        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -158,38 +184,37 @@ class DocumentControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
 
         $response->assertStatus(204);
-        $this->assertDatabaseMissing('documents', $document->toArray());
+        $this->assertDatabaseMissing('meetings', $meeting->toArray());
     }
 
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
+        $meeting = Member::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', 100, $document->id));
+        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', 100, $meeting->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldNotDeleteWhenDocumentNotFound()
+    public function testShouldNotDeleteWhenMeetingNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, 100));
+        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, 100));
 
         $response->assertStatus(404);
-        $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldNotDeleteWhenIsNotTheRepresentativeOfGroup()
@@ -199,9 +224,9 @@ class DocumentControllerTest extends TestCase
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
+        $meeting = Member::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $meeting->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -211,12 +236,12 @@ class DocumentControllerTest extends TestCase
     {
         return [
             'id',
-            'name',
-            'description',
-            'file',
+            'content',
+            'summary',
+            'ata',
+            'group_id',
             'created_at',
             'updated_at',
-            'group_id',
         ];
     }
 }
