@@ -73,4 +73,9 @@ class Group extends Model
     {
         return $this->hasMany(Meeting::class);
     }
+
+    public function activity(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

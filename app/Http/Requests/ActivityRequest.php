@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DocumentRequest extends FormRequest
+class ActivityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,11 +28,8 @@ class DocumentRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
 
         return [
-            'description' => 'string',
-            'file'        => sprintf(
-                '%s|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
-                $isRequired
-            ),
+            'description' => sprintf('%s|string|min:5', $isRequired),
+            'name'        => sprintf('%s|string|min:5', $isRequired),
         ];
     }
 
@@ -44,7 +41,10 @@ class DocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.string' => 'O campo de descrição deve ser uma string.',
+            'name.string'          => 'O campo de nome deve ser uma string.',
+            'name.required'        => 'O campo de nome é obrigatório.',
+            'description.string'   => 'O campo de descrição deve ser uma string.',
+            'description.required' => 'O campo de descrição é obrigatório.',
         ];
     }
 

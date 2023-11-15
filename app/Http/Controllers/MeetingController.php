@@ -14,7 +14,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="meetings",
- *     description="CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membross"
+ *     description="CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar historico de reuniões"
  * )
  */
 class MeetingController extends Controller
@@ -121,6 +121,7 @@ class MeetingController extends Controller
     {
         $this->authorize(AbilitiesEnum::CREATE, [Meeting::class, $groupId]);
         $payload = $request->validated();
+        $this->groupRepository->findById($groupId);
         $payload = array_merge($payload, ['group_id' => $groupId]);
         $meeting = $this->meetingRepository->create($payload);
         return response()->json($meeting, 201);

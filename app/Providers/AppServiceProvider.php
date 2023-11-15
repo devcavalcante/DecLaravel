@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\ActivityRepository;
+use App\Repositories\Interfaces\ActivityRepositoryInterface;
 use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use App\Repositories\DocumentRepository;
 use App\Repositories\Interfaces\DocumentRepositoryInterface;
@@ -60,10 +62,13 @@ class AppServiceProvider extends ServiceProvider
             DocumentRepositoryInterface::class,
             DocumentRepository::class
         );
-
         $this->app->bind(
             MeetingRepositoryInterface::class,
             MeetingRepository::class
+        );
+        $this->app->bind(
+            ActivityRepositoryInterface::class,
+            ActivityRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);
