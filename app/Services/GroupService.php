@@ -43,10 +43,10 @@ class GroupService
             DB::beginTransaction();
 
             $payloadTypeGroup = Arr::only($data, ['name', 'type_group']);
-            $type_group = $this->createTypeGroup($payloadTypeGroup);
+            $typeGroup = $this->createTypeGroup($payloadTypeGroup);
 
             $data['creator_user_id'] = Auth::id();
-            $data['type_group_id'] = $type_group->id;
+            $data['type_group_id'] = $typeGroup->id;
             $group = $this->groupRepository->create(Arr::except($data, ['name', 'type_group']));
 
             $representatives = Arr::get($data, 'representatives');
