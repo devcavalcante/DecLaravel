@@ -1,18 +1,19 @@
 <?php
+
 namespace App\Policies;
 
 use App\Models\User;
+use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
-use App\Repositories\Interfaces\MemberRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MemberPolicy extends AbstractPolicy
+class DocumentPolicy extends AbstractPolicy
 {
     use HandlesAuthorization, PolicyTrait;
 
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
-        protected MemberRepositoryInterface $memberRepository
+        protected DocumentRepositoryInterface $documentRepository
     ) {
     }
 
@@ -26,7 +27,7 @@ class MemberPolicy extends AbstractPolicy
 
     public function update(User $user, string $memberId): bool
     {
-        $member = $this->memberRepository->findById($memberId);
+        $member = $this->documentRepository->findById($memberId);
         $group = $this->groupRepository->findById($member->group_id);
         return $this->isAuthorized($user->id, $group->id);
     }
