@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
@@ -72,6 +73,12 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', [MeetingController::class, 'show']);
     });
 
+    Route::group(['prefix' => 'activity'], function () {
+        Route::put('/{id}', [ActivityController::class, 'update']);
+        Route::get('/', [ActivityController::class, 'index']);
+        Route::get('/{id}', [ActivityController::class, 'show']);
+    });
+
     Route::group(['prefix' => '/group'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
@@ -92,6 +99,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{groupId}/meeting-history'], function () {
             Route::post('/', [MeetingController::class, 'store']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => '{groupId}/activity'], function () {
+            Route::post('/', [ActivityController::class, 'store']);
+            Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });
     });
 });

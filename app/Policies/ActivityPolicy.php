@@ -1,18 +1,20 @@
 <?php
+
 namespace App\Policies;
 
 use App\Models\User;
+use App\Repositories\Interfaces\ActivityRepositoryInterface;
+use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
-use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MeetingPolicy extends AbstractPolicy
+class ActivityPolicy extends AbstractPolicy
 {
     use HandlesAuthorization, PolicyTrait;
 
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
-        protected MeetingRepositoryInterface $meetingRepository
+        protected ActivityRepositoryInterface $activityRepository
     ) {
     }
 
@@ -24,10 +26,10 @@ class MeetingPolicy extends AbstractPolicy
         return $this->isAuthorized($user->id, $groupId);
     }
 
-    public function update(User $user, string $meetingId): bool
+    public function update(User $user, string $activityId): bool
     {
-        $meeting = $this->meetingRepository->findById($meetingId);
-        $group = $this->groupRepository->findById($meeting->group_id);
+        $activity = $this->activityRepository->findById($activityId);
+        $group = $this->groupRepository->findById($activity->group_id);
         return $this->isAuthorized($user->id, $group->id);
     }
 

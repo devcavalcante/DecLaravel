@@ -25,10 +25,10 @@ class DocumentPolicy extends AbstractPolicy
         return $this->isAuthorized($user->id, $groupId);
     }
 
-    public function update(User $user, string $memberId): bool
+    public function update(User $user, string $documentId): bool
     {
-        $member = $this->documentRepository->findById($memberId);
-        $group = $this->groupRepository->findById($member->group_id);
+        $document = $this->documentRepository->findById($documentId);
+        $group = $this->groupRepository->findById($document->group_id);
         return $this->isAuthorized($user->id, $group->id);
     }
 

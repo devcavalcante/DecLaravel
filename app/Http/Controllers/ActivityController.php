@@ -3,34 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
+use App\Http\Requests\ActivityRequest;
 use App\Http\Requests\DocumentRequest;
-use App\Models\Document;
-use App\Repositories\Interfaces\DocumentRepositoryInterface;
-use App\Services\DocumentService;
+use App\Models\Activity;
+use App\Repositories\Interfaces\ActivityRepositoryInterface;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="documents",
- *     description="CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar documentos"
+ *     name="activity",
+ *     description="CRUD das atividades, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
  * )
  */
-class DocumentController extends Controller
+class ActivityController extends Controller
 {
     public function __construct(
-        private DocumentRepositoryInterface $documentRepository,
-        private DocumentService $documentService
+        private ActivityRepositoryInterface $activityRepository,
+        private GroupRepositoryInterface $groupRepository
     ) {
     }
 
     /**
      * @OA\Get(
-     *   path="/documents",
-     *   tags={"documents"},
-     *   summary="Listar todos os membros",
-     *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   path="/activity",
+     *   tags={"activity"},
+     *   summary="Listar todos as atividades",
+     *   description="Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -47,21 +48,21 @@ class DocumentController extends Controller
      */
     public function index(): JsonResponse
     {
-        $documents = $this->documentRepository->listAll();
+        $activities = $this->activityRepository->listAll();
 
-        return response()->json($documents);
+        return response()->json($activities);
     }
 
     /**
      * @OA\Get(
-     *   path="/documents/{id}",
-     *   tags={"documents"},
-     *   summary="Lista o registro de documento por ID",
-     *   description="Lista o registro de documento por ID de referência",
+     *   path="/activity/{id}",
+     *   tags={"activity"},
+     *   summary="Lista o registro de atividades por ID",
+     *   description="Lista o registro de atividades por ID de referência",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
-     *     description="Id do documento",
+     *     description="Id da atividade",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -69,7 +70,7 @@ class DocumentController extends Controller
      *   ),
      *   @OA\Response(
      *     response=404,
-     *     description="Documento not found"
+     *     description="Atividade not found"
      *   ),
      *   @OA\Response(
      *     response=200,
@@ -83,17 +84,17 @@ class DocumentController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $document = $this->documentRepository->findById($id);
+        $activity = $this->activityRepository->findById($id);
 
-        return response()->json($document);
+        return response()->json($activity);
     }
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/documents",
-     *   tags={"documents"},
-     *   summary="Criar novo documento",
-     *   description="Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   path="/group/{groupId}/activity",
+     *   tags={"activity"},
+     *   summary="Criar nova atividade",
+     *   description="Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -105,17 +106,17 @@ class DocumentController extends Controller
      *   ),
      *   @OA\RequestBody(
      *      @OA\MediaType(
-     *          mediaType="multipart/form-data",
+     *          mediaType="application/json",
      *          @OA\Schema(
+     *          @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="nome da atividade",
+     *              ),
      *              @OA\Property(
      *                  property="description",
      *                  type="string",
-     *                  description="descrição do documento",
-     *              ),
-     *              @OA\Property(
-     *                  description="documento a ser anexado",
-     *                  property="file",
-     *                  type="file",
+     *                  description="descrição da atividade",
      *              ),
      *         )
      *     )
@@ -139,23 +140,25 @@ class DocumentController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function store(DocumentRequest $request, string $groupId): JsonResponse
+    public function store(ActivityRequest $request, string $groupId): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [Document::class, $groupId]);
-        $document = $this->documentService->create($groupId, $request->all());
-        return response()->json($document, 201);
+        $this->authorize(AbilitiesEnum::CREATE, [Activity::class, $groupId]);
+        $this->groupRepository->findById($groupId);
+        $payload = array_merge($request->all(), ['group_id' => $groupId]);
+        $activity = $this->activityRepository->create($payload);
+        return response()->json($activity, 201);
     }
 
     /**
-     * @OA\Post(
-     *   path="/documents/{id}",
-     *   tags={"documents"},
-     *   summary="Atualiza documentos",
+     * @OA\Put(
+     *   path="/activity/{id}",
+     *   tags={"activity"},
+     *   summary="Atualiza atividades",
      *   description="Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
-     *     description="Id do documento",
+     *     description="Id da atividade",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -163,17 +166,17 @@ class DocumentController extends Controller
      *   ),
      *   @OA\RequestBody(
      *      @OA\MediaType(
-     *          mediaType="multipart/form-data",
+     *       mediaType="application/json",,
      *          @OA\Schema(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="nome da atividade",
+     *              ),
      *              @OA\Property(
      *                  property="description",
      *                  type="string",
-     *                  description="descrição do documento",
-     *              ),
-     *              @OA\Property(
-     *                  description="anexo da tarefa",
-     *                  property="file",
-     *                  type="file",
+     *                  description="descrição da atividade",
      *              ),
      *         )
      *     )
@@ -192,24 +195,24 @@ class DocumentController extends Controller
      *   ),
      *   @OA\Response(
      *     response=404,
-     *     description="Documento not found"
+     *     description="Atividade not found"
      *   )
      * )
      * @throws AuthorizationException
      */
     public function update(string $id, DocumentRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, [Document::class, $id]);
-        $document = $this->documentService->edit($id, $request->all());
-        return response()->json($document);
+        $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
+        $activity = $this->activityRepository->update($id, $request->all());
+        return response()->json($activity);
     }
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/documents/{documentId}",
-     *   tags={"documents"},
-     *   summary="Deletar documento",
-     *   description="Deletar documento por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   path="/group/{groupId}/activity/{activityId}",
+     *   tags={"activity"},
+     *   summary="Deletar atividade",
+     *   description="Deletar atividade por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -220,9 +223,9 @@ class DocumentController extends Controller
      *     )
      *   ),
      *   @OA\Parameter(
-     *     name="documentId",
+     *     name="activityId",
      *     in="path",
-     *     description="Id do documento",
+     *     description="Id da atividade",
      *     required=true,
      *     @OA\Schema(
      *         type="string"
@@ -245,8 +248,9 @@ class DocumentController extends Controller
      */
     public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [Document::class, $groupId]);
-        $this->documentService->delete($groupId, $id);
+        $this->authorize(AbilitiesEnum::CREATE, [Activity::class, $groupId]);
+        $this->groupRepository->findById($groupId);
+        $this->activityRepository->delete($groupId, $id);
         return response()->json([], 204);
     }
 }
