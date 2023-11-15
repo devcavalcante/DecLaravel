@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\TypeGroupController;
@@ -59,6 +60,18 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', [MemberController::class, 'show']);
     });
 
+    Route::group(['prefix' => 'documents'], function () {
+        Route::post('/{id}', [DocumentController::class, 'update']);
+        Route::get('/', [DocumentController::class, 'index']);
+        Route::get('/{id}', [DocumentController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'meeting-history'], function () {
+        Route::put('/{id}', [MeetingController::class, 'update']);
+        Route::get('/', [MeetingController::class, 'index']);
+        Route::get('/{id}', [MeetingController::class, 'show']);
+    });
+
     Route::group(['prefix' => '/group'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
@@ -71,11 +84,13 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::delete('/{id}', [MemberController::class, 'destroy']);
         });
 
+        Route::group(['prefix' => '{groupId}/documents'], function () {
+            Route::post('/', [DocumentController::class, 'store']);
+            Route::delete('/{id}', [DocumentController::class, 'destroy']);
+        });
+
         Route::group(['prefix' => '{groupId}/meeting-history'], function () {
-            Route::get('/', [MeetingController::class, 'index']);
             Route::post('/', [MeetingController::class, 'store']);
-            Route::get('/{id}', [MeetingController::class, 'show']);
-            Route::put('/{id}', [MeetingController::class, 'update']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
         });
     });

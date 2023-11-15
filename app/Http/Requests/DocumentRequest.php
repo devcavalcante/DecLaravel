@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MeetingRequest extends FormRequest
+class DocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,16 @@ class MeetingRequest extends FormRequest
     {
         $method = request()->method;
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
-        return [
-            'content' => sprintf('%s|min:5|string', $isRequired),
-            'summary' => sprintf('%s|min:5|string', $isRequired),
-            'ata'     => sprintf('%s|min:5|string', $isRequired),
-        ];
+
+        return array(
+            'description' => 'string',
+            'file'        => sprintf(
+                '%s|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
+                $isRequired
+            ),
+        );
     }
+
     /**
      * Get the error messages for the defined validation rules.
      *
@@ -40,15 +44,7 @@ class MeetingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'content.required' => 'O campo content é obrigatório.',
-            'content.string'   => 'O campo content deve ser uma string.',
-            'content.min'      => 'O campo content deve ter no mínimo 5 caracteres.',
-            'summary.required' => 'O campo summary é obrigatório.',
-            'summary.string'   => 'O campo summary deve ser uma string.',
-            'summary.min'      => 'O campo summary deve ter no mínimo 5 caracteres.',
-            'ata.required'     => 'O campo ata é obrigatório.',
-            'ata.string'       => 'O campo ata deve ser uma string.',
-            'ata.min'          => 'O campo ata deve ter no mínimo 5 caracteres.',
+            'description.string' => 'O campo de descrição deve ser uma string.',
         ];
     }
 
@@ -62,7 +58,6 @@ class MeetingRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

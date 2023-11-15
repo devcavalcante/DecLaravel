@@ -105,6 +105,206 @@
                 }
             }
         },
+        "/documents": {
+            "get": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Listar todos os membros",
+                "description": "Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "operationId": "cf58d1781992e8292fd9914b24487fdc",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/documents/{id}": {
+            "get": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Lista o registro de documento por ID",
+                "description": "Lista o registro de documento por ID de referência",
+                "operationId": "9cf5289c9ad15ddb6da247477998f54b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do documento",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Membro not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Atualiza documentos",
+                "description": "Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "0cdcb423f75df2b1325512d25a4f3dbe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do documento",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "description": {
+                                        "description": "descrição do documento",
+                                        "type": "string"
+                                    },
+                                    "file": {
+                                        "description": "anexo da tarefa",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Membro not found"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/documents": {
+            "post": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Criar novo documento",
+                "description": "Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "3beed3e3aeaa9b0a0a5ea431400b26d0",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o documento sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "description": {
+                                        "description": "descrição do documento",
+                                        "type": "string"
+                                    },
+                                    "file": {
+                                        "description": "documento a ser anexado",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/documents/{documentId}": {
+            "delete": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Deletar documento",
+                "description": "Deletar documento por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "2b113906220faa6735e222ca942fde22",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id do documento",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
         "/group": {
             "get": {
                 "tags": [
@@ -330,6 +530,225 @@
                 }
             }
         },
+        "/group/{groupId}/meeting-history": {
+            "get": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Listar todos os históricos de reuniões do grupo",
+                "description": "Lista todos os históricos de reuniões do grupo especificado",
+                "operationId": "f30ccf2bcbd2fca719790a8767ac2eda",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Atualizar o histórico de reunião para o grupo especificado",
+                "description": "Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "24558a53d4f777bb0e4ed8babd4655a1",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "summary",
+                                    "ata"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "O conteúdo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "summary": {
+                                        "description": "O resumo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "ata": {
+                                        "description": "A ata da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Criar um novo histórico de reunião para o grupo especificado",
+                "description": "Cria um novo histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "8780f16fcb540ebde6c005d88f159339",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "summary",
+                                    "ata"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "O conteúdo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "summary": {
+                                        "description": "O resumo da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    },
+                                    "ata": {
+                                        "description": "A ata da reunião",
+                                        "type": "string",
+                                        "minLength": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Excluir histórico de reunião",
+                "description": "Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "operationId": "4785815b973d75b19e07e28b518c655d",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Deleted"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/meeting-history/{id}": {
+            "get": {
+                "tags": [
+                    "meetings"
+                ],
+                "summary": "Exibir o histórico de uma reunião",
+                "description": "Exibe uma reunião no grupo especificado",
+                "operationId": "dab2ed89d7e0e6d95fd51c8b0f6229e7",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "O ID da reunião.",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": [
@@ -351,14 +770,14 @@
                 }
             }
         },
-        "group/{groupId}/members": {
+        "/group/{groupId}/members": {
             "post": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Criar novo membro",
                 "description": "Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "ad654c006dc3975a8f3c127a5c2ede51",
+                "operationId": "132ca5b0db7a8673ae8bea65a2eed21f",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -416,7 +835,7 @@
                     "members"
                 ],
                 "summary": "Lista o registro de membro por ID",
-                "description": "Lista o registro de membro por ID de referência,\n     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Lista o registro de membro por ID de referência.",
                 "operationId": "1fd856fdfaaf1e386c20f99e657e1904",
                 "parameters": [
                     {
@@ -446,7 +865,7 @@
                     "members"
                 ],
                 "summary": "Atualizar membro",
-                "description": "Atualizar membro: Apenas o membro pode atualizar suas próprias informações,\n     *   somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "somente o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "abf8609c946a1cf6b1fc64a55b707dc6",
                 "parameters": [
                     {
@@ -1057,8 +1476,16 @@
             "description": "Autenticação dos usuários"
         },
         {
+            "name": "documents",
+            "description": "CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
+        },
+        {
             "name": "group",
             "description": "Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
+        },
+        {
+            "name": "meetings",
+            "description": "CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membross"
         },
         {
             "name": "members",

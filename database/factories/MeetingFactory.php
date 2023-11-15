@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Meeting;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MeetingFactory extends Factory
 {
+    protected $model = Meeting::class;
+
     /**
      * Define the model's default state.
      *
@@ -14,10 +17,9 @@ class MeetingFactory extends Factory
     public function definition(): array
     {
         return [
-            'content' => $this->faker->sentence(100),
-            'summary' => $this->faker->sentence(50),
-            'ata'     => $this->faker->paragraph(20),
-            'date'    => $this->faker->dateTime(),
+            'content' => $this->faker->word,
+            'summary' => $this->faker->text,
+            'ata'     => $this->faker->word,
         ];
     }
 }

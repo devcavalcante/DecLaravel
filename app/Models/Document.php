@@ -6,26 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Meeting extends Model
+class Document extends Model
 {
     use HasFactory;
 
-    protected $table = 'meetings';
-
-    protected $fillable = [
-        'content',
-        'summary',
-        'ata',
-        'group_id',
-    ];
+    protected $table = 'documents';
+    protected $fillable = ['name', 'description', 'file', 'group_id'];
 
     public function getNotFoundMessage(): string
     {
-        return 'Reunião não encontrada';
+        return 'Documento não encontrado';
     }
 
     public function group(): BelongsTo
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Group::class, 'group_id');
     }
 }

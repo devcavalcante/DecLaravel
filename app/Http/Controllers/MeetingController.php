@@ -5,20 +5,24 @@ namespace App\Http\Controllers;
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\MeetingRequest;
 use App\Models\Meeting;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
  *     name="meetings",
- *     description="CRUD das reuniões"
+ *     description="CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membross"
  * )
  */
 class MeetingController extends Controller
 {
-    public function __construct(private MeetingRepositoryInterface $meetingRepository)
-    {
+    public function __construct(
+        private MeetingRepositoryInterface $meetingRepository,
+        private GroupRepositoryInterface $groupRepository,
+    ) {
     }
 
     /**
@@ -26,7 +30,7 @@ class MeetingController extends Controller
      *   path="/group/{groupId}/meeting-history",
      *   tags={"meetings"},
      *   summary="Listar todos os históricos de reuniões do grupo",
-     *   description="Lista todos os históricos de reuniões do grupo especificado: somente o REPRESENTANTE obtem acesso a esse endpoint",
+     *   description="Lista todos os históricos de reuniões do grupo especificado",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -49,15 +53,13 @@ class MeetingController extends Controller
      *     description="Unauthorized"
      *   )
      * )
-     * @throws AuthorizationException
      */
     public function index(): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::VIEW, Meeting::class);
-
         $meetings = $this->meetingRepository->listAll();
         return response()->json($meetings, 200);
     }
+
     /**
      * @OA\Post(
      *   path="/group/{groupId}/meeting-history",
@@ -115,11 +117,11 @@ class MeetingController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function store(MeetingRequest $request): JsonResponse
+    public function store(MeetingRequest $request, string $groupId): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, Meeting::class);
-
+        $this->authorize(AbilitiesEnum::CREATE, [Meeting::class, $groupId]);
         $payload = $request->validated();
+        $payload = array_merge($payload, ['group_id' => $groupId]);
         $meeting = $this->meetingRepository->create($payload);
         return response()->json($meeting, 201);
     }
@@ -163,7 +165,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Put(
      *   path="/group/{groupId}/meeting-history",
      *   tags={"meetings"},
      *   summary="Atualizar o histórico de reunião para o grupo especificado",
@@ -257,9 +259,10 @@ class MeetingController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::DELETE, [Meeting::class, $id]);
+        $this->authorize(AbilitiesEnum::CREATE, [Meeting::class, $groupId]);
+        $this->groupRepository->findById($groupId);
         $this->meetingRepository->delete($id);
         return response()->json([], 204);
     }
