@@ -56,7 +56,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Post(
-     *   path="group/{groupId}/members",
+     *   path="/group/{groupId}/members",
      *   tags={"members"},
      *   summary="Criar novo membro",
      *   description="Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
