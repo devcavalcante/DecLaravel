@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\GroupRepositoryInterface;
 
 class GroupPolicy extends AbstractPolicy
 {
+
     public function __construct(private readonly GroupRepositoryInterface $groupRepository)
     {
     }

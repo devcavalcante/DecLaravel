@@ -9,6 +9,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class MemberRequest extends FormRequest
 {
+
+
     /**
      * Determine if the user is authorized to make this request.
      */
