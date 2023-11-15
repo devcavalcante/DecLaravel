@@ -34,6 +34,14 @@ class GroupController extends Controller
      *   tags={"group"},
      *   summary="Listar todos os grupos",
      *   description="Lista todos os grupos",
+     *   @OA\Parameter(
+     *     name="entity",
+     *     in="query",
+     *     description="nome da entidade que deseja filtrar",
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -48,9 +56,9 @@ class GroupController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(GroupRequest $groupRequest): JsonResponse
     {
-        $groups = $this->groupRepository->listAll();
+        $groups = $this->groupService->findMany($groupRequest->all());
 
         return response()->json($this->transform(new GroupTransformer(), $groups));
     }
