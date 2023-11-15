@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MemberPolicy extends AbstractPolicy
 {
-    use HandlesAuthorization, PolicyTrait;
+    use HandlesAuthorization;
 
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
@@ -37,5 +37,16 @@ class MemberPolicy extends AbstractPolicy
     public function delete(User $user, string $groupId): bool
     {
         return $this->isAuthorized($user->id, $groupId);
+    }
+
+    private function isAuthorized(string $userId, string $groupId): bool
+    {
+        $group = $this->groupRepository->findById($groupId);
+        $representatives = $group->representatives()->get()->toArray();
+        $representativeIds = array_column($representatives, 'id');
+        $isRepresentativeOfTheGroup = array_filter($representativeIds, function ($representativeId) use ($userId) {
+            return $representativeId == $userId;
+        });
+        return !empty($isRepresentativeOfTheGroup);
     }
 }
