@@ -5,7 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\MeetingController;
 use Illuminate\Support\Facades\Route;
@@ -36,14 +35,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('/{id}', [TypeUserController::class, 'update']);
         Route::delete('/{id}', [TypeUserController::class, 'destroy']);
         Route::get('/', [TypeUserController::class, 'index']);
-    });
-
-    Route::group(['prefix' => '/type-group'], function () {
-        Route::post('/', [TypeGroupController::class, 'store']);
-        Route::get('/{id}', [TypeGroupController::class, 'show']);
-        Route::put('/{id}', [TypeGroupController::class, 'update']);
-        Route::delete('/{id}', [TypeGroupController::class, 'destroy']);
-        Route::get('/', [TypeGroupController::class, 'index']);
     });
 
     Route::group(['prefix' => '/users'], function () {

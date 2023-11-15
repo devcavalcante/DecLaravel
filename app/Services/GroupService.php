@@ -6,6 +6,7 @@ use App\Enums\TypeUserEnum;
 use App\Exceptions\OnlyRepresentativesException;
 use App\Repositories\Interfaces\GroupHasRepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
+use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ class GroupService
         protected GroupRepositoryInterface $groupRepository,
         protected GroupHasRepresentativeRepositoryInterface $groupHasRepresentativeRepository,
         protected UserRepositoryInterface $userRepository,
+        protected TypeGroupRepositoryInterface $typeGroupRepository,
     ) {
     }
 
@@ -39,9 +41,15 @@ class GroupService
     {
         try {
             DB::beginTransaction();
+
+            $payloadTypeGroup = Arr::only($data, ['name', 'type_group']);
+            $type_group = $this->createTypeGroup($payloadTypeGroup);
+
             $data['creator_user_id'] = Auth::id();
+            $data['type_group_id'] = $type_group->id;
+            $group = $this->groupRepository->create(Arr::except($data, ['name', 'type_group']));
+
             $representatives = Arr::get($data, 'representatives');
-            $group = $this->groupRepository->create($data);
             $this->createGroupHasRepresentatives($representatives, $group->id);
 
             DB::commit();
@@ -59,8 +67,16 @@ class GroupService
     {
         try {
             DB::beginTransaction();
-            $representatives = Arr::get($data, 'representatives');
+            $typeGroup = Arr::only($data, ['name', 'type_group']);
+
             $group = $this->groupRepository->update($groupId, $data);
+
+
+            if (!empty($typeGroup)) {
+                $this->editTypeGroup($group->typeGroup->id, $typeGroup);
+            }
+
+            $representatives = Arr::get($data, 'representatives');
             if (!empty($representatives)) {
                 $this->updateGroupHasRepresentatives($representatives, $groupId);
             }
@@ -81,12 +97,14 @@ class GroupService
             DB::beginTransaction();
             $group = $this->groupRepository->findById($id);
             $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters(['group_id' => $group->id]);
+            $typeGroupId = $group->typeGroup->id;
 
             foreach ($groupRepresentatives->toArray() as $groupRepresentative) {
                 $this->groupHasRepresentativeRepository->delete($groupRepresentative['id']);
             }
 
             $this->groupRepository->delete($id);
+            $this->typeGroupRepository->delete($typeGroupId);
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();
@@ -133,5 +151,15 @@ class GroupService
     {
         $user = $this->userRepository->findById($userId);
         return $user->role() == TypeUserEnum::REPRESENTATIVE;
+    }
+
+    private function createTypeGroup(array $data): Model
+    {
+        return $this->typeGroupRepository->create($data);
+    }
+
+    private function editTypeGroup(string $typeGrupId, array $data): void
+    {
+        $this->typeGroupRepository->update($typeGrupId, $data);
     }
 }
