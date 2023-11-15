@@ -38,6 +38,18 @@ class GroupControllerTest extends TestCase
         $this->assertCount(10, Group::all());
     }
 
+    public function testShouldListByFilters()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+        $user = User::factory()->create();
+        Group::factory(['creator_user_id' => $user])->create();
+
+        $response = $this->get(self::BASE_URL, ['creator_user_id' => $user->id]);
+
+        $response->assertStatus(200);
+        $this->assertCount(1, json_decode($response->getContent(), true)['data']);
+    }
+
     public function testShouldListOne()
     {
         $this->login(TypeUserEnum::MANAGER);

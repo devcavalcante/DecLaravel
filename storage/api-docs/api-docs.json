@@ -513,6 +513,16 @@
                 "summary": "Listar todos os grupos",
                 "description": "Lista todos os grupos",
                 "operationId": "e8330ffe5396478cbf1a2fb8a8cf0536",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "query",
+                        "description": "nome da entidade que deseja filtrar",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"

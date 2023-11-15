@@ -7,6 +7,7 @@ use App\Exceptions\OnlyRepresentativesException;
 use App\Repositories\Interfaces\GroupHasRepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,15 @@ class GroupService
         protected GroupHasRepresentativeRepositoryInterface $groupHasRepresentativeRepository,
         protected UserRepositoryInterface $userRepository,
     ) {
+    }
+
+    public function findMany(array $filters = []): Collection
+    {
+        if (!empty($filters)) {
+            return $this->groupRepository->findByFilters($filters);
+        }
+
+        return $this->groupRepository->listAll();
     }
 
     /**
