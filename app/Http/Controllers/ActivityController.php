@@ -166,7 +166,7 @@ class ActivityController extends Controller
      *   ),
      *   @OA\RequestBody(
      *      @OA\MediaType(
-     *       mediaType="application/json",,
+     *       mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(
      *                  property="name",

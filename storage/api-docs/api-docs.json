@@ -12,6 +12,206 @@
     ],
     "paths": {
         "/auth": {},
+        "/activity": {
+            "get": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Listar todos as atividades",
+                "description": "Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "operationId": "62e729339ad731c11a804a79624f36ae",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/activity/{id}": {
+            "get": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Lista o registro de atividades por ID",
+                "description": "Lista o registro de atividades por ID de referência",
+                "operationId": "0f8a0773d3fe13f5a23743fbda8818f7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da atividade",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Atividade not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Atualiza atividades",
+                "description": "Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "8a0046ad2f5568277508b8d3ecb52101",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da atividade",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "nome da atividade",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "descrição da atividade",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Atividade not found"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/activity": {
+            "post": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Criar nova atividade",
+                "description": "Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "d1ead45e1fb6738ad0a9375a5efb7831",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o documento sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "nome da atividade",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "descrição da atividade",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/activity/{activityId}": {
+            "delete": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Deletar atividade",
+                "description": "Deletar atividade por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "0d3be6468f3efcea49b77af0003feb6f",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "activityId",
+                        "in": "path",
+                        "description": "Id da atividade",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "tags": [
@@ -147,7 +347,7 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "Membro not found"
+                        "description": "Documento not found"
                     },
                     "200": {
                         "description": "Ok"
@@ -205,7 +405,7 @@
                         "description": "Não autorizado"
                     },
                     "404": {
-                        "description": "Membro not found"
+                        "description": "Documento not found"
                     }
                 }
             }
@@ -1472,12 +1672,16 @@
     ],
     "tags": [
         {
+            "name": "activity",
+            "description": "CRUD das atividades, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
+        },
+        {
             "name": "auth",
             "description": "Autenticação dos usuários"
         },
         {
             "name": "documents",
-            "description": "CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
+            "description": "CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar documentos"
         },
         {
             "name": "group",
@@ -1485,7 +1689,7 @@
         },
         {
             "name": "meetings",
-            "description": "CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membross"
+            "description": "CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar historico de reuniões"
         },
         {
             "name": "members",
