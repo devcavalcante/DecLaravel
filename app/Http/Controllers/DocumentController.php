@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
-use App\Exceptions\MembersExists;
 use App\Http\Requests\DocumentRequest;
 use App\Models\Document;
 use App\Repositories\Interfaces\DocumentRepositoryInterface;
