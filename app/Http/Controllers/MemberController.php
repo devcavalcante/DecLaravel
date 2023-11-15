@@ -222,8 +222,8 @@ class MemberController extends Controller
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
         $payload = $request->all();
-        $user = $this->memberService->edit($id, $payload);
-        return response()->json($user);
+        $member = $this->memberService->edit($id, $payload);
+        return response()->json($member);
     }
 
     /**
