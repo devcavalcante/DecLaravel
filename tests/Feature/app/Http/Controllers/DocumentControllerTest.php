@@ -67,7 +67,7 @@ class DocumentControllerTest extends TestCase
         $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
             'description' => $this->faker->text,
-            'file' => $file,
+            'file'        => $file,
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
@@ -85,7 +85,7 @@ class DocumentControllerTest extends TestCase
 
         $payload = [
             'description' => $this->faker->text,
-            'file' => UploadedFile::fake()->create('file.pdf'),
+            'file'        => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', 100), $payload);
@@ -104,7 +104,7 @@ class DocumentControllerTest extends TestCase
 
         $payload = [
             'description' => $this->faker->text,
-            'file' => UploadedFile::fake()->create('file.pdf'),
+            'file'        => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
@@ -122,7 +122,7 @@ class DocumentControllerTest extends TestCase
 
         $payload = [
             'description' => $this->faker->text,
-            'file' => UploadedFile::fake()->create('file.pdf'),
+            'file'        => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);
@@ -144,7 +144,7 @@ class DocumentControllerTest extends TestCase
 
         $payload = [
             'description' => $this->faker->text,
-            'file' => UploadedFile::fake()->create('file.pdf'),
+            'file'        => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);

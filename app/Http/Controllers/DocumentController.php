@@ -16,8 +16,7 @@ class DocumentController extends Controller
     public function __construct(
         private DocumentRepositoryInterface $documentRepository,
         private DocumentService $documentService
-    )
-    {
+    ) {
     }
 
     public function index(): JsonResponse

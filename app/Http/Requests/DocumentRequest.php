@@ -44,7 +44,7 @@ class DocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.string'            => 'O campo de descrição deve ser uma string.'
+            'description.string' => 'O campo de descrição deve ser uma string.',
         ];
     }
 
