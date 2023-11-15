@@ -18,9 +18,6 @@ class DocumentService
     ) {
     }
 
-    /**
-     * @throws Throwable
-     */
     public function create(string $groupId, array $data): Model
     {
         $this->groupRepository->findById($groupId);
@@ -34,9 +31,6 @@ class DocumentService
         return $this->documentRepository->create($data);
     }
 
-    /**
-     * @throws Throwable
-     */
     public function edit(string $id, array $data): Model
     {
         $file = Arr::get($data, 'file');
@@ -49,9 +43,6 @@ class DocumentService
         return $this->documentRepository->update($id, $data);
     }
 
-    /**
-     * @throws Throwable
-     */
     public function delete(string $groupId, string $documentId): void
     {
         $this->groupRepository->findById($groupId);
