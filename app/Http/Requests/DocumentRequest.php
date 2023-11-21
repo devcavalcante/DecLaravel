@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\GetValues;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
-class TypeGroupRequest extends FormRequest
+class DocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,14 +25,18 @@ class TypeGroupRequest extends FormRequest
     public function rules(): array
     {
         $method = request()->method;
-        $isRequired = $method == 'POST' ? 'required':'sometimes';
+        $isRequired = $method == 'POST' ? 'required' : 'sometimes';
 
         return [
-            'name'       => sprintf('%s|min:4|string', $isRequired),
-            'type_group' => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
+            'description' => 'string',
+            'file'        => sprintf(
+                '%s|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
+                $isRequired
+            ),
         ];
     }
-   /**
+
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array<string, string>
@@ -42,14 +44,10 @@ class TypeGroupRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'       => 'O campo nome é obrigatório.',
-            'name.string'         => 'O campo nome deve ser uma string.',
-            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
-            'type_group.required' => 'O campo tipo de grupo é obrigatório.',
-            'type_group.string'   => 'O campo tipo de grupo deve ser uma string.',
-            'type_group.in'       => 'O campo tipo de grupo deve ser interno ou externo',
+            'description.string' => 'O campo de descrição deve ser uma string.',
         ];
     }
+
     /**
      * Handle a failed validation attempt.
      *
@@ -60,7 +58,6 @@ class TypeGroupRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator): void
     {
-
-        throw new HttpResponseException(response()->json($validator->errors(), 422));
+        throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

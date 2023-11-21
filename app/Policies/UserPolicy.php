@@ -32,7 +32,7 @@ class UserPolicy extends AbstractPolicy
      */
     public function create(User $user, UserRequest $userRequest): bool
     {
-        return $this->isAuthorized($userRequest->type_user_id);
+        return $this->isUserAuthorized($userRequest->type_user_id);
     }
 
     /**
@@ -59,7 +59,7 @@ class UserPolicy extends AbstractPolicy
         return $this->canModifiedUser($user->id, $id) || $user->id == $id;
     }
 
-    private function isAuthorized(string $typeUserId): bool
+    private function isUserAuthorized(string $typeUserId): bool
     {
         $isAdmin = $this->isAdmin();
         $isManager = $this->isManager();

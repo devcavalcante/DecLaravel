@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\TypeGroupController;
 use App\Http\Controllers\TypeUserController;
+use App\Http\Controllers\MeetingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -35,14 +37,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/', [TypeUserController::class, 'index']);
     });
 
-    Route::group(['prefix' => '/type-group'], function () {
-        Route::post('/', [TypeGroupController::class, 'store']);
-        Route::get('/{id}', [TypeGroupController::class, 'show']);
-        Route::put('/{id}', [TypeGroupController::class, 'update']);
-        Route::delete('/{id}', [TypeGroupController::class, 'destroy']);
-        Route::get('/', [TypeGroupController::class, 'index']);
-    });
-
     Route::group(['prefix' => '/users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -58,6 +52,24 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', [MemberController::class, 'show']);
     });
 
+    Route::group(['prefix' => 'documents'], function () {
+        Route::post('/{id}', [DocumentController::class, 'update']);
+        Route::get('/', [DocumentController::class, 'index']);
+        Route::get('/{id}', [DocumentController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'meeting-history'], function () {
+        Route::put('/{id}', [MeetingController::class, 'update']);
+        Route::get('/', [MeetingController::class, 'index']);
+        Route::get('/{id}', [MeetingController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'activity'], function () {
+        Route::put('/{id}', [ActivityController::class, 'update']);
+        Route::get('/', [ActivityController::class, 'index']);
+        Route::get('/{id}', [ActivityController::class, 'show']);
+    });
+
     Route::group(['prefix' => '/group'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
@@ -68,6 +80,21 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{groupId}/members'], function () {
             Route::post('/', [MemberController::class, 'store']);
             Route::delete('/{id}', [MemberController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => '{groupId}/documents'], function () {
+            Route::post('/', [DocumentController::class, 'store']);
+            Route::delete('/{id}', [DocumentController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => '{groupId}/meeting-history'], function () {
+            Route::post('/', [MeetingController::class, 'store']);
+            Route::delete('/{id}', [MeetingController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => '{groupId}/activity'], function () {
+            Route::post('/', [ActivityController::class, 'store']);
+            Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });
     });
 });

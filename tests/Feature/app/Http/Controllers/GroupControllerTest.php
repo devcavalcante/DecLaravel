@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Enums\TypeGroupEnum;
 use App\Enums\TypeUserEnum;
 use App\Models\Group;
 use App\Models\GroupHasRepresentative;
@@ -38,6 +39,18 @@ class GroupControllerTest extends TestCase
         $this->assertCount(10, Group::all());
     }
 
+    public function testShouldListByFilters()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+        $user = User::factory()->create();
+        Group::factory(['creator_user_id' => $user])->create();
+
+        $response = $this->get(self::BASE_URL, ['creator_user_id' => $user->id]);
+
+        $response->assertStatus(200);
+        $this->assertCount(1, json_decode($response->getContent(), true)['data']);
+    }
+
     public function testShouldListOne()
     {
         $this->login(TypeUserEnum::MANAGER);
@@ -72,6 +85,7 @@ class GroupControllerTest extends TestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representatives', 'members']));
         $this->assertDatabaseHasRepresentatives($payload['representatives'], $actual['id']);
+        $this->assertDatabaseHas('type_groups', Arr::only($payload, ['name', 'type_group']));
     }
 
     public function testShouldOnlyManagersCreate()
@@ -168,13 +182,15 @@ class GroupControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::MANAGER);
 
-        $group = Group::factory()->create();
+        $typeGroup = TypeGroup::factory()->create();
+        $group = Group::factory(['type_group_id' => $typeGroup->id])->create();
         $groupHasRepresentative = GroupHasRepresentative::factory(['group_id' => $group->id])->create();
         $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('groups', $group->toArray());
         $this->assertDatabaseMissing('group_has_representatives', $groupHasRepresentative->toArray());
+        $this->assertDatabaseMissing('type_groups', $typeGroup->toArray());
     }
 
     public function testShouldOnlyManagerCreatedCanDelete()
@@ -224,6 +240,8 @@ class GroupControllerTest extends TestCase
             'observations'       => $this->faker->text,
             'type_group_id'      => $typeGroup->id,
             'representatives'    => $ids,
+            'name'               => 'Comissão',
+            'type_group'         => TypeGroupEnum::INTERNO,
         ];
     }
 }
