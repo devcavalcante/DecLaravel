@@ -89,7 +89,7 @@ class NoteControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'title'        => 'teste teste',
+            'title'       => 'teste teste',
             'description' => $this->faker->text,
             'color'       => ColorsEnum::YELLOW,
         ];
@@ -110,7 +110,7 @@ class NoteControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'title'        => 'teste teste',
+            'title'       => 'teste teste',
             'description' => $this->faker->text,
             'color'       => ColorsEnum::YELLOW,
         ];

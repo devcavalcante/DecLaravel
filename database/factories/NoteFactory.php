@@ -15,7 +15,7 @@ class NoteFactory extends Factory
         $group = Group::factory()->create();
 
         return [
-            'title'        => $this->faker->word,
+            'title'       => $this->faker->word,
             'description' => $this->faker->text,
             'color'       => ColorsEnum::YELLOW,
             'group_id'    => $group->id,
