@@ -28,9 +28,9 @@ class NoteRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required':'sometimes';
 
         return [
-            'title' => sprintf('%s|min:5|string', $isRequired),
+            'title'       => sprintf('%s|min:5|string', $isRequired),
             'description' => sprintf('%s|min:5|string', $isRequired),
-            'color' => sprintf('%s|string|in:green,red,yellow,blue', $isRequired),
+            'color'       => sprintf('%s|string|in:green,red,yellow,blue', $isRequired),
         ];
     }
 
@@ -43,15 +43,15 @@ class NoteRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'title.required' => 'O campo título é obrigatório.',
-            'title.string'   => 'O campo título deve ser uma string.',
-            'title.min'      => 'O campo título deve ter no mínimo 5 caracteres.',
+            'title.required'       => 'O campo título é obrigatório.',
+            'title.string'         => 'O campo título deve ser uma string.',
+            'title.min'            => 'O campo título deve ter no mínimo 5 caracteres.',
             'description.required' => 'O campo descrição é obrigatório.',
             'description.string'   => 'O campo descrição deve ser uma string.',
             'description.min'      => 'O campo descrição deve ter no mínimo 5 caracteres.',
-            'color.required' => 'O campo de cor é obrigatório.',
-            'color.string'   => 'O campo de cor deve ser uma string.',
-            'color.in'      => 'O campo de cor deve ser green,red,yellow ou blue.',
+            'color.required'       => 'O campo de cor é obrigatório.',
+            'color.string'         => 'O campo de cor deve ser uma string.',
+            'color.in'             => 'O campo de cor deve ser green,red,yellow ou blue.',
         ];
     }
 

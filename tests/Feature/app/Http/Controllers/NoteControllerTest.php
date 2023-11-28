@@ -73,9 +73,9 @@ class NoteControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'title'        => 'teste teste',
+            'title'       => 'teste teste',
             'description' => $this->faker->text,
-            'color' => ColorsEnum::GREEN,
+            'color'       => ColorsEnum::GREEN,
         ];
 
         $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);
@@ -93,7 +93,7 @@ class NoteControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'color' => ColorsEnum::YELLOW,
+            'color'       => ColorsEnum::YELLOW,
         ];
 
         $response = $this->post(sprintf('/api/group/%s/notes', 100), $payload);
@@ -114,7 +114,7 @@ class NoteControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'color' => ColorsEnum::YELLOW,
+            'color'       => ColorsEnum::YELLOW,
         ];
 
         $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);

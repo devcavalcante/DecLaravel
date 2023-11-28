@@ -20,7 +20,6 @@ return new class extends Migration
 
             $table->foreign('group_id')->references('id')->on('groups');
             $table->timestamps();
-
         });
     }
 
@@ -32,23 +31,3 @@ return new class extends Migration
         Schema::dropIfExists('notes');
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
