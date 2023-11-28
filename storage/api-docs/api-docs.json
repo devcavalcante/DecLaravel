@@ -1257,7 +1257,7 @@
                                         "type": "string"
                                     },
                                     "description": {
-                                        "description": "descrição da atividade",
+                                        "description": "descrição da nota",
                                         "type": "string"
                                     },
                                     "color": {
@@ -1315,7 +1315,7 @@
                                         "type": "string"
                                     },
                                     "description": {
-                                        "description": "descrição da atividade",
+                                        "description": "descrição da nota",
                                         "type": "string"
                                     },
                                     "color": {
