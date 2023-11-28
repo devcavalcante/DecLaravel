@@ -14,11 +14,16 @@ class Note extends Model
         'title',
         'description',
         'color',
-        'group id',
+        'group_id',
     ];
 
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
+    }
+
+    public function getNotFoundMessage(): string
+    {
+        return 'Nota não encontrada';
     }
 }

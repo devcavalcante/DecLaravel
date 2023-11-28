@@ -4,7 +4,6 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\ColorsEnum;
 use App\Enums\TypeUserEnum;
-use App\Models\Activity;
 use App\Models\GroupHasRepresentative;
 use App\Models\Group;
 use App\Models\Note;
@@ -13,7 +12,6 @@ use App\Models\User;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
-use Mockery\Matcher\Not;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -56,14 +54,14 @@ class NoteControllerTest extends TestCase
         $response->assertJsonStructure($this->getJsonStructure());
     }
 
-    public function testNotShouldListOneWhenNotFoundActivity()
+    public function testNotShouldListOneWhenNotFoundNote()
     {
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->get(sprintf('%s/%s', self::BASE_URL, 100));
 
         $response->assertStatus(404);
-        $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldCreate()
@@ -91,7 +89,7 @@ class NoteControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'name'        => 'teste teste',
+            'title'        => 'teste teste',
             'description' => $this->faker->text,
             'color'       => ColorsEnum::YELLOW,
         ];
@@ -112,7 +110,7 @@ class NoteControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'name'        => 'teste teste',
+            'title'        => 'teste teste',
             'description' => $this->faker->text,
             'color'       => ColorsEnum::YELLOW,
         ];
@@ -131,7 +129,7 @@ class NoteControllerTest extends TestCase
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $payload = [
-            'name' => 'teste 2',
+            'title' => 'teste 2',
         ];
 
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $note->id), $payload);
@@ -139,23 +137,23 @@ class NoteControllerTest extends TestCase
         $actual = json_decode($response->getContent(), true);
 
         $response->assertStatus(200);
-        $this->assertEquals($payload, Arr::only($actual, ['name']));
+        $this->assertEquals($payload, Arr::only($actual, ['title']));
     }
 
-    public function testShouldNotUpdateWhenActivityNotFound()
+    public function testShouldNotUpdateWhenNoteNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'name' => 'teste ajskajska',
+            'title' => 'teste ajskajska',
         ];
 
         $response = $this->put(sprintf('api/notes/%s', 100), $payload);
 
         $response->assertStatus(404);
-        $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
@@ -203,7 +201,7 @@ class NoteControllerTest extends TestCase
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldNotDeleteWhenActivityNotFound()
+    public function testShouldNotDeleteWhenNoteNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
@@ -212,7 +210,7 @@ class NoteControllerTest extends TestCase
         $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, 100));
 
         $response->assertStatus(404);
-        $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
     public function testShouldNotDeleteWhenIsNotTheRepresentativeOfGroup()

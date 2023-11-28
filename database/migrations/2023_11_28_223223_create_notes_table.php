@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('notes', function (Blueprint $table) {
+        Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('description');
             $table->string('color');
             $table->unsignedBigInteger('group_id');
-
             $table->foreign('group_id')->references('id')->on('groups');
             $table->timestamps();
         });

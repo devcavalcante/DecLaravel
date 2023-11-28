@@ -49,9 +49,9 @@ class NoteController extends Controller
      */
     public function index(): JsonResponse
     {
-        $activities = $this->noteRepository->listAll();
+        $notes = $this->noteRepository->listAll();
 
-        return response()->json($activities);
+        return response()->json($notes);
     }
 
     /**
@@ -112,12 +112,12 @@ class NoteController extends Controller
      *          @OA\Property(
      *                  property="title",
      *                  type="string",
-     *                  description=titulo da nota",
+     *                  description="titulo da nota",
      *              ),
      *              @OA\Property(
      *                  property="description",
      *                  type="string",
-     *                  description="descrição da atividade",
+     *                  description="descrição da nota",
      *              ),
      *              @OA\Property(
      *                  property="color",
@@ -146,7 +146,7 @@ class NoteController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function store(ActivityRequest $request, string $groupId): JsonResponse
+    public function store(NoteRequest $request, string $groupId): JsonResponse
     {
         $this->authorize(AbilitiesEnum::CREATE, [Note::class, $groupId]);
         $this->groupRepository->findById($groupId);
@@ -182,7 +182,7 @@ class NoteController extends Controller
      *              @OA\Property(
      *                  property="description",
      *                  type="string",
-     *                  description="descrição da atividade",
+     *                  description="descrição da nota",
      *              ),
      *              @OA\Property(
      *                  property="color",
@@ -214,8 +214,8 @@ class NoteController extends Controller
     public function update(string $id, NoteRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Note::class, $id]);
-        $activity = $this->noteRepository->update($id, $request->all());
-        return response()->json($activity);
+        $note = $this->noteRepository->update($id, $request->all());
+        return response()->json($note);
     }
 
     /**
