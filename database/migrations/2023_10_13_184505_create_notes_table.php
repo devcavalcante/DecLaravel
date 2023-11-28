@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
+            $table->string('color');
             $table->unsignedBigInteger('group_id');
-
 
             $table->foreign('group_id')->references('id')->on('groups');
             $table->timestamps();

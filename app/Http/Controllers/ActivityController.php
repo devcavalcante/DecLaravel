@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\ActivityRequest;
-use App\Http\Requests\DocumentRequest;
 use App\Models\Activity;
 use App\Repositories\Interfaces\ActivityRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
@@ -200,7 +199,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, DocumentRequest $request): JsonResponse
+    public function update(string $id, ActivityRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, $request->all());
@@ -250,7 +249,7 @@ class ActivityController extends Controller
     {
         $this->authorize(AbilitiesEnum::CREATE, [Activity::class, $groupId]);
         $this->groupRepository->findById($groupId);
-        $this->activityRepository->delete($groupId, $id);
+        $this->activityRepository->delete($id);
         return response()->json([], 204);
     }
 }

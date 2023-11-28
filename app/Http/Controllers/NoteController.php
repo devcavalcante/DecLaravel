@@ -3,78 +3,268 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
-use App\Http\Requests\UserRequest;
+use App\Http\Requests\ActivityRequest;
+use App\Http\Requests\NoteRequest;
+use App\Models\Activity;
 use App\Models\Note;
-use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Transformer\UserTransformer;
-use http\Env\Response;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
+use App\Repositories\Interfaces\NoteRepositoryInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="note",
- *     description="CRUD de notas
+ *     name="notes",
+ *     description="CRUD das notas, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
  * )
  */
 class NoteController extends Controller
 {
-    //Lista de notas para grupo especificado
-    public function index(int $groupId): JsonResponse
-    {
-        $note = Note::where('group_id', $groupId)->paginate(10);
-
-        return response()->json($note);
-
+    public function __construct(
+        private NoteRepositoryInterface $noteRepository,
+        private GroupRepositoryInterface $groupRepository
+    ) {
     }
 
-    //Retorna nota especifica
-    public function show(int $groupId, int $id): JsonResponse
+    /**
+     * @OA\Get(
+     *   path="/notes",
+     *   tags={"notes"},
+     *   summary="Listar todos as notas",
+     *   description="Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function index(): JsonResponse
     {
+        $activities = $this->noteRepository->listAll();
 
-        $note = Note::where('group_id', $groupId)->findOrFail($id);
+        return response()->json($activities);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/notas/{id}",
+     *   tags={"notas"},
+     *   summary="Lista o registro de notas por ID",
+     *   description="Lista o registro de notas por ID de referência",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id da nota",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Note not found"
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function show(string $id): JsonResponse
+    {
+        $note = $this->noteRepository->findById($id);
 
         return response()->json($note);
     }
 
-    //Cria uma nova nota
-    public function store(int $groupId, NoteRequest $request): JsonResponse
+    /**
+     * @OA\Post(
+     *   path="/group/{groupId}/notas",
+     *   tags={"notas"},
+     *   summary="Criar nova nota",
+     *   description="Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *  @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="Id do grupo que o documento sera associado",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\RequestBody(
+     *      @OA\MediaType(
+     *          mediaType="application/json",
+     *          @OA\Schema(
+     *          @OA\Property(
+     *                  property="title",
+     *                  type="string",
+     *                  description=titulo da nota",
+     *              ),
+     *              @OA\Property(
+     *                  property="description",
+     *                  type="string",
+     *                  description="descrição da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="color",
+     *                  type="string",
+     *                  description="cor da nota desejada",
+     *              ),
+     *         )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="Criado"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response="422",
+     *     description="Erro de validação"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Não autorizado"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function store(ActivityRequest $request, string $groupId): JsonResponse
     {
-        $this->authorize('create', Note::class);
-
-        $note = new Note();
-        $note->fill($request->all());
-        $note->group_id = $groupId;
-        $note->save();
-
+        $this->authorize(AbilitiesEnum::CREATE, [Note::class, $groupId]);
+        $this->groupRepository->findById($groupId);
+        $payload = array_merge($request->all(), ['group_id' => $groupId]);
+        $note = $this->noteRepository->create($payload);
         return response()->json($note, 201);
     }
 
-    //Update
-
-    public function update(int $groupId, int $id, NoteRequest $request): JsonResponse
+    /**
+     * @OA\Put(
+     *   path="/notes/{id}",
+     *   tags={"notes"},
+     *   summary="Atualiza notas",
+     *   description="Atualizar notas: somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id da nota",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\RequestBody(
+     *      @OA\MediaType(
+     *       mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(
+     *                  property="title",
+     *                  type="string",
+     *                  description="titulo da nota",
+     *              ),
+     *              @OA\Property(
+     *                  property="description",
+     *                  type="string",
+     *                  description="descrição da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="color",
+     *                  type="string",
+     *                  description="cor da nota desejada",
+     *              ),
+     *         )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Note not found"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function update(string $id, NoteRequest $request): JsonResponse
     {
-        $this->authorize('update', Note::class);
-
-        $note = Note::where('group_id', $groupId)->findOrFail($id);
-        $note->fill($request->all());
-        $note->save();
-
-        return response()->json($note);
+        $this->authorize(AbilitiesEnum::UPDATE, [Note::class, $id]);
+        $activity = $this->noteRepository->update($id, $request->all());
+        return response()->json($activity);
     }
 
-    //Delete
-    public function destroy(int $groupId, int $id): JsonResponse
+    /**
+     * @OA\Delete(
+     *   path="/group/{groupId}/notes/{noteId}",
+     *   tags={"notes"},
+     *   summary="Deletar notas",
+     *   description="Deletar nota por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="Id do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="noteId",
+     *     in="path",
+     *     description="Id da nota",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=204,
+     *     description="No Content"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   ),
+     *)
+     * @throws AuthorizationException
+     */
+    public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize('delete', Note::class);
-
-        $note = Note::where('group_id', $groupId)->findOrFail($id);
-        $note->delete();
-
+        $this->authorize(AbilitiesEnum::CREATE, [Activity::class, $groupId]);
+        $this->groupRepository->findById($groupId);
+        $this->noteRepository->delete($id);
         return response()->json([], 204);
     }
-    }
+}
 
 
 

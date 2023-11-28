@@ -78,4 +78,9 @@ class Group extends Model
     {
         return $this->hasMany(Activity::class);
     }
+
+    public function note(): HasMany
+    {
+        return $this->hasMany(Note::class);
+    }
 }

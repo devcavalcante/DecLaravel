@@ -2,14 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\GetValues;
-use App\Policies\MemberPolicy;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 
 class NoteRequest extends FormRequest
 {
@@ -18,10 +14,7 @@ class NoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Use a política MemberPolicy para garantir que apenas usuários do tipo de usuário REPRESENTANTE LIGADOS AO GRUPO possam criar notas dentro do grupo.
-        // Chame o método isAuthorized() da política MemberPolicy, passando a nota como parâmetro.
-        // Retorne true se o usuário estiver autorizado a criar ou atualizar a nota, caso contrário false.
-        return MemberPolicy::isAuthorized($this->note);
+        return true;
     }
 
     /**
@@ -37,6 +30,7 @@ class NoteRequest extends FormRequest
         return [
             'title' => sprintf('%s|min:5|string', $isRequired),
             'description' => sprintf('%s|min:5|string', $isRequired),
+            'color' => sprintf('%s|string|in:green,red,yellow,blue', $isRequired),
         ];
     }
 
@@ -55,6 +49,9 @@ class NoteRequest extends FormRequest
             'description.required' => 'O campo descrição é obrigatório.',
             'description.string'   => 'O campo descrição deve ser uma string.',
             'description.min'      => 'O campo descrição deve ter no mínimo 5 caracteres.',
+            'color.required' => 'O campo de cor é obrigatório.',
+            'color.string'   => 'O campo de cor deve ser uma string.',
+            'color.in'      => 'O campo de cor deve ser green,red,yellow ou blue.',
         ];
     }
 
@@ -68,7 +65,6 @@ class NoteRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }
