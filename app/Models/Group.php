@@ -28,6 +28,7 @@ class Group extends Model
         'observations',
         'type_group_id',
         'creator_user_id',
+        
     ];
 
     protected $hidden = [

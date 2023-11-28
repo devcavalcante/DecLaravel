@@ -17,5 +17,6 @@ class GroupHasRepresentative extends Model
     protected $fillable = [
         'user_id',
         'group_id',
+        
     ];
 }
