@@ -30,6 +30,19 @@ class UserControllerTest extends TestCase
         $this->assertCount(10, User::all());
     }
 
+    public function testShouldListByFilters()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        $data = ['email' => 'teste@gmail.com'];
+        User::factory($data)->create();
+
+        $response = $this->get('/api/users?email=teste@gmail.com');
+
+        $response->assertStatus(200);
+        $this->assertCount(1, json_decode($response->getContent(), true)['data']);
+    }
+
     public function testShouldNotListUsersWithoutPermission()
     {
         $this->login(TypeUserEnum::VIEWER);

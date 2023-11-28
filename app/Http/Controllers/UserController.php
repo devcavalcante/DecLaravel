@@ -10,6 +10,7 @@ use App\Services\UserService;
 use App\Transformer\UserTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 
 /**
@@ -23,8 +24,7 @@ class UserController extends Controller
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private UserService $userService,
-    )
-    {
+    ) {
     }
 
     /**
@@ -48,11 +48,11 @@ class UserController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function index(UserRequest $userRequest): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::VIEW, User::class);
 
-        $users = $this->userService->findMany($userRequest->all());
+        $users = $this->userService->findMany($request->all());
         return response()->json($this->transform(new UserTransformer(), $users));
     }
 
