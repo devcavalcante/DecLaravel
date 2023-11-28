@@ -60,4 +60,14 @@ Gerando documentação
 ```bash
   docker exec -it plataforma.dev composer swagger
 ```
+# Acessando com outro banco
+Basta mudar as infomações da env.example que atualmente usam postgres mas se for necessario trocar ou acessar com outro banco:
+```bash
+    DB_CONNECTION=pgsql
+    DB_HOST=plataforma.db
+    DB_PORT=5432
+    DB_DATABASE=plataform
+    DB_USERNAME=postgres
+    DB_PASSWORD=postgres
+```
 
