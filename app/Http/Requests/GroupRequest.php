@@ -90,7 +90,6 @@ class GroupRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }
