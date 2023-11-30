@@ -11,7 +11,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'users';
 
@@ -53,7 +53,7 @@ class User extends Authenticatable
 
     public function getNotFoundMessage(): string
     {
-        return 'Usuario nao encontrado';
+        return 'Usuário não encontrado';
     }
 
     public function typeUser(): BelongsTo

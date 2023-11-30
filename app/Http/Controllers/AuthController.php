@@ -74,7 +74,7 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
+//        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
 
         $data = $userRequest->all();
         $user = $this->authService->register($data);
@@ -158,9 +158,7 @@ class AuthController extends Controller
      */
     public function handleCallback(): array|string|null
     {
-        // Obtém o código da query string
         $code = request()->query('code');
-        $response = $this->authService->handleCallback($code);
-        dd($response);
+        return $this->authService->handleCallback($code);
     }
 }
