@@ -34,6 +34,14 @@ class UserController extends Controller
      *   tags={"users"},
      *   summary="Listar todos os usuários",
      *   description="Lista todos os usuários: 3 tipos de usuários obtem o acesso desse endpoint: ADMINISTRADOR, REPRESENTANTE E GERENTE",
+     *   @OA\Parameter(
+     *     name="email",
+     *     in="query",
+     *     description="nome do email que deseja filtrar",
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"

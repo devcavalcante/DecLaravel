@@ -1556,6 +1556,16 @@
                 "summary": "Listar todos os usuários",
                 "description": "Lista todos os usuários: 3 tipos de usuários obtem o acesso desse endpoint: ADMINISTRADOR, REPRESENTANTE E GERENTE",
                 "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "nome do email que deseja filtrar",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"
