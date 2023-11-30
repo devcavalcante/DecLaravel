@@ -97,11 +97,11 @@ class AuthService
 
             $response = $client->post(env('AUTH_SERVER_URL') . '/token', [
                 'form_params' => [
-                    'client_id' => env('CLIENT_ID'),
+                    'client_id'     => env('CLIENT_ID'),
                     'client_secret' => env('CLIENT_SECRET'),
-                    'redirect_uri' => env('REDIRECT_URI'),
-                    'grant_type' => 'authorization_code',
-                    'code' => $code,
+                    'redirect_uri'  => env('REDIRECT_URI'),
+                    'grant_type'    => 'authorization_code',
+                    'code'          => $code,
                 ],
             ]);
 
@@ -109,18 +109,18 @@ class AuthService
 
             $response = $client->get('https://api.dev.ufopa.edu.br/usuario/v1/usuarios/info', [
                 'headers' => [
-                    'Authorization' => sprintf('Bearer %s', Arr::get($token))
+                    'Authorization' => sprintf('Bearer %s', Arr::get($token)),
                 ],
             ]);
 
             $user = json_decode($response->getBody()->getContents(), true);
 
             $data = [
-                'name' => Arr::get($user, 'nome-pessoa'),
-                'active' => Arr::get($user, 'ativo'),
-                'email' => Arr::get($user, 'email'),
-                'url_photo' => Arr::get($user, 'url-foto'),
-                'type_user_id' => $this->typeUserRepository->findByFilters(['name', TypeUserEnum::VIEWER])
+                'name'         => Arr::get($user, 'nome-pessoa'),
+                'active'       => Arr::get($user, 'ativo'),
+                'email'        => Arr::get($user, 'email'),
+                'url_photo'    => Arr::get($user, 'url-foto'),
+                'type_user_id' => $this->typeUserRepository->findByFilters(['name', TypeUserEnum::VIEWER]),
             ];
 
             $user = $this->userRepository->create($data);
