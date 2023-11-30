@@ -8,6 +8,7 @@ use App\Models\Meeting;
 use App\Models\Group;
 use App\Models\TypeUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
@@ -73,6 +74,7 @@ class MeetingControllerTest extends TestCase
             'content' => 'teste teste',
             'summary' => $this->faker->text,
             'ata'     => 'ata numero 20020',
+            'date_meet' => Carbon::now(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
@@ -91,6 +93,7 @@ class MeetingControllerTest extends TestCase
             'content' => 'tetstststs',
             'summary' => $this->faker->text,
             'ata'     => 'ata numero 20',
+            'date_meet' => Carbon::now(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', 100), $payload);
@@ -112,6 +115,7 @@ class MeetingControllerTest extends TestCase
             'content' => 'tetstststs',
             'summary' => $this->faker->text,
             'ata'     => 'ata numero 20',
+            'date_meet' => Carbon::now(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
