@@ -105,8 +105,8 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson('api/register', $this->getFakePayload($typeUser->id));
         $actual = json_decode($response->getContent(), true);
 
-        $this->assertEquals(422, $response->getStatusCode());
-        $this->assertEquals('Esse e-mail ja esta cadastrado', Arr::first($actual['errors']['email']));
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Esse e-mail ja esta cadastrado', $actual['errors']);
     }
 
     public function testShouldLogin()

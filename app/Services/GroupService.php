@@ -71,7 +71,6 @@ class GroupService
 
             $group = $this->groupRepository->update($groupId, $data);
 
-
             if (!empty($typeGroup)) {
                 $this->editTypeGroup($group->typeGroup->id, $typeGroup);
             }
@@ -104,7 +103,7 @@ class GroupService
             }
 
             $this->groupRepository->delete($id);
-            $this->typeGroupRepository->delete($typeGroupId);
+	        $this->typeGroupRepository->delete($typeGroupId);
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();

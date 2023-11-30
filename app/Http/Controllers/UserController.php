@@ -6,10 +6,12 @@ use App\Enums\AbilitiesEnum;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\UserService;
 use App\Transformer\UserTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use Throwable;
 
 /**
  * @OA\Tag(
@@ -19,7 +21,10 @@ use OpenApi\Annotations as OA;
  */
 class UserController extends Controller
 {
-    public function __construct(private UserRepositoryInterface $userRepository)
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private UserService $userService,
+    )
     {
     }
 
@@ -133,12 +138,13 @@ class UserController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function update(string $id, UserRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [User::class, $id]);
         $payload = $request->validated();
-        $user = $this->userRepository->update($id, $payload);
+        $user = $this->userService->update($payload, $id);
         return response()->json($this->transform(new UserTransformer(), $user));
     }
 
