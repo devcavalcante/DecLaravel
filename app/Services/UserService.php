@@ -23,8 +23,7 @@ class UserService
         $email = Arr::get($data, 'email');
         $user = $this->userRepository->findByFilters(['email' => $email])->first();
 
-        if($user && $user->email != $email)
-        {
+        if ($user && $user->email != $email) {
             throw new EmailExists();
         }
 

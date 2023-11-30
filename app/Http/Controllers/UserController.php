@@ -24,8 +24,7 @@ class UserController extends Controller
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private UserService $userService,
-    )
-    {
+    ) {
     }
 
     /**

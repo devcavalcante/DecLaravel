@@ -32,8 +32,7 @@ class AuthService
             $data['creator_user_id'] = Auth::id();
             $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')]);
 
-            if($user->isNotEmpty())
-            {
+            if ($user->isNotEmpty()) {
                 throw new EmailExists();
             }
 
