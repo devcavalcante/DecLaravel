@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Exceptions\AuthorizedException;
+use App\Exceptions\EmailExists;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\TokenRepository;
@@ -28,6 +30,12 @@ class AuthService
             DB::beginTransaction();
             $data['password'] = bcrypt($data['password']);
             $data['creator_user_id'] = Auth::id();
+            $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')]);
+
+            if ($user->isNotEmpty()) {
+                throw new EmailExists();
+            }
+
             $user = $this->userRepository->create($data);
             $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
             DB::commit();

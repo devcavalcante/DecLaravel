@@ -12,6 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
+use Throwable;
 
 /**
  * @OA\Tag(
@@ -33,6 +34,14 @@ class UserController extends Controller
      *   tags={"users"},
      *   summary="Listar todos os usuários",
      *   description="Lista todos os usuários: 3 tipos de usuários obtem o acesso desse endpoint: ADMINISTRADOR, REPRESENTANTE E GERENTE",
+     *   @OA\Parameter(
+     *     name="email",
+     *     in="query",
+     *     description="nome do email que deseja filtrar",
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -137,12 +146,13 @@ class UserController extends Controller
      *   )
      * )
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function update(string $id, UserRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [User::class, $id]);
         $payload = $request->validated();
-        $user = $this->userRepository->update($id, $payload);
+        $user = $this->userService->update($payload, $id);
         return response()->json($this->transform(new UserTransformer(), $user));
     }
 

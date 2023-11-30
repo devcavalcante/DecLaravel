@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\MeetingController;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,12 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', [ActivityController::class, 'show']);
     });
 
+    Route::group(['prefix' => 'notes'], function () {
+        Route::put('/{id}', [NoteController::class, 'update']);
+        Route::get('/', [NoteController::class, 'index']);
+        Route::get('/{id}', [NoteController::class, 'show']);
+    });
+
     Route::group(['prefix' => '/group'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
@@ -95,6 +102,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{groupId}/activity'], function () {
             Route::post('/', [ActivityController::class, 'store']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => '{groupId}/notes'], function () {
+            Route::post('/', [NoteController::class, 'store']);
+            Route::delete('/{id}', [NoteController::class, 'destroy']);
         });
     });
 });

@@ -71,7 +71,6 @@ class GroupService
 
             $group = $this->groupRepository->update($groupId, $data);
 
-
             if (!empty($typeGroup)) {
                 $this->editTypeGroup($group->typeGroup->id, $typeGroup);
             }

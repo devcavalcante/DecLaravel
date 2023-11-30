@@ -1175,6 +1175,216 @@
                 }
             }
         },
+        "/notes": {
+            "get": {
+                "tags": [
+                    "notes"
+                ],
+                "summary": "Listar todos as notas",
+                "description": "Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "operationId": "9393a3bea0b52c3edef159a70977cbbe",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/notas/{id}": {
+            "get": {
+                "tags": [
+                    "notas"
+                ],
+                "summary": "Lista o registro de notas por ID",
+                "description": "Lista o registro de notas por ID de referência",
+                "operationId": "0c735c533167555b2d177e69aaf8d940",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da nota",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Note not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/notas": {
+            "post": {
+                "tags": [
+                    "notas"
+                ],
+                "summary": "Criar nova nota",
+                "description": "Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "47b8e574f3ff2346bf03153cb2972503",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o documento sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "description": "titulo da nota",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "descrição da nota",
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "description": "cor da nota desejada",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/notes/{id}": {
+            "put": {
+                "tags": [
+                    "notes"
+                ],
+                "summary": "Atualiza notas",
+                "description": "Atualizar notas: somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "29a9163f38861fad93ae0510c516c5cd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da nota",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "description": "titulo da nota",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "descrição da nota",
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "description": "cor da nota desejada",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Note not found"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/notes/{noteId}": {
+            "delete": {
+                "tags": [
+                    "notes"
+                ],
+                "summary": "Deletar notas",
+                "description": "Deletar nota por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "628089016c53242300d6689edbff078b",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "noteId",
+                        "in": "path",
+                        "description": "Id da nota",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
         "/type-user": {
             "get": {
                 "tags": [
@@ -1346,6 +1556,16 @@
                 "summary": "Listar todos os usuários",
                 "description": "Lista todos os usuários: 3 tipos de usuários obtem o acesso desse endpoint: ADMINISTRADOR, REPRESENTANTE E GERENTE",
                 "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "nome do email que deseja filtrar",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"
@@ -1541,6 +1761,10 @@
         {
             "name": "members",
             "description": "CRUD dos membros, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar membros"
+        },
+        {
+            "name": "notes",
+            "description": "CRUD das notas, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
         },
         {
             "name": "type-user",
