@@ -16,6 +16,7 @@ class Meeting extends Model
         'content',
         'summary',
         'ata',
+        'date_meet',
         'group_id',
     ];
 

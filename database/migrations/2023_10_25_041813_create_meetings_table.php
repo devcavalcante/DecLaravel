@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('content');
             $table->string('summary');
             $table->string('ata');
+            $table->date('date_meet');
 
             $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups');
