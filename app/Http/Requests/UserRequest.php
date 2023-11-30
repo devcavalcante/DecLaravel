@@ -32,7 +32,7 @@ class UserRequest extends FormRequest
         $isForbidden = $method !== 'POST' ? 'prohibited' : 'required';
         return [
             'name'            => sprintf('%s|min:4|string', $isRequired),
-            'email'           => sprintf('%s|email|string|unique:users', $isRequired),
+            'email'           => sprintf('%s|email|string', $isRequired),
             'password'        => sprintf('%s|min:8|string', $isRequired),
             'c_password'      => sprintf('%s|same:password|min:8|string', $isRequired),
             'type_user_id'    => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],

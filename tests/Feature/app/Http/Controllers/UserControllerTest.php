@@ -6,8 +6,6 @@ use App\Enums\TypeUserEnum;
 use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Arr;
-use Laravel\Passport\Passport;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -28,6 +26,19 @@ class UserControllerTest extends TestCase
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os usuários
         $response->assertStatus(200);
         $this->assertCount(10, User::all());
+    }
+
+    public function testShouldListByFilters()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        $data = ['email' => 'teste@gmail.com'];
+        User::factory($data)->create();
+
+        $response = $this->get('/api/users?email=teste@gmail.com');
+
+        $response->assertStatus(200);
+        $this->assertCount(1, json_decode($response->getContent(), true)['data']);
     }
 
     public function testShouldNotListUsersWithoutPermission()
@@ -235,5 +246,14 @@ class UserControllerTest extends TestCase
         $response = $this->patch(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShouldUpdateEmail()
+    {
+        $user = $this->login(TypeUserEnum::ADMIN);
+
+        $response = $this->put(sprintf('api/users/%s', $user->id), ['email' => $user->email, 'name' => 'outronome']);
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof NotFoundHttpException) {
-            return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], 404);
+            return response(['errors' => $exceptionMessage, 'code' => 404], 404);
         }
 
         if ($exception instanceof UnauthorizedException || $exception instanceof AuthorizationException) {
@@ -76,11 +76,11 @@ class Handler extends ExceptionHandler
             preg_match('#\[(.*?)]#', $exception->getMessage(), $match);
             if ($match[1] == '23503') {
                 return response([
-                    'errors' => 'Nao e possivel deletar tipo de usuario ligado a um usuario',
+                    'errors' => 'Não foi possível deletar.',
                     'code'   => 400,
                 ], 400);
             }
-            return response(['errors' => 'Nao é possivel executar essa ação'], 400);
+            return response(['errors' => 'Não é possivel executar essa ação.'], 400);
         }
 
         return parent::render($request, $exception);
