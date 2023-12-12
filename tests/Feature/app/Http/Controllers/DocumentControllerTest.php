@@ -212,7 +212,7 @@ class DocumentControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::VIEWER);
         $file = UploadedFile::fake()->create('file.pdf');
-        $file =  Storage::disk('local')->put('documents', $file);
+        $file =  Storage::disk('local')->put('docs', $file);
 
         $document = Document::factory()->create(['file' => $file]);
 

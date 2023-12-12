@@ -57,7 +57,7 @@ class DocumentService
 
     private function upload(UploadedFile $file): string
     {
-        return Storage::disk('local')->put('documents', $file);
+        return Storage::disk('local')->put('docs', $file);
     }
 
     private function calculateMb(string $uploadedFile): float
