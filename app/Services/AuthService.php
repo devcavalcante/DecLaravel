@@ -127,7 +127,8 @@ class AuthService
         }
 
         $this->userRepository->update($user->id, [
-            'api_token' => null, 'api_token_expires_at' => null
+            'api_token'            => null,
+            'api_token_expires_at' => null,
         ]);
     }
 
