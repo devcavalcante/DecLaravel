@@ -17,9 +17,10 @@ class MeetingFactory extends Factory
     public function definition(): array
     {
         return [
-            'content' => $this->faker->word,
-            'summary' => $this->faker->text,
-            'ata'     => $this->faker->word,
+            'content'   => $this->faker->word,
+            'summary'   => $this->faker->text,
+            'ata'       => $this->faker->word,
+            'date_meet' => $this->faker->date,
         ];
     }
 }
