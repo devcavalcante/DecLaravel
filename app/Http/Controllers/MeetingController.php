@@ -97,7 +97,11 @@ class MeetingController extends Controller
      *           property="ata",
      *           description="A ata da reunião",
      *           type="string",
-     *           minLength=5
+     *           minLength=5),
+     *         @OA\Property(
+     *           property="date_meet",
+     *           description="Data da reunião",
+     *           type="date"
      *         )
      *       )
      *     )
@@ -185,7 +189,7 @@ class MeetingController extends Controller
      *       mediaType="application/json",
      *       @OA\Schema(
      *         type="object",
-     *         required={"content", "summary", "ata"},
+     *         required={"content", "summary", "ata", "date_meet"},
      *         @OA\Property(
      *           property="content",
      *           description="O conteúdo da reunião",
@@ -202,7 +206,11 @@ class MeetingController extends Controller
      *           property="ata",
      *           description="A ata da reunião",
      *           type="string",
-     *           minLength=5
+     *           minLength=5),
+     *         @OA\Property(
+     *           property="date_meet",
+     *           description="Data da reunião",
+     *           type="date"
      *         )
      *       )
      *     )

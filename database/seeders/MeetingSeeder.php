@@ -20,12 +20,14 @@ class MeetingSeeder extends Seeder
                 'content'   => 'Reunião inicial',
                 'summary'   => 'discuções da reunião',
                 'ata'       => 'ata e afins',
+                'date_meet' => Carbon::now(),
                 'groups_id' => $group->id,
             ],
             [
                 'content'   => 'Reunião final',
                 'summary'   => 'discuções da reunião',
                 'ata'       => 'ata e afins',
+                'date_meet' => Carbon::now(),
                 'groups_id' => $group->id,
             ],
         ]);
