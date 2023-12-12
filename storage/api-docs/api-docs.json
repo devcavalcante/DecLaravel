@@ -505,6 +505,38 @@
                 }
             }
         },
+        "/documents/download/{id}": {
+            "get": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Faz download do documento",
+                "description": "faz download do documento por ID",
+                "operationId": "a0f846764dbdc0ff1f54741881ba7143",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do documento",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Documento not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
         "/group": {
             "get": {
                 "tags": [
@@ -798,7 +830,8 @@
                                 "required": [
                                     "content",
                                     "summary",
-                                    "ata"
+                                    "ata",
+                                    "date_meet"
                                 ],
                                 "properties": {
                                     "content": {
@@ -815,6 +848,11 @@
                                         "description": "A ata da reunião",
                                         "type": "string",
                                         "minLength": 5
+                                    },
+                                    "date_meet": {
+                                        "description": "Data da reunião",
+                                        "type": "string",
+                                        "format": "date"
                                     }
                                 },
                                 "type": "object"
@@ -876,6 +914,11 @@
                                         "description": "A ata da reunião",
                                         "type": "string",
                                         "minLength": 5
+                                    },
+                                    "date_meet": {
+                                        "description": "Data da reunião",
+                                        "type": "string",
+                                        "format": "date"
                                     }
                                 },
                                 "type": "object"
