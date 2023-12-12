@@ -57,6 +57,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/{id}', [DocumentController::class, 'update']);
         Route::get('/', [DocumentController::class, 'index']);
         Route::get('/{id}', [DocumentController::class, 'show']);
+        Route::get('download/{id}', [DocumentController::class, 'download']);
     });
 
     Route::group(['prefix' => 'meeting-history'], function () {

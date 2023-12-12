@@ -9,7 +9,10 @@ use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Services\DocumentService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @OA\Tag(
@@ -248,5 +251,47 @@ class DocumentController extends Controller
         $this->authorize(AbilitiesEnum::CREATE, [Document::class, $groupId]);
         $this->documentService->delete($groupId, $id);
         return response()->json([], 204);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/documents/download/{id}",
+     *   tags={"documents"},
+     *   summary="Faz download do documento",
+     *   description="faz download do documento por ID",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do documento",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Documento not found"
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function download(string $documentId): BinaryFileResponse|JsonResponse
+    {
+        $document = $this->documentRepository->findById($documentId);
+        $filePath = $document->file;
+        $fileName = substr($filePath, 7);
+
+        if (Storage::disk('local')->exists($filePath)) {
+            return Response::download(storage_path("app/{$filePath}"), $fileName);
+        }
+
+        return response()->json(['error' => 'Arquivo não encontrado'], 404);
     }
 }

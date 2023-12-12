@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
-use Throwable;
 
 class DocumentService
 {
@@ -23,9 +22,11 @@ class DocumentService
         $this->groupRepository->findById($groupId);
 
         $file = Arr::get($data, 'file');
+        $uploadedFile = $this->upload($file);
 
-        Arr::set($data, 'file', $this->upload($file));
+        Arr::set($data, 'file', $uploadedFile);
         Arr::set($data, 'name', $file->getClientOriginalName());
+        Arr::set($data, 'file_size', $this->calculateMb($uploadedFile));
 
         $data = array_merge($data, ['group_id' => $groupId]);
         return $this->documentRepository->create($data);
@@ -36,8 +37,10 @@ class DocumentService
         $file = Arr::get($data, 'file');
 
         if (!empty($file)) {
-            Arr::set($data, 'file', $this->upload($file));
+            $uploadedFile = $this->upload($file);
+            Arr::set($data, 'file', $uploadedFile);
             Arr::set($data, 'name', $file->getClientOriginalName());
+            Arr::set($data, 'file_size', $this->calculateMb($uploadedFile));
         }
 
         return $this->documentRepository->update($id, $data);
@@ -55,5 +58,12 @@ class DocumentService
     private function upload(UploadedFile $file): string
     {
         return Storage::disk('local')->put('images', $file);
+    }
+
+    private function calculateMb(string $uploadedFile): float
+    {
+        $fileSize = Storage::disk('local')->size($uploadedFile);
+        $mb = $fileSize / (1024 * 1024);
+        return round($mb, 2);
     }
 }

@@ -8,9 +8,11 @@ use App\Models\Group;
 use App\Models\GroupHasRepresentative;
 use App\Models\TypeUser;
 use App\Models\User;
+use App\Repositories\DocumentRepository;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -205,6 +207,20 @@ class DocumentControllerTest extends TestCase
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldDownload()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        $file = UploadedFile::fake()->create('file.pdf');
+        $file =  Storage::disk('local')->put('images', $file);
+
+        $document = Document::factory()->create(['file' => $file]);
+
+        $response = $this->get("/api/documents/download/{$document->id}");
+
+        $response->assertStatus(200);
+        Storage::disk('local')->delete($file);
     }
 
     private function getJsonStructure(): array
