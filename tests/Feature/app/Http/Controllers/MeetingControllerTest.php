@@ -71,9 +71,9 @@ class MeetingControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'content' => 'teste teste',
-            'summary' => $this->faker->text,
-            'ata'     => 'ata numero 20020',
+            'content'   => 'teste teste',
+            'summary'   => $this->faker->text,
+            'ata'       => 'ata numero 20020',
             'date_meet' => Carbon::now(),
         ];
 
@@ -90,9 +90,9 @@ class MeetingControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'content' => 'tetstststs',
-            'summary' => $this->faker->text,
-            'ata'     => 'ata numero 20',
+            'content'   => 'tetstststs',
+            'summary'   => $this->faker->text,
+            'ata'       => 'ata numero 20',
             'date_meet' => Carbon::now(),
         ];
 
@@ -112,9 +112,9 @@ class MeetingControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'content' => 'tetstststs',
-            'summary' => $this->faker->text,
-            'ata'     => 'ata numero 20',
+            'content'   => 'tetstststs',
+            'summary'   => $this->faker->text,
+            'ata'       => 'ata numero 20',
             'date_meet' => Carbon::now(),
         ];
 

@@ -10,10 +10,11 @@ class Cors
     {
         $response = $next($request);
 
-        $response->headers->set('Access-Control-Allow-Origin' , '*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE, PATCH');
         $response->headers->set(
-            'Access-Control-Allow-Headers', "Accept, Authorization, Content-Type"
+            'Access-Control-Allow-Headers',
+            "Accept, Authorization, Content-Type"
         );
 
         return $response;

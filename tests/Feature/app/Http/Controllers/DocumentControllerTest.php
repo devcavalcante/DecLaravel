@@ -8,7 +8,6 @@ use App\Models\Group;
 use App\Models\GroupHasRepresentative;
 use App\Models\TypeUser;
 use App\Models\User;
-use App\Repositories\DocumentRepository;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
