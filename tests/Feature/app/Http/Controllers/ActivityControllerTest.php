@@ -35,7 +35,7 @@ class ActivityControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(self::BASE_URL);
+        $response = $this->get(sprintf('api/group/%s/activity', $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));

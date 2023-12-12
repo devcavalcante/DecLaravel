@@ -28,14 +28,14 @@ class DocumentControllerTest extends TestCase
 
     public function testShouldListAll()
     {
-        Document::factory(2)->create();
+        $document = Document::factory(2)->create();
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get('api/documents');
+        $response = $this->get(sprintf('api/group/%s/documents', $document->first()->group_id));
 
         $response->assertStatus(200);
-        $this->assertCount(2, json_decode($response->getContent(), true));
+        $this->assertCount(1, json_decode($response->getContent(), true));
     }
 
     public function testShouldListOne()

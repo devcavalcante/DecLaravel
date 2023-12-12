@@ -66,4 +66,11 @@ class DocumentService
         $mb = $fileSize / (1024 * 1024);
         return round($mb, 2);
     }
+
+    public function listAll(string $groupId)
+    {
+        $group = $this->groupRepository->findById($groupId);
+
+        return $group->document;
+    }
 }

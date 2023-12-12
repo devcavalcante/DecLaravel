@@ -55,27 +55,23 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::group(['prefix' => 'documents'], function () {
         Route::post('/{id}', [DocumentController::class, 'update']);
-        Route::get('/', [DocumentController::class, 'index']);
         Route::get('/{id}', [DocumentController::class, 'show']);
         Route::get('download/{id}', [DocumentController::class, 'download']);
     });
 
     Route::group(['prefix' => 'meeting-history'], function () {
         Route::post('/{id}', [MeetingController::class, 'update']);
-        Route::get('/', [MeetingController::class, 'index']);
         Route::get('/{id}', [MeetingController::class, 'show']);
         Route::get('download/{id}', [MeetingController::class, 'download']);
     });
 
     Route::group(['prefix' => 'activity'], function () {
         Route::put('/{id}', [ActivityController::class, 'update']);
-        Route::get('/', [ActivityController::class, 'index']);
         Route::get('/{id}', [ActivityController::class, 'show']);
     });
 
     Route::group(['prefix' => 'notes'], function () {
         Route::put('/{id}', [NoteController::class, 'update']);
-        Route::get('/', [NoteController::class, 'index']);
         Route::get('/{id}', [NoteController::class, 'show']);
     });
 
@@ -92,21 +88,25 @@ Route::group(['middleware' => 'auth:api'], function () {
         });
 
         Route::group(['prefix' => '{groupId}/documents'], function () {
-            Route::post('/', [DocumentController::class, 'store']);
+            Route::get('/', [DocumentController::class, 'index']);
             Route::delete('/{id}', [DocumentController::class, 'destroy']);
+            Route::post('/', [DocumentController::class, 'store']);
         });
 
         Route::group(['prefix' => '{groupId}/meeting-history'], function () {
+            Route::get('/', [MeetingController::class, 'index']);
             Route::post('/', [MeetingController::class, 'store']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
         });
 
         Route::group(['prefix' => '{groupId}/activity'], function () {
+            Route::get('/', [ActivityController::class, 'index']);
             Route::post('/', [ActivityController::class, 'store']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });
 
         Route::group(['prefix' => '{groupId}/notes'], function () {
+            Route::get('/', [NoteController::class, 'index']);
             Route::post('/', [NoteController::class, 'store']);
             Route::delete('/{id}', [NoteController::class, 'destroy']);
         });
