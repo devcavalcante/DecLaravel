@@ -27,10 +27,19 @@ class ActivityController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/activity",
+     *   path="/group/{groupId}/activity",
      *   tags={"activity"},
      *   summary="Listar todos as atividades",
      *   description="Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -45,9 +54,10 @@ class ActivityController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $activities = $this->activityRepository->listAll();
+        $group = $this->groupRepository->findById($groupId);
+        $activities = $group->activity;
 
         return response()->json($activities);
     }

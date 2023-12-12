@@ -12,20 +12,83 @@
     ],
     "paths": {
         "/auth": {},
-        "/activity": {
+        "/group/{groupId}/activity": {
             "get": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Listar todos as atividades",
                 "description": "Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "62e729339ad731c11a804a79624f36ae",
+                "operationId": "f0acb07d5e32cc06eb9239e645d8730b",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"
                     },
                     "500": {
                         "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Criar nova atividade",
+                "description": "Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "d1ead45e1fb6738ad0a9375a5efb7831",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o documento sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "nome da atividade",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "descrição da atividade",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
                     },
                     "403": {
                         "description": "Não autorizado"
@@ -113,60 +176,6 @@
                     },
                     "404": {
                         "description": "Atividade not found"
-                    }
-                }
-            }
-        },
-        "/group/{groupId}/activity": {
-            "post": {
-                "tags": [
-                    "activity"
-                ],
-                "summary": "Criar nova atividade",
-                "description": "Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "d1ead45e1fb6738ad0a9375a5efb7831",
-                "parameters": [
-                    {
-                        "name": "groupId",
-                        "in": "path",
-                        "description": "Id do grupo que o documento sera associado",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "description": "nome da atividade",
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "description": "descrição da atividade",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Criado"
-                    },
-                    "500": {
-                        "description": "Erro"
-                    },
-                    "422": {
-                        "description": "Erro de validação"
-                    },
-                    "403": {
-                        "description": "Não autorizado"
                     }
                 }
             }
@@ -305,20 +314,83 @@
                 }
             }
         },
-        "/documents": {
+        "/group/{groupId}/documents": {
             "get": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Listar todos os membros",
                 "description": "Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "cf58d1781992e8292fd9914b24487fdc",
+                "operationId": "4d39d0375316a2b9302cbeee27a34a4e",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"
                     },
                     "500": {
                         "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Criar novo documento",
+                "description": "Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "operationId": "3beed3e3aeaa9b0a0a5ea431400b26d0",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "Id do grupo que o documento sera associado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "description": {
+                                        "description": "descrição do documento",
+                                        "type": "string"
+                                    },
+                                    "file": {
+                                        "description": "documento a ser anexado",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
                     },
                     "403": {
                         "description": "Não autorizado"
@@ -406,60 +478,6 @@
                     },
                     "404": {
                         "description": "Documento not found"
-                    }
-                }
-            }
-        },
-        "/group/{groupId}/documents": {
-            "post": {
-                "tags": [
-                    "documents"
-                ],
-                "summary": "Criar novo documento",
-                "description": "Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "3beed3e3aeaa9b0a0a5ea431400b26d0",
-                "parameters": [
-                    {
-                        "name": "groupId",
-                        "in": "path",
-                        "description": "Id do grupo que o documento sera associado",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
-                                    "description": {
-                                        "description": "descrição do documento",
-                                        "type": "string"
-                                    },
-                                    "file": {
-                                        "description": "documento a ser anexado",
-                                        "type": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Criado"
-                    },
-                    "500": {
-                        "description": "Erro"
-                    },
-                    "422": {
-                        "description": "Erro de validação"
-                    },
-                    "403": {
-                        "description": "Não autorizado"
                     }
                 }
             }
@@ -1199,14 +1217,25 @@
                 }
             }
         },
-        "/notes": {
+        "/group/{groupId}/notes": {
             "get": {
                 "tags": [
                     "notes"
                 ],
                 "summary": "Listar todos as notas",
                 "description": "Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "9393a3bea0b52c3edef159a70977cbbe",
+                "operationId": "254492338320496166e160e40f401f44",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"

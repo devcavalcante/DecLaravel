@@ -29,10 +29,19 @@ class NoteController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/notes",
+     *   path="/group/{groupId}/notes",
      *   tags={"notes"},
      *   summary="Listar todos as notas",
      *   description="Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -47,9 +56,10 @@ class NoteController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $notes = $this->noteRepository->listAll();
+        $group = $this->groupRepository->findById($groupId);
+        $notes = $group->note;
 
         return response()->json($notes);
     }

@@ -30,10 +30,19 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/documents",
+     *   path="/group/{groupId}/documents",
      *   tags={"documents"},
      *   summary="Listar todos os membros",
      *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -48,9 +57,9 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $documents = $this->documentRepository->listAll();
+        $documents = $this->documentService->listAll($groupId);
 
         return response()->json($documents);
     }

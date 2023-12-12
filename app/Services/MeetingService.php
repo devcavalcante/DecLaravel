@@ -45,4 +45,11 @@ class MeetingService
     {
         return Storage::disk('local')->put('atas', $file);
     }
+
+    public function listAll(string $groupId)
+    {
+        $group = $this->groupRepository->findById($groupId);
+
+        return $group->meeting;
+    }
 }

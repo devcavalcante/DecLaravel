@@ -60,10 +60,10 @@ class MeetingController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $meetings = $this->meetingRepository->listAll();
-        return response()->json($meetings, 200);
+        $meetings = $this->meetingService->listAll($groupId);
+        return response()->json($meetings);
     }
 
     /**
