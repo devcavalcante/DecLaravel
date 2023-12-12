@@ -3,6 +3,7 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
+use App\Models\Document;
 use App\Models\GroupHasRepresentative;
 use App\Models\Meeting;
 use App\Models\Group;
@@ -11,7 +12,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -73,14 +76,16 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content'   => 'teste teste',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20020',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('meetings', array_merge($payload, ['group_id' => $group->id]));
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
     }
 
     public function testShouldNotCreateWhenGroupNotFound()
@@ -92,7 +97,7 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
@@ -114,7 +119,7 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
@@ -132,17 +137,17 @@ class MeetingControllerTest extends TestCase
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
-            'content' => 'tetstststs',
-            'summary' => $this->faker->text,
-            'ata'     => 'ata numero 20',
+            'content' => $this->faker->text,
+            'ata'        => UploadedFile::fake()->create('file.pdf'),
+            'method' => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
-
-        $actual = json_decode($response->getContent(), true);
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
 
         $response->assertStatus(200);
-        $this->assertEquals($payload, Arr::only($actual, ['content', 'ata', 'summary']));
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
     }
 
     public function testShouldNotUpdateWhenMeetingNotFound()
@@ -233,6 +238,20 @@ class MeetingControllerTest extends TestCase
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldDownload()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        $file = UploadedFile::fake()->create('file.pdf');
+        $file =  Storage::disk('local')->put('docs', $file);
+
+        $meeting = Meeting::factory()->create(['ata' => $file]);
+
+        $response = $this->get("/api/meeting-history/download/{$meeting->id}");
+
+        $response->assertStatus(200);
+        Storage::disk('local')->delete($file);
     }
 
     private function getJsonStructure(): array
