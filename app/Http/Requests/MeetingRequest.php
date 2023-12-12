@@ -29,7 +29,7 @@ class MeetingRequest extends FormRequest
         return [
             'content'   => sprintf('%s|min:5|string', $isRequired),
             'summary'   => sprintf('%s|min:5|string', $isRequired),
-            'ata'        => sprintf(
+            'ata'       => sprintf(
                 '%s|mimes:xml,pdf,docx,doc,zip',
                 $isRequired
             ),

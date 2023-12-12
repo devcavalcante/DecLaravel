@@ -138,8 +138,8 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'content' => $this->faker->text,
-            'ata'        => UploadedFile::fake()->create('file.pdf'),
-            'method' => 'PUT',
+            'ata'     => UploadedFile::fake()->create('file.pdf'),
+            'method'  => 'PUT',
         ];
 
         $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);

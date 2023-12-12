@@ -24,7 +24,7 @@ class MeetingFactory extends Factory
             'summary'   => $this->faker->text,
             'ata'       => $this->faker->url,
             'date_meet' => $this->faker->date,
-            'group_id'    => $group->id,
+            'group_id'  => $group->id,
         ];
     }
 }
