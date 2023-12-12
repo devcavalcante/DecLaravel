@@ -74,7 +74,7 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-//        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
+        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
 
         $data = $userRequest->all();
         $user = $this->authService->register($data);
@@ -155,10 +155,21 @@ class AuthController extends Controller
 
     /**
      * @throws GuzzleException
+     * @throws Throwable
      */
     public function handleCallback(): array|string|null
     {
         $code = request()->query('code');
-        return $this->authService->handleCallback($code);
+        return $this->authService->getUsers($code);
+    }
+
+    /**
+     * @throws AuthorizedException
+     */
+    public function logoutUser(): JsonResponse
+    {
+        $token = request()->header('token');
+        $this->authService->logoutUsers($token);
+        return response()->json([], 204);
     }
 }

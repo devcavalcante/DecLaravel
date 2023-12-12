@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Helpers\GetValues;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
-class TypeGroupRequest extends FormRequest
+class NoteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,26 +28,33 @@ class TypeGroupRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required':'sometimes';
 
         return [
-            'name'       => sprintf('%s|min:4|string', $isRequired),
-            'type_group' => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
+            'title'       => sprintf('%s|min:5|string', $isRequired),
+            'description' => sprintf('%s|min:5|string', $isRequired),
+            'color'       => sprintf('%s|string|in:green,red,yellow,blue', $isRequired),
         ];
     }
-   /**
+
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array<string, string>
      */
+
     public function messages(): array
     {
         return [
-            'name.required'       => 'O campo nome é obrigatório.',
-            'name.string'         => 'O campo nome deve ser uma string.',
-            'name.min'            => 'O campo nome deve ter no mínimo 4 caracteres.',
-            'type_group.required' => 'O campo tipo de grupo é obrigatório.',
-            'type_group.string'   => 'O campo tipo de grupo deve ser uma string.',
-            'type_group.in'       => 'O campo tipo de grupo deve ser interno ou externo',
+            'title.required'       => 'O campo título é obrigatório.',
+            'title.string'         => 'O campo título deve ser uma string.',
+            'title.min'            => 'O campo título deve ter no mínimo 5 caracteres.',
+            'description.required' => 'O campo descrição é obrigatório.',
+            'description.string'   => 'O campo descrição deve ser uma string.',
+            'description.min'      => 'O campo descrição deve ter no mínimo 5 caracteres.',
+            'color.required'       => 'O campo de cor é obrigatório.',
+            'color.string'         => 'O campo de cor deve ser uma string.',
+            'color.in'             => 'O campo de cor deve ser green,red,yellow ou blue.',
         ];
     }
+
     /**
      * Handle a failed validation attempt.
      *
@@ -60,7 +65,6 @@ class TypeGroupRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

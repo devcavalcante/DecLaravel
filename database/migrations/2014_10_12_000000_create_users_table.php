@@ -17,6 +17,7 @@ return new class extends Migration
                 $table->id();
                 $table->string('name');
                 $table->string('email')->unique();
+                $table->string('password')->nullable();
                 $table->boolean('active');
                 $table->string('url_photo');
                 $table->unsignedBigInteger('type_user_id');

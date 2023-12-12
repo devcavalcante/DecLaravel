@@ -2,9 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\TypeGroup;
-use App\Models\User;
-
 class TypeGroupPolicy extends AbstractPolicy
 {
     /**
@@ -12,7 +9,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function view(): bool
     {
-        return $this->isRepresentative();
+        return $this->isManager();
     }
 
     /**
@@ -20,7 +17,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function create(): bool
     {
-        return $this->isRepresentative();
+        return $this->isManager();
     }
 
     /**
@@ -28,7 +25,7 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function update(): bool
     {
-        return $this->isRepresentative();
+        return $this->isManager();
     }
 
     /**
@@ -36,6 +33,6 @@ class TypeGroupPolicy extends AbstractPolicy
      */
     public function delete(): bool
     {
-        return $this->isRepresentative();
+        return $this->isManager();
     }
 }
