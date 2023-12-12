@@ -124,6 +124,7 @@ class DocumentControllerTest extends TestCase
         $payload = [
             'description' => $this->faker->text,
             'file'        => UploadedFile::fake()->create('file.pdf'),
+            'method'      => 'PUT',
         ];
 
         $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);

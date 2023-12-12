@@ -825,34 +825,24 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "content",
-                                    "summary",
-                                    "ata",
-                                    "date_meet"
-                                ],
                                 "properties": {
                                     "content": {
-                                        "description": "O conteúdo da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                        "description": "conteudo da reuniao",
+                                        "type": "string"
                                     },
                                     "summary": {
-                                        "description": "O resumo da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                        "description": "sumario da reuniao",
+                                        "type": "string"
                                     },
-                                    "ata": {
-                                        "description": "A ata da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                    "file": {
+                                        "description": "ata da reunião",
+                                        "type": "file"
                                     },
-                                    "date_meet": {
-                                        "description": "Data da reunião",
-                                        "type": "string",
-                                        "format": "date"
+                                    "": {
+                                        "description": "data da reunião",
+                                        "type": "file"
                                     }
                                 },
                                 "type": "object"
@@ -892,33 +882,24 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "content",
-                                    "summary",
-                                    "ata"
-                                ],
                                 "properties": {
                                     "content": {
-                                        "description": "O conteúdo da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                        "description": "conteudo da reuniao",
+                                        "type": "string"
                                     },
                                     "summary": {
-                                        "description": "O resumo da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                        "description": "sumario da reuniao",
+                                        "type": "string"
                                     },
-                                    "ata": {
-                                        "description": "A ata da reunião",
-                                        "type": "string",
-                                        "minLength": 5
+                                    "file": {
+                                        "description": "ata da reunião",
+                                        "type": "file"
                                     },
-                                    "date_meet": {
-                                        "description": "Data da reunião",
-                                        "type": "string",
-                                        "format": "date"
+                                    "": {
+                                        "description": "data da reunião",
+                                        "type": "file"
                                     }
                                 },
                                 "type": "object"

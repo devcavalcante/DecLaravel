@@ -7,9 +7,14 @@ use App\Http\Requests\MeetingRequest;
 use App\Models\Meeting;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MeetingRepositoryInterface;
+use App\Services\MeetingService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @OA\Tag(
@@ -21,6 +26,7 @@ class MeetingController extends Controller
 {
     public function __construct(
         private MeetingRepositoryInterface $meetingRepository,
+        private MeetingService $meetingService,
         private GroupRepositoryInterface $groupRepository,
     ) {
     }
@@ -76,34 +82,31 @@ class MeetingController extends Controller
      *     )
      *   ),
      *   @OA\RequestBody(
-     *     @OA\MediaType(
-     *       mediaType="application/json",
-     *       @OA\Schema(
-     *         type="object",
-     *         required={"content", "summary", "ata"},
-     *         @OA\Property(
-     *           property="content",
-     *           description="O conteúdo da reunião",
-     *           type="string",
-     *           minLength=5
-     *         ),
-     *         @OA\Property(
-     *           property="summary",
-     *           description="O resumo da reunião",
-     *           type="string",
-     *           minLength=5
-     *         ),
-     *         @OA\Property(
-     *           property="ata",
-     *           description="A ata da reunião",
-     *           type="string",
-     *           minLength=5),
-     *         @OA\Property(
-     *           property="date_meet",
-     *           description="Data da reunião",
-     *           type="date"
+     *      @OA\MediaType(
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *              @OA\Property(
+     *                  property="content",
+     *                  type="string",
+     *                  description="conteudo da reuniao",
+     *              ),
+     *              @OA\Property(
+     *                  property="summary",
+     *                  type="string",
+     *                  description="sumario da reuniao",
+     *              ),
+     *              @OA\Property(
+     *                  description="ata",
+     *                  property="file",
+     *                  type="file",
+     *                  description="ata da reunião"
+     *             ),
+     *              @OA\Property(
+     *                  description="date_meet",
+     *                  type="file",
+     *                  description="data da reunião"
+     *              ),
      *         )
-     *       )
      *     )
      *   ),
      *   @OA\Response(
@@ -124,10 +127,7 @@ class MeetingController extends Controller
     public function store(MeetingRequest $request, string $groupId): JsonResponse
     {
         $this->authorize(AbilitiesEnum::CREATE, [Meeting::class, $groupId]);
-        $payload = $request->validated();
-        $this->groupRepository->findById($groupId);
-        $payload = array_merge($payload, ['group_id' => $groupId]);
-        $meeting = $this->meetingRepository->create($payload);
+        $meeting = $this->meetingService->create($groupId, $request->all());
         return response()->json($meeting, 201);
     }
 
@@ -185,34 +185,31 @@ class MeetingController extends Controller
      *     )
      *   ),
      *   @OA\RequestBody(
-     *     @OA\MediaType(
-     *       mediaType="application/json",
-     *       @OA\Schema(
-     *         type="object",
-     *         required={"content", "summary", "ata", "date_meet"},
-     *         @OA\Property(
-     *           property="content",
-     *           description="O conteúdo da reunião",
-     *           type="string",
-     *           minLength=5
-     *         ),
-     *         @OA\Property(
-     *           property="summary",
-     *           description="O resumo da reunião",
-     *           type="string",
-     *           minLength=5
-     *         ),
-     *         @OA\Property(
-     *           property="ata",
-     *           description="A ata da reunião",
-     *           type="string",
-     *           minLength=5),
-     *         @OA\Property(
-     *           property="date_meet",
-     *           description="Data da reunião",
-     *           type="date"
+     *      @OA\MediaType(
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *              @OA\Property(
+     *                  property="content",
+     *                  type="string",
+     *                  description="conteudo da reuniao",
+     *              ),
+     *              @OA\Property(
+     *                  property="summary",
+     *                  type="string",
+     *                  description="sumario da reuniao",
+     *              ),
+     *              @OA\Property(
+     *                  description="ata",
+     *                  property="file",
+     *                  type="file",
+     *                  description="ata da reunião"
+     *             ),
+     *              @OA\Property(
+     *                  description="date_meet",
+     *                  type="file",
+     *                  description="data da reunião"
+     *              ),
      *         )
-     *       )
      *     )
      *   ),
      *   @OA\Response(
@@ -233,9 +230,8 @@ class MeetingController extends Controller
     public function update(string $id, MeetingRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Meeting::class, $id]);
-        $payload = $request->validated();
-        $meeting = $this->meetingRepository->update($id, $payload);
-        return response()->json($meeting, 200);
+        $meeting = $this->meetingService->edit($id, $request->all());
+        return response()->json($meeting);
     }
 
     /**
@@ -274,5 +270,18 @@ class MeetingController extends Controller
         $this->groupRepository->findById($groupId);
         $this->meetingRepository->delete($id);
         return response()->json([], 204);
+    }
+
+    public function download(string $meetingId): BinaryFileResponse|JsonResponse
+    {
+        $document = $this->meetingRepository->findById($meetingId);
+        $filePath = $document->ata;
+        $fileName = substr($filePath, 5);
+
+        if (Storage::disk('local')->exists($filePath)) {
+            return Response::download(storage_path("app/{$filePath}"), $fileName);
+        }
+
+        return response()->json(['error' => 'Arquivo não encontrado'], 404);
     }
 }

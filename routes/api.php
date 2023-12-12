@@ -61,9 +61,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'meeting-history'], function () {
-        Route::put('/{id}', [MeetingController::class, 'update']);
+        Route::post('/{id}', [MeetingController::class, 'update']);
         Route::get('/', [MeetingController::class, 'index']);
         Route::get('/{id}', [MeetingController::class, 'show']);
+        Route::get('download/{id}', [MeetingController::class, 'download']);
     });
 
     Route::group(['prefix' => 'activity'], function () {
