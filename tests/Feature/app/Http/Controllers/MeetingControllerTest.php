@@ -158,9 +158,10 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
+            'method'  => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', 100), $payload);
+        $response = $this->post(sprintf('api/meeting-history/%s', 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -179,9 +180,10 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
+            'method'  => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
