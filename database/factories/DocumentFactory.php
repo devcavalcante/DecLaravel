@@ -15,7 +15,6 @@ class DocumentFactory extends Factory
 
         return [
             'name'        => $this->faker->word,
-            'description' => $this->faker->text,
             'file'        => $this->faker->imageUrl,
             'file_size'   => $this->faker->numerify,
             'group_id'    => $group->id,
