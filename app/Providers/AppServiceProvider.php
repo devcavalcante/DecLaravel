@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Repositories\ActivityRepository;
+use App\Repositories\ApiTokenRepository;
 use App\Repositories\Interfaces\ActivityRepositoryInterface;
+use App\Repositories\Interfaces\ApiTokenRepositoryInterface;
 use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use App\Repositories\DocumentRepository;
 use App\Repositories\Interfaces\DocumentRepositoryInterface;
@@ -75,6 +77,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             NoteRepositoryInterface::class,
             NoteRepository::class
+        );
+        $this->app->bind(
+            ApiTokenRepositoryInterface::class,
+            ApiTokenRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);

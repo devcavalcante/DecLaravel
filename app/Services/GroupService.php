@@ -7,6 +7,7 @@ use App\Exceptions\OnlyRepresentativesException;
 use App\Repositories\Interfaces\GroupHasRepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
+use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ class GroupService
         protected GroupHasRepresentativeRepositoryInterface $groupHasRepresentativeRepository,
         protected UserRepositoryInterface $userRepository,
         protected TypeGroupRepositoryInterface $typeGroupRepository,
+        protected TypeUserRepositoryInterface $typeUserRepository,
     ) {
     }
 
@@ -95,13 +97,17 @@ class GroupService
         try {
             DB::beginTransaction();
             $group = $this->groupRepository->findById($id);
-            $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters(['group_id' => $group->id]);
+            $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters([
+                'group_id' => $group->id
+            ])->toArray();
+            $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
             $typeGroupId = $group->typeGroup->id;
 
-            foreach ($groupRepresentatives->toArray() as $groupRepresentative) {
+            foreach ($groupRepresentatives as $groupRepresentative) {
                 $this->groupHasRepresentativeRepository->delete($groupRepresentative['id']);
             }
 
+            $this->setTypeUser($typeUser->id, $groupRepresentatives, null);
             $this->groupRepository->delete($id);
             $this->typeGroupRepository->delete($typeGroupId);
             DB::commit();
@@ -116,14 +122,17 @@ class GroupService
      */
     private function createGroupHasRepresentatives(array $representatives, string $groupId): void
     {
+        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::REPRESENTATIVE])->first();
+
         foreach ($representatives as $representative) {
-            if (!$this->checkIfIsRepresentative($representative)) {
+            if ($this->checkIfUserIsManager($representative)) {
                 throw new OnlyRepresentativesException();
             }
             $data = [
                 'user_id'  => $representative,
                 'group_id' => $groupId,
             ];
+            $this->userRepository->update($representative, ['type_user_id' => $typeUser->id]);
             $this->groupHasRepresentativeRepository->create($data);
         }
     }
@@ -133,23 +142,26 @@ class GroupService
      */
     private function updateGroupHasRepresentatives(array $representatives, string $groupId): void
     {
-        $isNotRepresentative = array_filter($representatives, function ($representative) {
-            return !$this->checkIfIsRepresentative($representative);
+        $isManager = array_filter($representatives, function ($representative) {
+            return !$this->checkIfUserIsManager($representative);
         });
 
-        if (!empty($isNotRepresentative)) {
+        if (!empty($isManager)) {
             throw new OnlyRepresentativesException();
         }
 
-        $group = $this->groupRepository->findById($groupId);
-        $group->representatives()->sync($representatives);
-        $group->refresh();
-    }
+        $typeUserRepresentative = $this->typeUserRepository->findByFilters([
+            'name' => TypeUserEnum::REPRESENTATIVE
+        ])->first();
+        $typeUserViewer = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
 
-    private function checkIfIsRepresentative(string $userId): bool
-    {
-        $user = $this->userRepository->findById($userId);
-        return $user->role() == TypeUserEnum::REPRESENTATIVE;
+        $this->setTypeUser($typeUserRepresentative->id, null, $representatives);
+        $group = $this->groupRepository->findById($groupId);
+        $groupRepresentatives = $group->representatives();
+
+        $this->setTypeUser($typeUserViewer->id, $groupRepresentatives->toArray(), null);
+        $groupRepresentatives->sync($representatives);
+        $group->refresh();
     }
 
     private function createTypeGroup(array $data): Model
@@ -160,5 +172,21 @@ class GroupService
     private function editTypeGroup(string $typeGrupId, array $data): void
     {
         $this->typeGroupRepository->update($typeGrupId, $data);
+    }
+
+    private function setTypeUser(string $typeUserId, ?array $data, ?array $values): void
+    {
+        if(!is_null($data)) {
+            $ids = array_column($data, 'id');
+            $this->userRepository->updateWhereIn($ids, ['type_user_id' => $typeUserId]);
+            return;
+        }
+        $this->userRepository->updateWhereIn($values, ['type_user_id' => $typeUserId]);
+    }
+
+    private function checkIfUserIsManager(string $id): bool
+    {
+        $user = $this->userRepository->findById($id);
+        return $user->role() == TypeUserEnum::MANAGER;
     }
 }

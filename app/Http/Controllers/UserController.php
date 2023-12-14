@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\UserRequest;
+use App\Models\Group;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\UserService;
@@ -198,39 +199,12 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Patch(
-     *   path="/users/restore/{id}",
-     *   tags={"users"},
-     *   summary="Restaurar usuário",
-     *   description="Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
-     *   @OA\Parameter(
-     *     name="id",
-     *     in="path",
-     *     description="Id do usuário",
-     *     required=true,
-     *     @OA\Schema(
-     *         type="string"
-     *     )
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Ok"
-     *   ),
-     *   @OA\Response(
-     *     response="500",
-     *     description="Error"
-     *   ),
-     *   @OA\Response(
-     *     response="404",
-     *     description="Usuário not found"
-     *   )
-     * )
      * @throws AuthorizationException
      */
-    public function restore(string $id): JsonResponse
+    public function setManager(string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::RESTORE, [User::class, $id]);
-        $user = $this->userRepository->restore($id);
-        return response()->json($this->transform(new UserTransformer(), $user));
+        $this->authorize(AbilitiesEnum::CREATE, User::class);
+        $user = $this->userService->updateTypeUser($id);
+        return response()->json($user);
     }
 }

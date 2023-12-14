@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\TypeUserEnum;
 use App\Exceptions\EmailExists;
+use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -13,6 +15,7 @@ class UserService
 {
     public function __construct(
         protected UserRepositoryInterface $userRepository,
+        protected TypeUserRepositoryInterface $typeUserRepository
     ) {
     }
 
@@ -38,5 +41,12 @@ class UserService
         }
 
         return $this->userRepository->update($id, $data);
+    }
+
+    public function updateTypeUser(string $id): Model
+    {
+        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::MANAGER])->first();
+
+        return $this->userRepository->update($id, ['type_user_id' => $typeUser->id]);
     }
 }

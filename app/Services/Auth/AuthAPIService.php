@@ -1,26 +1,24 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Auth;
 
 use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
-use App\Exceptions\EmailExists;
+use App\Repositories\Interfaces\ApiTokenRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Passport\TokenRepository;
 use Throwable;
 
-class AuthService
+class AuthAPIService
 {
     const CODE = 'code';
 
@@ -28,55 +26,8 @@ class AuthService
         protected UserRepositoryInterface $userRepository,
         protected TokenRepository $tokenRepository,
         protected TypeUserRepositoryInterface $typeUserRepository,
+        protected ApiTokenRepositoryInterface $apiTokenRepository
     ) {
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function register(array $data): Model
-    {
-        try {
-            DB::beginTransaction();
-            $data['password'] = bcrypt($data['password']);
-            $data['creator_user_id'] = Auth::id();
-            $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')]);
-
-            if ($user->isNotEmpty()) {
-                throw new EmailExists();
-            }
-
-            $user = $this->userRepository->create($data);
-            $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
-            DB::commit();
-            return $user;
-        } catch (Throwable $throwable) {
-            DB::rollBack();
-            throw $throwable;
-        }
-    }
-
-    /**
-     * @throws AuthorizedException
-     */
-    public function login(array $data): array|Authenticatable
-    {
-        $auth = Auth::guard('web');
-        if ($auth->attempt(['email' => $data['email'], 'password' => $data['password']])) {
-            $user = $auth->user();
-            $user['token'] =  $user->createToken(env('APP_NAME'))->accessToken;
-            return $user;
-        }
-
-        throw new AuthorizedException('Não autorizado', 401);
-    }
-
-    /**
-     * @throws AuthorizedException
-     */
-    public function logout(): void
-    {
-        $this->tokenRepository->revokeAccessToken(Auth::guard('api')->user()->token()->id);
     }
 
     public function getAuthorizationUrl(): string
@@ -97,9 +48,12 @@ class AuthService
      * @throws GuzzleException
      * @throws Throwable
      */
-    public function getUsers(string $code): array|string|null
+    public function loginWithAPIUFOPA(?string $code): Model|Collection
     {
         try {
+            if(is_null($code)){
+                throw new \InvalidArgumentException('É necessário o código');
+            }
             $token = $this->makeRequestAuthorization($code);
             $user = $this->makeRequestGetUserInfo(Arr::get($token, 'access_token'));
             return $this->createOrShowUser($user, $token);
@@ -134,7 +88,7 @@ class AuthService
 
     private function createOrShowUser(array $user, array $token): Collection|Model
     {
-        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER]);
+        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
         $milliseconds = Arr::get($token, 'expires_in');
 
         $data = [
@@ -142,15 +96,23 @@ class AuthService
             'active'               => Arr::get($user, 'ativo'),
             'email'                => Arr::get($user, 'email'),
             'url_photo'            => Arr::get($user, 'url-foto'),
-            'type_user_id'         => $typeUser->first()->id,
-            'api_token'            =>  Arr::get($token, 'access_token'),
-            'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
+            'type_user_id'         => $typeUser->id,
         ];
 
         $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')])->first();
 
         if (!$user) {
-            return $this->userRepository->create($data);
+            $user = $this->userRepository->create($data);
+        }
+
+        $apiToken = $this->apiTokenRepository->findByFilters(['user_id' => $user->id])->first();
+
+        if(!$apiToken){
+            $this->apiTokenRepository->create([
+                'api_token' => Arr::get($token, 'access_token'),
+                'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
+                'user_id' => $user->id,
+            ]);
         }
 
         return $user;

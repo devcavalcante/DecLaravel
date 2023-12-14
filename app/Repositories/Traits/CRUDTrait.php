@@ -53,13 +53,18 @@ trait CRUDTrait
 
     public function restore(string $id): Model
     {
-        $user = $this->model->withTrashed()->find($id);
+        $model = $this->model->withTrashed()->find($id);
 
-        if (!$user) {
+        if (!$model) {
             throw new NotFoundHttpException($this->model->getNotFoundMessage());
         }
 
-        $user->restore();
-        return $user;
+        $model->restore();
+        return $model;
+    }
+
+    public function updateWhereIn(array $ids, array $data)
+    {
+        return $this->model->whereIn('id', $ids)->update($data);
     }
 }

@@ -1,21 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use App\Enums\AbilitiesEnum;
 use App\Exceptions\AuthorizedException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Services\AuthService;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use App\Services\Auth\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redirect;
 use OpenApi\Annotations as OA;
 use Throwable;
 
@@ -74,7 +69,7 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
+        $this->authorize(AbilitiesEnum::CREATE, User::class);
 
         $data = $userRequest->all();
         $user = $this->authService->register($data);
@@ -144,32 +139,6 @@ class AuthController extends Controller
     public function logout(): JsonResponse
     {
         $this->authService->logout();
-        return response()->json([], 204);
-    }
-
-    public function redirect(): RedirectResponse
-    {
-        $authorizationUrl = $this->authService->getAuthorizationUrl();
-        return Redirect::away($authorizationUrl);
-    }
-
-    /**
-     * @throws GuzzleException
-     * @throws Throwable
-     */
-    public function handleCallback(): array|string|null
-    {
-        $code = request()->query('code');
-        return $this->authService->getUsers($code);
-    }
-
-    /**
-     * @throws AuthorizedException
-     */
-    public function logoutUser(): JsonResponse
-    {
-        $token = request()->header('token');
-        $this->authService->logoutUsers($token);
         return response()->json([], 204);
     }
 }

@@ -1,15 +1,16 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthAPIUFOPAController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TypeUserController;
-use App\Http\Controllers\MeetingController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,14 +27,10 @@ Route::get('health', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/redirect', [AuthController::class, 'redirect']);
-Route::get('/callback', [AuthController::class, 'handleCallback']);
+Route::get('/redirect', [AuthAPIUFOPAController::class, 'redirect']);
+Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 
-Route::group(['middleware' => 'token.auth'], function () {
-    Route::post('/logout-users', [AuthController::class, 'logoutUser']);
-});
-
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => ['auth:api', 'token.auth']], function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     Route::group(['prefix' => '/type-user'], function () {
@@ -47,8 +44,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => '/users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/logout-ufopa', [AuthAPIUFOPAController::class, 'logoutUser']);
         Route::get('/{id}', [UserController::class, 'show']);
         Route::put('/{id}', [UserController::class, 'update']);
+        Route::put('/set-manager/{id}', [UserController::class, 'setManager']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::patch('/restore/{id}', [UserController::class, 'restore']);
     });
