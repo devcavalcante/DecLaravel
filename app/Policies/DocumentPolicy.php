@@ -25,13 +25,6 @@ class DocumentPolicy extends AbstractPolicy
         return $this->isAuthorized($user->id, $groupId);
     }
 
-    public function update(User $user, string $documentId): bool
-    {
-        $document = $this->documentRepository->findById($documentId);
-        $group = $this->groupRepository->findById($document->group_id);
-        return $this->isAuthorized($user->id, $group->id);
-    }
-
     /**
      * Determine whether the user can delete the model.
      */

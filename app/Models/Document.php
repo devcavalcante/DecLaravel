@@ -11,7 +11,7 @@ class Document extends Model
     use HasFactory;
 
     protected $table = 'documents';
-    protected $fillable = ['name', 'description', 'file', 'file_size', 'group_id'];
+    protected $fillable = ['name', 'file', 'file_size', 'group_id'];
 
     public function getNotFoundMessage(): string
     {

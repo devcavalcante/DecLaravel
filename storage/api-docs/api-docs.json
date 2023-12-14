@@ -319,8 +319,8 @@
                 "tags": [
                     "documents"
                 ],
-                "summary": "Listar todos os membros",
-                "description": "Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "summary": "Listar todos os documentos",
+                "description": "Lista todos os documentos: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
                 "operationId": "4d39d0375316a2b9302cbeee27a34a4e",
                 "parameters": [
                     {
@@ -426,58 +426,6 @@
                     },
                     "403": {
                         "description": "Não autorizado"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "documents"
-                ],
-                "summary": "Atualiza documentos",
-                "description": "Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "0cdcb423f75df2b1325512d25a4f3dbe",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id do documento",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
-                                    "description": {
-                                        "description": "descrição do documento",
-                                        "type": "string"
-                                    },
-                                    "file": {
-                                        "description": "anexo da tarefa",
-                                        "type": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Ok"
-                    },
-                    "500": {
-                        "description": "Erro"
-                    },
-                    "403": {
-                        "description": "Não autorizado"
-                    },
-                    "404": {
-                        "description": "Documento not found"
                     }
                 }
             }
@@ -854,13 +802,13 @@
                                         "description": "sumario da reuniao",
                                         "type": "string"
                                     },
-                                    "file": {
+                                    "ata": {
                                         "description": "ata da reunião",
                                         "type": "file"
                                     },
-                                    "": {
+                                    "date_meet": {
                                         "description": "data da reunião",
-                                        "type": "file"
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -911,13 +859,13 @@
                                         "description": "sumario da reuniao",
                                         "type": "string"
                                     },
-                                    "file": {
+                                    "ata": {
                                         "description": "ata da reunião",
                                         "type": "file"
                                     },
-                                    "": {
+                                    "date_meet": {
                                         "description": "data da reunião",
-                                        "type": "file"
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -1252,7 +1200,7 @@
         "/notas/{id}": {
             "get": {
                 "tags": [
-                    "notas"
+                    "notes"
                 ],
                 "summary": "Lista o registro de notas por ID",
                 "description": "Lista o registro de notas por ID de referência",
@@ -1284,7 +1232,7 @@
         "/group/{groupId}/notas": {
             "post": {
                 "tags": [
-                    "notas"
+                    "notes"
                 ],
                 "summary": "Criar nova nota",
                 "description": "Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",

@@ -24,15 +24,8 @@ class DocumentRequest extends FormRequest
      */
     public function rules(): array
     {
-        $method = request()->method;
-        $isRequired = $method == 'POST' ? 'required' : 'sometimes';
-
         return [
-            'description' => 'string',
-            'file'        => sprintf(
-                '%s|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
-                $isRequired
-            ),
+            'file'        => 'required|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
         ];
     }
 
@@ -44,7 +37,7 @@ class DocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.string' => 'O campo de descrição deve ser uma string.',
+            'file.required' => 'O campo de arquivo é obrigatório.',
         ];
     }
 
