@@ -14,10 +14,10 @@ class DocumentFactory extends Factory
         $group = Group::factory()->create();
 
         return [
-            'name'        => $this->faker->word,
-            'file'        => $this->faker->imageUrl,
-            'file_size'   => $this->faker->numerify,
-            'group_id'    => $group->id,
+            'name'      => $this->faker->word,
+            'file'      => $this->faker->imageUrl,
+            'file_size' => $this->faker->numerify,
+            'group_id'  => $group->id,
         ];
     }
 }

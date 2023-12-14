@@ -84,7 +84,7 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', 100), $payload);
@@ -102,7 +102,7 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
