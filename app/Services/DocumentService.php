@@ -43,7 +43,11 @@ class DocumentService
 
     private function upload(UploadedFile $file): string
     {
-        return Storage::disk('local')->put('docs', $file);
+        $fileName = uniqid() . '_' . $file->getClientOriginalName();
+
+        Storage::disk('local')->put('docs/' . $fileName, file_get_contents($file));
+
+        return 'docs/' . $fileName;
     }
 
     private function calculateMb(string $uploadedFile): float
