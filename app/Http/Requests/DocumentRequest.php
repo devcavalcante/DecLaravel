@@ -37,7 +37,7 @@ class DocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'description.file' => 'O campo de arquivo é obrigatório.',
+            'file.required' => 'O campo de arquivo é obrigatório.',
         ];
     }
 
