@@ -51,7 +51,7 @@ class AuthAPIService
     public function loginWithAPIUFOPA(?string $code): Model|Collection
     {
         try {
-            if(is_null($code)){
+            if (is_null($code)) {
                 throw new \InvalidArgumentException('É necessário o código');
             }
             $token = $this->makeRequestAuthorization($code);
@@ -92,11 +92,11 @@ class AuthAPIService
         $milliseconds = Arr::get($token, 'expires_in');
 
         $data = [
-            'name'                 => Arr::get($user, 'nome-pessoa'),
-            'active'               => Arr::get($user, 'ativo'),
-            'email'                => Arr::get($user, 'email'),
-            'url_photo'            => Arr::get($user, 'url-foto'),
-            'type_user_id'         => $typeUser->id,
+            'name'         => Arr::get($user, 'nome-pessoa'),
+            'active'       => Arr::get($user, 'ativo'),
+            'email'        => Arr::get($user, 'email'),
+            'url_photo'    => Arr::get($user, 'url-foto'),
+            'type_user_id' => $typeUser->id,
         ];
 
         $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')])->first();
@@ -107,11 +107,11 @@ class AuthAPIService
 
         $apiToken = $this->apiTokenRepository->findByFilters(['user_id' => $user->id])->first();
 
-        if(!$apiToken){
+        if (!$apiToken) {
             $this->apiTokenRepository->create([
-                'api_token' => Arr::get($token, 'access_token'),
+                'api_token'            => Arr::get($token, 'access_token'),
                 'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
-                'user_id' => $user->id,
+                'user_id'              => $user->id,
             ]);
         }
 

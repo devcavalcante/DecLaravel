@@ -98,7 +98,7 @@ class GroupService
             DB::beginTransaction();
             $group = $this->groupRepository->findById($id);
             $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters([
-                'group_id' => $group->id
+                'group_id' => $group->id,
             ])->toArray();
             $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
             $typeGroupId = $group->typeGroup->id;
@@ -151,7 +151,7 @@ class GroupService
         }
 
         $typeUserRepresentative = $this->typeUserRepository->findByFilters([
-            'name' => TypeUserEnum::REPRESENTATIVE
+            'name' => TypeUserEnum::REPRESENTATIVE,
         ])->first();
         $typeUserViewer = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
 
@@ -176,7 +176,7 @@ class GroupService
 
     private function setTypeUser(string $typeUserId, ?array $data, ?array $values): void
     {
-        if(!is_null($data)) {
+        if (!is_null($data)) {
             $ids = array_column($data, 'id');
             $this->userRepository->updateWhereIn($ids, ['type_user_id' => $typeUserId]);
             return;

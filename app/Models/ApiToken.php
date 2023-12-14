@@ -12,7 +12,7 @@ class ApiToken extends Model
     protected $fillable = [
         'user_id',
         'api_token',
-        'api_token_expires_at'
+        'api_token_expires_at',
     ];
 
     public function user(): BelongsTo
