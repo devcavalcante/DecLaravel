@@ -30,7 +30,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/redirect', [AuthAPIUFOPAController::class, 'redirect']);
 Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 
-Route::group(['middleware' => ['auth:api', 'token.auth']], function () {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     Route::group(['prefix' => '/type-user'], function () {

@@ -57,7 +57,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception): Response|JsonResponse
     {
-        dd($exception);
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();
 
