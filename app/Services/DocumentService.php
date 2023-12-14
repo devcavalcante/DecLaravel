@@ -32,20 +32,6 @@ class DocumentService
         return $this->documentRepository->create($data);
     }
 
-    public function edit(string $id, array $data): Model
-    {
-        $file = Arr::get($data, 'file');
-
-        if (!empty($file)) {
-            $uploadedFile = $this->upload($file);
-            Arr::set($data, 'file', $uploadedFile);
-            Arr::set($data, 'name', $file->getClientOriginalName());
-            Arr::set($data, 'file_size', $this->calculateMb($uploadedFile));
-        }
-
-        return $this->documentRepository->update($id, $data);
-    }
-
     public function delete(string $groupId, string $documentId): void
     {
         $this->groupRepository->findById($groupId);

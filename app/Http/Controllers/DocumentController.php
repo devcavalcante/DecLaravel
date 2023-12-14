@@ -32,8 +32,8 @@ class DocumentController extends Controller
      * @OA\Get(
      *   path="/group/{groupId}/documents",
      *   tags={"documents"},
-     *   summary="Listar todos os membros",
-     *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   summary="Listar todos os documentos",
+     *   description="Lista todos os documentos: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -156,64 +156,6 @@ class DocumentController extends Controller
         $this->authorize(AbilitiesEnum::CREATE, [Document::class, $groupId]);
         $document = $this->documentService->create($groupId, $request->all());
         return response()->json($document, 201);
-    }
-
-    /**
-     * @OA\Post(
-     *   path="/documents/{id}",
-     *   tags={"documents"},
-     *   summary="Atualiza documentos",
-     *   description="Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
-     *   @OA\Parameter(
-     *     name="id",
-     *     in="path",
-     *     description="Id do documento",
-     *     required=true,
-     *     @OA\Schema(
-     *         type="string"
-     *     )
-     *   ),
-     *   @OA\RequestBody(
-     *      @OA\MediaType(
-     *          mediaType="multipart/form-data",
-     *          @OA\Schema(
-     *              @OA\Property(
-     *                  property="description",
-     *                  type="string",
-     *                  description="descrição do documento",
-     *              ),
-     *              @OA\Property(
-     *                  description="anexo da tarefa",
-     *                  property="file",
-     *                  type="file",
-     *              ),
-     *         )
-     *     )
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Ok"
-     *   ),
-     *   @OA\Response(
-     *     response="500",
-     *     description="Erro"
-     *   ),
-     *   @OA\Response(
-     *     response=403,
-     *     description="Não autorizado"
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="Documento not found"
-     *   )
-     * )
-     * @throws AuthorizationException
-     */
-    public function update(string $id, DocumentRequest $request): JsonResponse
-    {
-        $this->authorize(AbilitiesEnum::UPDATE, [Document::class, $id]);
-        $document = $this->documentService->edit($id, $request->all());
-        return response()->json($document);
     }
 
     /**

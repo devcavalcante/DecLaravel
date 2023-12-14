@@ -67,7 +67,7 @@ class NoteController extends Controller
     /**
      * @OA\Get(
      *   path="/notas/{id}",
-     *   tags={"notas"},
+     *   tags={"notes"},
      *   summary="Lista o registro de notas por ID",
      *   description="Lista o registro de notas por ID de referência",
      *   @OA\Parameter(
@@ -103,7 +103,7 @@ class NoteController extends Controller
     /**
      * @OA\Post(
      *   path="/group/{groupId}/notas",
-     *   tags={"notas"},
+     *   tags={"notes"},
      *   summary="Criar nova nota",
      *   description="Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
