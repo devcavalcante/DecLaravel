@@ -31,7 +31,7 @@ class Authenticate extends Middleware
     private function checkTokenApi(string $token): bool
     {
         $apiTokenRepository = app(ApiTokenRepositoryInterface::class);
-        if($token) {
+        if ($token) {
             $apiToken = $apiTokenRepository->findByFilters(['api_token' => $token])->first();
 
             if (!$apiToken) {
