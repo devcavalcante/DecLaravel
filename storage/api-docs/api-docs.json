@@ -879,6 +879,15 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do histórico de reunião",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -935,6 +944,15 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do histórico de reunião",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],

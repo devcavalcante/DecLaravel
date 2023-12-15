@@ -185,6 +185,15 @@ class MeetingController extends Controller
      *       type="integer"
      *     )
      *   ),
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do histórico de reunião",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
      *   @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="multipart/form-data",
@@ -249,6 +258,15 @@ class MeetingController extends Controller
      *     required=true,
      *     @OA\Schema(
      *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do histórico de reunião",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
      *     )
      *   ),
      *   @OA\Response(
