@@ -97,13 +97,14 @@ class MeetingController extends Controller
      *              ),
      *              @OA\Property(
      *                  description="ata",
-     *                  property="file",
+     *                  property="ata",
      *                  type="file",
      *                  description="ata da reunião"
      *             ),
      *              @OA\Property(
      *                  description="date_meet",
-     *                  type="file",
+     *                  property="date_meet",
+     *                  type="string",
      *                  description="data da reunião"
      *              ),
      *         )
@@ -200,13 +201,14 @@ class MeetingController extends Controller
      *              ),
      *              @OA\Property(
      *                  description="ata",
-     *                  property="file",
+     *                  property="ata",
      *                  type="file",
      *                  description="ata da reunião"
      *             ),
      *              @OA\Property(
      *                  description="date_meet",
-     *                  type="file",
+     *                  property="date_meet",
+     *                  type="string",
      *                  description="data da reunião"
      *              ),
      *         )

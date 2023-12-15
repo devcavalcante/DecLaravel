@@ -43,7 +43,11 @@ class MeetingService
 
     private function upload(UploadedFile $file): string
     {
-        return Storage::disk('local')->put('atas', $file);
+        $fileName = uniqid() . '_' . $file->getClientOriginalName();
+
+        Storage::disk('local')->put('atas/' . $fileName, file_get_contents($file));
+
+        return 'docs/' . $fileName;
     }
 
     public function listAll(string $groupId)

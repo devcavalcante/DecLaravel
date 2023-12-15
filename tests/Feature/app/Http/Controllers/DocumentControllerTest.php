@@ -67,7 +67,6 @@ class DocumentControllerTest extends TestCase
 
         $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
-            'description' => $this->faker->text,
             'file'        => $file,
         ];
 
@@ -85,8 +84,7 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', 100), $payload);
@@ -104,52 +102,10 @@ class DocumentControllerTest extends TestCase
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
+            'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
-
-        $response->assertStatus(403);
-        $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
-    }
-
-    public function testShouldUpdate()
-    {
-        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
-
-        $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
-            'method'      => 'PUT',
-        ];
-
-        $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['file']);
-        $response = json_decode($response->getContent(), true);
-        $this->assertDatabaseHas('documents', $response);
-    }
-
-    public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
-    {
-        $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
-        $document = Document::factory(['group_id' => $group->id])->create();
-
-        $payload = [
-            'description' => $this->faker->text,
-            'file'        => UploadedFile::fake()->create('file.pdf'),
-        ];
-
-        $response = $this->post(sprintf('api/documents/%s', $document->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -171,7 +127,7 @@ class DocumentControllerTest extends TestCase
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
+        User::factory()->create();
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
@@ -228,8 +184,8 @@ class DocumentControllerTest extends TestCase
         return [
             'id',
             'name',
-            'description',
             'file',
+            'file_size',
             'created_at',
             'updated_at',
             'group_id',
