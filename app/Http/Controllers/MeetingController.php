@@ -172,7 +172,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/group/{groupId}/meeting-history",
+     *   path="/group/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Atualizar o histórico de reunião para o grupo especificado",
      *   description="Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
@@ -183,6 +183,15 @@ class MeetingController extends Controller
      *     required=true,
      *     @OA\Schema(
      *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do histórico de reunião",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
      *     )
      *   ),
      *   @OA\RequestBody(
@@ -238,7 +247,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/meeting-history",
+     *   path="/group/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Excluir histórico de reunião",
      *   description="Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
@@ -249,6 +258,15 @@ class MeetingController extends Controller
      *     required=true,
      *     @OA\Schema(
      *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do histórico de reunião",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
      *     )
      *   ),
      *   @OA\Response(
@@ -274,6 +292,31 @@ class MeetingController extends Controller
         return response()->json([], 204);
     }
 
+    /**
+     * @OA\Get(
+     *   path="/meeting-history/download/{id}",
+     *   tags={"meetings"},
+     *   summary="Faz download da ata",
+     *   description="faz download da ata por ID",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do historico de reunião",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="histórico not found"
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     * )
+     */
     public function download(string $meetingId): BinaryFileResponse|JsonResponse
     {
         $document = $this->meetingRepository->findById($meetingId);
