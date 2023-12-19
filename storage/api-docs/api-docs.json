@@ -335,9 +335,6 @@
                     },
                     "422": {
                         "description": "Erro de validação"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 }
             }
@@ -1301,7 +1298,7 @@
         "/notas/{id}": {
             "get": {
                 "tags": [
-                    "notas"
+                    "notes"
                 ],
                 "summary": "Lista o registro de notas por ID",
                 "description": "Lista o registro de notas por ID de referência",
@@ -1333,7 +1330,7 @@
         "/group/{groupId}/notas": {
             "post": {
                 "tags": [
-                    "notas"
+                    "notes"
                 ],
                 "summary": "Criar nova nota",
                 "description": "Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
@@ -1793,13 +1790,13 @@
             }
         },
         "/users/set-manager/{id}": {
-            "delete": {
+            "put": {
                 "tags": [
                     "users"
                 ],
                 "summary": "Atualiza usuário para se tornar gerente",
                 "description": "Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
-                "operationId": "ac536157bb347122436c53c117cb4e7e",
+                "operationId": "68967707e08aeb20ccb3fad859f3cd87",
                 "parameters": [
                     {
                         "name": "id",

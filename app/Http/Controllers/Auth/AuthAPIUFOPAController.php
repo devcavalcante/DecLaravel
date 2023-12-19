@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Exceptions\AuthorizedException;
 use App\Http\Controllers\Controller;
 use App\Services\Auth\AuthAPIService;
-use App\Transformer\UserTransformer;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use OpenApi\Annotations as OA;
 use Throwable;
+
 
 class AuthAPIUFOPAController extends Controller
 {

@@ -199,7 +199,7 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Delete(
+     * @OA\PUT(
      *   path="/users/set-manager/{id}",
      *   tags={"users"},
      *   summary="Atualiza usuário para se tornar gerente",

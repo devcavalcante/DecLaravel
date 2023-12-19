@@ -59,10 +59,6 @@ class AuthController extends Controller
      *     response="422",
      *     description="Erro de validação"
      *   ),
-     *   @OA\Response(
-     *     response="401",
-     *     description="Unauthorized"
-     *   )
      * )
      * @throws AuthorizationException
      * @throws Throwable
