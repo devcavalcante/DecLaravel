@@ -6,6 +6,6 @@ class OnlyRepresentativesException extends BaseException
 {
     public function __construct()
     {
-        parent::__construct('Usuários do tipo gerente não podem ser representantes');
+        parent::__construct('Apenas usuários do tipo representante sao permitidos');
     }
 }

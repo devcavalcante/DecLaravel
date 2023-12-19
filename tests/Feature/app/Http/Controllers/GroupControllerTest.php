@@ -112,7 +112,7 @@ class GroupControllerTest extends TestCase
         $response = $this->post(self::BASE_URL, $payload);
         $actual = json_decode($response->getContent(), true);
         $response->assertStatus(400);
-        $this->assertEquals('Apenas usuarios do tipo representante sao permitidos', $actual['errors']);
+        $this->assertEquals('Apenas usuários do tipo representante sao permitidos', $actual['errors']);
     }
 
     public function testShouldUpdate()
@@ -143,7 +143,7 @@ class GroupControllerTest extends TestCase
 
         $actual = json_decode($response->getContent(), true);
         $response->assertStatus(400);
-        $this->assertEquals('Apenas usuarios do tipo representante sao permitidos', $actual['errors']);
+        $this->assertEquals('Apenas usuários do tipo representante sao permitidos', $actual['errors']);
     }
 
     public function testShouldOnlyManagersUpdate()

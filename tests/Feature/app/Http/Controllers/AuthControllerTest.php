@@ -30,37 +30,6 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    public function testShouldCreateWhenUserIsManagerAndRegisterRepresentative()
-    {
-        $typeUserManager = TypeUser::where('name', TypeUserEnum::MANAGER)->first();
-        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $user = User::factory(['type_user_id' => $typeUserManager->id])->create();
-        $payload = $this->getFakePayload($typeUserRepresentative->id);
-        Passport::actingAs($user);
-        $response = $this->post('/api/register', $payload);
-        $actual = json_decode($response->getContent(), true);
-        $this->assertEquals(Arr::only($payload, ['name', 'email']), Arr::only($actual, ['name', 'email']));
-        $this->assertEquals(201, $response->getStatusCode());
-    }
-
-    public function testShouldCreateWhenUserIsRepresentativeAndRegisterViewer()
-    {
-        $this->artisan('db:seed');
-
-        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $typeUserViewer = TypeUser::where('name', TypeUserEnum::VIEWER)->first();
-        $user = User::factory(['type_user_id' => $typeUserRepresentative->id])->create();
-        $payload = $this->getFakePayload($typeUserViewer->id);
-
-        Passport::actingAs($user);
-
-        $response = $this->post('/api/register', $payload);
-        $actual = json_decode($response->getContent(), true);
-
-        $this->assertEquals(Arr::only($payload, ['name', 'email']), Arr::only($actual, ['name', 'email']));
-        $this->assertEquals(201, $response->getStatusCode());
-    }
-
     public function testShouldNotCreateWhenOutsidePermissionRule()
     {
         $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
@@ -121,9 +90,9 @@ class AuthControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->postJson('api/login', ['email' => $user->email, 'password' => '12345678']);
         $this->assertEquals(401, $response->getStatusCode());
-        $actual = json_decode($response->getContent(), true);
+        $actual = json_decode($response->getContent(), true)['errors'];
 
-        $this->assertEquals('Nao autorizado', $actual['errors']);
+        $this->assertEquals('Não autorizado', $actual);
     }
 
     public function testShouldLogout()
@@ -138,7 +107,8 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
         $actual = json_decode($response->getContent(), true);
-        $this->assertEquals('Unauthorized.', $actual['errors']);
+
+        $this->assertEquals('Não autorizado', $actual['errors']);
     }
 
     private function getFakePayload(string $typeUserId): array

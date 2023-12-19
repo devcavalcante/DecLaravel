@@ -125,7 +125,7 @@ class GroupService
         $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::REPRESENTATIVE])->first();
 
         foreach ($representatives as $representative) {
-            if ($this->checkIfUserIsManager($representative)) {
+            if ($this->checkIfUserIsNotRepresentative($representative)) {
                 throw new OnlyRepresentativesException();
             }
             $data = [
@@ -143,7 +143,7 @@ class GroupService
     private function updateGroupHasRepresentatives(array $representatives, string $groupId): void
     {
         $isManager = array_filter($representatives, function ($representative) {
-            return !$this->checkIfUserIsManager($representative);
+            return $this->checkIfUserIsNotRepresentative($representative);
         });
 
         if (!empty($isManager)) {
@@ -159,7 +159,8 @@ class GroupService
         $group = $this->groupRepository->findById($groupId);
         $groupRepresentatives = $group->representatives();
 
-        $this->setTypeUser($typeUserViewer->id, $groupRepresentatives->toArray(), null);
+        $this->setTypeUser($typeUserViewer->id, $groupRepresentatives->get()->toArray(), null);
+
         $groupRepresentatives->sync($representatives);
         $group->refresh();
     }
@@ -184,9 +185,9 @@ class GroupService
         $this->userRepository->updateWhereIn($values, ['type_user_id' => $typeUserId]);
     }
 
-    private function checkIfUserIsManager(string $id): bool
+    private function checkIfUserIsNotRepresentative(string $id): bool
     {
         $user = $this->userRepository->findById($id);
-        return $user->role() == TypeUserEnum::MANAGER;
+        return $user->role() != TypeUserEnum::REPRESENTATIVE;
     }
 }
