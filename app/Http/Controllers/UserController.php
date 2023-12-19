@@ -107,7 +107,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Atualizar usuário",
-     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
+     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -162,7 +162,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Deletar usuário",
-     *   description="Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
+     *   description="Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o administrador",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -199,6 +199,37 @@ class UserController extends Controller
     }
 
     /**
+     * @OA\Delete(
+     *   path="/users/set-manager/{id}",
+     *   tags={"users"},
+     *   summary="Atualiza usuário para se tornar gerente",
+     *   description="Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do usuário",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=204,
+     *     description="No Content"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Error"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Unauthorized"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Usuario Not Found"
+     *   )
+     * )
      * @throws AuthorizationException
      */
     public function setManager(string $id): JsonResponse

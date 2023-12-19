@@ -29,14 +29,6 @@ class UserPolicy extends AbstractPolicy
     }
 
     /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return $this->isAdmin();
-    }
-
-    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, string $id): bool
@@ -49,6 +41,6 @@ class UserPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $id): bool
     {
-        return $user->id == $id;
+        return $user->id == $id || $this->isAdmin();
     }
 }

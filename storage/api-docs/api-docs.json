@@ -212,14 +212,102 @@
                 }
             }
         },
+        "/redirect": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Redireciona o usuário para o login da ufopa",
+                "description": "Endpoint para redirecionar para o login da ufopa",
+                "operationId": "676d0819334d1d5703f6a645afc1e0b7",
+                "responses": {
+                    "default": {
+                        "description": "Redireciona para a URL de autorização"
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
+        "/callback": {
+            "get": {
+                "summary": "Retorno para salvar usuário",
+                "operationId": "4751235e81bc3293aaf2ad95b2c62fdb",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Código de autorização recebido no retorno",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Informação do usuário",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Error",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Error response",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/logout-ufopa": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Desloga usuário logado pela api da ufopa",
+                "description": "Endpoint para revogar o token",
+                "operationId": "13e79a2a8a49dae966d82a3a992e1be0",
+                "responses": {
+                    "204": {
+                        "description": "Not Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "tags": [
                     "auth"
                 ],
                 "summary": "Criar novo usuário",
-                "description": "Cria novo usuário: Administradores podem criar qualquer tipo de usuário, Gerentes podem criar REPRESENTANTES, Representantes podem criar MEMBROS E VISUALIZADORES",
-                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "description": "Criação de novo usuário",
+                "operationId": "f367ea894b2ac44a9607f8e0a9a03537",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -258,7 +346,7 @@
                 ],
                 "summary": "Login do usuário",
                 "description": "Usuário loga no sistema",
-                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "operationId": "ec9c379d2a959de66404708dd4a9322d",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -294,7 +382,7 @@
                 ],
                 "summary": "Desloga usuário",
                 "description": "Endpoint para revogar o token",
-                "operationId": "4d05b3b4c4627a89a3d62ea61d7aff88",
+                "operationId": "3e7d1f7cfbf48af19c928f0d946cc6b7",
                 "responses": {
                     "204": {
                         "description": "Not Content"
@@ -798,7 +886,8 @@
                                 "required": [
                                     "content",
                                     "summary",
-                                    "ata"
+                                    "ata",
+                                    "date_meet"
                                 ],
                                 "properties": {
                                     "content": {
@@ -815,6 +904,11 @@
                                         "description": "A ata da reunião",
                                         "type": "string",
                                         "minLength": 5
+                                    },
+                                    "date_meet": {
+                                        "description": "Data da reunião",
+                                        "type": "string",
+                                        "format": "date"
                                     }
                                 },
                                 "type": "object"
@@ -876,6 +970,11 @@
                                         "description": "A ata da reunião",
                                         "type": "string",
                                         "minLength": 5
+                                    },
+                                    "date_meet": {
+                                        "description": "Data da reunião",
+                                        "type": "string",
+                                        "format": "date"
                                     }
                                 },
                                 "type": "object"
@@ -1615,7 +1714,7 @@
                     "users"
                 ],
                 "summary": "Atualizar usuário",
-                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
+                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
                 "operationId": "ddfe232db1870b82493bf8bd25596d37",
                 "parameters": [
                     {
@@ -1661,7 +1760,7 @@
                     "users"
                 ],
                 "summary": "Deletar usuário",
-                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
+                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o administrador",
                 "operationId": "43dd20becb1f47444e484cbb18ce345c",
                 "parameters": [
                     {
@@ -1690,14 +1789,14 @@
                 }
             }
         },
-        "/users/restore/{id}": {
-            "patch": {
+        "/users/set-manager/{id}": {
+            "delete": {
                 "tags": [
                     "users"
                 ],
-                "summary": "Restaurar usuário",
-                "description": "Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
-                "operationId": "282df5354ee2b04bf7ac4bbc6d5fb515",
+                "summary": "Atualiza usuário para se tornar gerente",
+                "description": "Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
+                "operationId": "ac536157bb347122436c53c117cb4e7e",
                 "parameters": [
                     {
                         "name": "id",
@@ -1710,14 +1809,17 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Ok"
+                    "204": {
+                        "description": "No Content"
                     },
                     "500": {
                         "description": "Error"
                     },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
-                        "description": "Usuário not found"
+                        "description": "Usuario Not Found"
                     }
                 }
             }

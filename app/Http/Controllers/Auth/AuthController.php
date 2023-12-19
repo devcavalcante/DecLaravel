@@ -32,7 +32,7 @@ class AuthController extends Controller
      *   path="/register",
      *   tags={"auth"},
      *   summary="Criar novo usuário",
-     *   description="Cria novo usuário: Administradores podem criar qualquer tipo de usuário, Gerentes podem criar REPRESENTANTES, Representantes podem criar MEMBROS E VISUALIZADORES",
+     *   description="Criação de novo usuário",
      *   @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="application/json",
@@ -69,8 +69,6 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, User::class);
-
         $data = $userRequest->all();
         $user = $this->authService->register($data);
         return response()->json($user, 201);
