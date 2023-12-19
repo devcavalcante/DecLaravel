@@ -47,7 +47,7 @@ class MeetingService
 
         Storage::disk('local')->put('atas/' . $fileName, file_get_contents($file));
 
-        return 'docs/' . $fileName;
+        return 'atas/' . $fileName;
     }
 
     public function listAll(string $groupId)
