@@ -21,14 +21,14 @@ class MeetingPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isAuthorized($user->id, $groupId)|| $this->isAdmin();
     }
 
     public function update(User $user, string $meetingId): bool
     {
         $meeting = $this->meetingRepository->findById($meetingId);
         $group = $this->groupRepository->findById($meeting->group_id);
-        return $this->isAuthorized($user->id, $group->id);
+        return $this->isAuthorized($user->id, $group->id)|| $this->isAdmin();
     }
 
     /**
@@ -36,6 +36,6 @@ class MeetingPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isAuthorized($user->id, $groupId)|| $this->isAdmin();
     }
 }

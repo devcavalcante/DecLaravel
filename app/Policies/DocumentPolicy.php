@@ -22,7 +22,7 @@ class DocumentPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isAuthorized($user->id, $groupId) || $this->isAdmin();
     }
 
     /**
@@ -30,6 +30,6 @@ class DocumentPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isAuthorized($user->id, $groupId)|| $this->isAdmin();
     }
 }
