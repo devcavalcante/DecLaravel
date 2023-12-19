@@ -15,6 +15,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\UnauthorizedException;
 use Laravel\Passport\TokenRepository;
 use Throwable;
 
@@ -86,10 +87,12 @@ class AuthAPIService
         ]);
     }
 
-    private function createOrShowUser(array $user, array $token): Collection|Model
+	/**
+	 * @throws GuzzleException
+	 */
+	private function createOrShowUser(array $user, array $token): Collection|Model
     {
         $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
-        $milliseconds = Arr::get($token, 'expires_in');
 
         $data = [
             'name'         => Arr::get($user, 'nome-pessoa'),
@@ -105,18 +108,37 @@ class AuthAPIService
             $user = $this->userRepository->create($data);
         }
 
-        $apiToken = $this->apiTokenRepository->findByFilters(['user_id' => $user->id])->first();
+        $this->createOrUpdateApiToken($token, $user->id);
 
-        if (!$apiToken) {
-            $this->apiTokenRepository->create([
-                'api_token'            => Arr::get($token, 'access_token'),
-                'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
-                'user_id'              => $user->id,
-            ]);
-        }
-
-        return $user;
+        return $user->load('apiToken');
     }
+
+	/**
+	 * @throws GuzzleException
+	 */
+	private function createOrUpdateApiToken(array $token, string $userId): void
+	{
+		$milliseconds = Arr::get($token, 'expires_in');
+		$apiToken = $this->apiTokenRepository->findByFilters(['user_id' => $userId])->first();
+
+		if (!$apiToken) {
+			$this->apiTokenRepository->create([
+				'api_token'            => Arr::get($token, 'access_token'),
+				'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
+				'user_id'              => $userId,
+			]);
+		}
+
+		if ($apiToken && now()->gt($apiToken->api_token_expires_at)) {
+			$response = $this->makeRequestRefreshToken(Arr::get($token, 'refresh_token'));
+			$milliseconds = Arr::get($response, 'expires_in');
+
+			$this->apiTokenRepository->update($apiToken->id, [
+				'api_token'            => Arr::get($token, 'access_token'),
+				'api_token_expires_at' => Carbon::now()->addMilliseconds($milliseconds),
+			]);
+		}
+	}
 
     /**
      * @throws GuzzleException
@@ -137,7 +159,7 @@ class AuthAPIService
     /**
      * @throws GuzzleException
      */
-    private function makeRequestAuthorization(string $code)
+    private function makeRequestAuthorization(string $code): array
     {
         $client = new Client();
 
@@ -153,4 +175,23 @@ class AuthAPIService
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
+	/**
+	 * @throws GuzzleException
+	 */
+	private function makeRequestRefreshToken(string $refreshToken): array
+	{
+		$client = new Client();
+
+		$response = $client->post(env('AUTH_SERVER_URL') . '/token', [
+			'form_params' => [
+				'client_id'     => env('CLIENT_ID'),
+				'client_secret' => env('CLIENT_SECRET'),
+				'grant_type'    => 'refresh_token',
+				'refresh_token' => $refreshToken
+			],
+		]);
+
+		return json_decode($response->getBody()->getContents(), true);
+	}
 }

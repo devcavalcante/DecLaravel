@@ -80,7 +80,7 @@ class Handler extends ExceptionHandler
                     'code'   => 400,
                 ], 400);
             }
-            return response(['errors' => 'Não é possivel executar essa ação.'], 400);
+            return response(['errors' => $exception->getMessage()], 400);
         }
 
         return parent::render($request, $exception);
