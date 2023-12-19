@@ -103,20 +103,6 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function testShouldNotDestroyUserWithoutPermission()
-    {
-        $userLogged = $this->login(TypeUserEnum::ADMIN);
-
-        // Cria um usuário no banco de dados usando o model factory
-        $user = User::factory()->create();
-
-        // Envia uma solicitação para excluir o usuário criado
-        $response = $this->deleteJson('/api/users/' . $user->id);
-
-        // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
-        $response->assertStatus(403);
-    }
-
     public function testShouldUpdate()
     {
         $user = $this->login(TypeUserEnum::ADMIN);
@@ -143,6 +129,16 @@ class UserControllerTest extends TestCase
         $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShouldDestrou()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+        $user = User::factory()->create();
+
+        $response = $this->delete(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
     public function testShouldNotDestroyWithoutPermissions()

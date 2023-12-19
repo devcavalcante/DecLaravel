@@ -232,6 +232,9 @@
         },
         "/callback": {
             "get": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Retorno para salvar usuário",
                 "operationId": "4751235e81bc3293aaf2ad95b2c62fdb",
                 "parameters": [

@@ -43,6 +43,7 @@ class AuthAPIUFOPAController extends Controller
     /**
      * @OA\Get(
      *     path="/callback",
+     *     tags={"auth"},
      *     summary="Retorno para salvar usuário",
      *     @OA\Parameter(
      *         name="code",
