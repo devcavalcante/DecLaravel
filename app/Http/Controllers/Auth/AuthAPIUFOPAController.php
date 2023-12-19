@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Redirect;
 use OpenApi\Annotations as OA;
 use Throwable;
 
-
 class AuthAPIUFOPAController extends Controller
 {
     public function __construct(private AuthAPIService $authService)
