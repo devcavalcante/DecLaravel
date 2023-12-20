@@ -246,7 +246,7 @@ class MeetingControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::VIEWER);
         $file = UploadedFile::fake()->create('file.pdf');
-        $file =  Storage::disk('local')->put('docs', $file);
+        $file =  Storage::disk('local')->put('atas', $file);
 
         $meeting = Meeting::factory()->create(['ata' => $file]);
 
