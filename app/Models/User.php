@@ -71,9 +71,4 @@ class User extends Authenticatable
     {
         return $this->typeUser->name;
     }
-
-    public function groupsRepresentatives(): BelongsToMany
-    {
-        return $this->belongsToMany(Group::class, 'group_has_representatives', 'user_id', 'group_id');
-    }
 }

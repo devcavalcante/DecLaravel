@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
-use App\Exceptions\MembersExists;
 use App\Http\Requests\MemberRequest;
 use App\Models\Member;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Services\MemberService;
 use App\Transformer\MemberTransformer;
@@ -24,7 +24,8 @@ class MemberController extends Controller
 {
     public function __construct(
         private readonly MemberRepositoryInterface $memberRepository,
-        private readonly MemberService $memberService
+        private readonly MemberService $memberService,
+        private readonly GroupRepositoryInterface $groupRepository,
     ) {
     }
 
@@ -48,9 +49,11 @@ class MemberController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $members = $this->memberRepository->listAll();
+        $group = $this->groupRepository->findById($groupId);
+        $members = $group->members;
+
         return response()->json($this->transform(new MemberTransformer(), $members));
     }
 
@@ -110,7 +113,7 @@ class MemberController extends Controller
      *   )
      * )
      * @throws AuthorizationException
-     * @throws MembersExists|Throwable
+     * @throws Throwable
      */
     public function store(MemberRequest $request, string $groupId): JsonResponse
     {

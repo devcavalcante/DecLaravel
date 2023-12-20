@@ -4,7 +4,7 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
 use App\Models\Group;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\Member;
 use App\Models\TypeUser;
 use App\Models\User;
@@ -61,7 +61,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             [
@@ -98,7 +98,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             [
@@ -129,7 +129,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $payload = [
@@ -162,7 +162,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
             [
@@ -185,7 +185,7 @@ class MemberControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $payload = [
@@ -205,7 +205,7 @@ class MemberControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $payload = [
@@ -227,7 +227,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
         $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
 
         $payload = [
@@ -245,7 +245,7 @@ class MemberControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
@@ -259,7 +259,7 @@ class MemberControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', 100, $member->id));
@@ -273,7 +273,7 @@ class MemberControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, 100));
@@ -289,7 +289,7 @@ class MemberControllerTest extends TestCase
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $user2 = User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
         $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));

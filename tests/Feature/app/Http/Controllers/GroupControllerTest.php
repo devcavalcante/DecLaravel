@@ -5,7 +5,7 @@ namespace Tests\Feature\app\Http\Controllers;
 use App\Enums\TypeGroupEnum;
 use App\Enums\TypeUserEnum;
 use App\Models\Group;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\TypeGroup;
 use App\Models\TypeUser;
 use App\Models\User;
@@ -120,7 +120,7 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::MANAGER);
 
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -136,7 +136,7 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::MANAGER);
 
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['representatives'] = [1, 2];
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -151,7 +151,7 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -168,7 +168,7 @@ class GroupControllerTest extends TestCase
         $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
         $user = User::factory(['type_user_id' => $typeUserId])->create();
         $group = Group::factory(['creator_user_id' => $user->id])->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -184,7 +184,7 @@ class GroupControllerTest extends TestCase
 
         $typeGroup = TypeGroup::factory()->create();
         $group = Group::factory(['type_group_id' => $typeGroup->id])->create();
-        $groupHasRepresentative = GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        $groupHasRepresentative = Representative::factory(['group_id' => $group->id])->create();
         $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
 
         $response->assertStatus(204);
@@ -200,7 +200,7 @@ class GroupControllerTest extends TestCase
         $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
         $user = User::factory(['type_user_id' => $typeUserId])->create();
         $group = Group::factory(['creator_user_id' => $user->id])->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id])->create();
+        Representative::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
         $actual = json_decode($response->getContent(), true);

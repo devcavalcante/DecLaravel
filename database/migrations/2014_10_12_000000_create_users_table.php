@@ -20,7 +20,6 @@ return new class extends Migration
                 $table->timestamp('email_verified_at')->nullable();
                 $table->string('password');
                 $table->unsignedBigInteger('type_user_id');
-                $table->unsignedBigInteger('creator_user_id')->nullable(); // Novo campo para o criador do usuário
                 $table->rememberToken();
                 $table->timestamps();
                 $table->softDeletes();

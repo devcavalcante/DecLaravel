@@ -91,7 +91,7 @@ class GroupController extends Controller
      *                 "internal_concierge": "corrupti",
      *                 "type_group_id": 1,
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
-     *                 "representatives": {2,4},
+     *                 "representative": 2,
      *                 "name": "comissão",
      *                 "type_group": "interno"
      *              }

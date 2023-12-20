@@ -5,7 +5,7 @@ namespace Tests\Feature\app\Http\Controllers;
 use App\Enums\TypeUserEnum;
 use App\Models\Document;
 use App\Models\Group;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\TypeUser;
 use App\Models\User;
 use Faker\Factory as FakerFactory;
@@ -63,7 +63,7 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
@@ -81,7 +81,7 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             'file' => UploadedFile::fake()->create('file.pdf'),
@@ -99,7 +99,7 @@ class DocumentControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
             'file' => UploadedFile::fake()->create('file.pdf'),
@@ -115,7 +115,7 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
@@ -129,7 +129,7 @@ class DocumentControllerTest extends TestCase
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         User::factory()->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', 100, $document->id));
@@ -142,7 +142,7 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, 100));
 
@@ -156,7 +156,7 @@ class DocumentControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));

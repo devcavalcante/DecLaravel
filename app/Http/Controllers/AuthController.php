@@ -68,8 +68,6 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
-
         $data = $userRequest->all();
         $user = $this->authService->register($data);
         return response()->json($user, 201);

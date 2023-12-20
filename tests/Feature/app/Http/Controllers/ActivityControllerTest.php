@@ -4,7 +4,7 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
 use App\Models\Activity;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\Group;
 use App\Models\TypeUser;
 use App\Models\User;
@@ -67,7 +67,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             'name'        => 'teste teste',
@@ -84,7 +84,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             'name'        => 'teste teste',
@@ -104,7 +104,7 @@ class ActivityControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
 
         $payload = [
             'name'        => 'teste teste',
@@ -121,7 +121,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -140,7 +140,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             'name' => 'teste ajskajska',
@@ -158,7 +158,7 @@ class ActivityControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -175,7 +175,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));
@@ -188,7 +188,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/activity/%s', 100, $activity->id));
@@ -201,7 +201,7 @@ class ActivityControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, 100));
 
@@ -215,7 +215,7 @@ class ActivityControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
         $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));

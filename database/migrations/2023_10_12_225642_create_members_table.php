@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
+            $table->string('email');
             $table->string('role');
             $table->string('phone');
             $table->date('entry_date');
             $table->date('departure_date');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('group_id');
-
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('group_id')->references('id')->on('groups');
             $table->timestamps();
         });
     }
