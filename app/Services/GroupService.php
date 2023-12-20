@@ -53,8 +53,8 @@ class GroupService
 
             $payloadGroup = array_merge($payloadGroup, [
                 'representative_id' => $representative->id,
-                'creator_user_id' => Auth::id(),
-                'type_group_id' => $typeGroup->id
+                'creator_user_id'   => Auth::id(),
+                'type_group_id'     => $typeGroup->id,
             ]);
             $group = $this->groupRepository->create($payloadGroup);
 
@@ -118,17 +118,16 @@ class GroupService
     {
         $user = $this->userRepository->findByFilters(['email' => $representative]);
 
-        if($user->isNotEmpty())
-        {
+        if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
 
-            if(!$this->checkIfIsRepresentative($userId)){
+            if (!$this->checkIfIsRepresentative($userId)) {
                 throw new OnlyRepresentativesException();
             }
 
             $data = [
-                'email' => $representative,
-                'user_id'  => $userId,
+                'email'   => $representative,
+                'user_id' => $userId,
             ];
 
             return $this->representativeRepository->create($data);
@@ -148,23 +147,23 @@ class GroupService
         $user = $this->userRepository->findByFilters(['email' => $representative]);
         $group = $this->groupRepository->findById($groupId);
 
-        if($user->isNotEmpty()){
+        if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
 
-            if(!$this->checkIfIsRepresentative($userId)){
+            if (!$this->checkIfIsRepresentative($userId)) {
                 throw new OnlyRepresentativesException();
             }
 
             $data = [
-                'email' => $representative,
-                'user_id'  => $userId,
+                'email'   => $representative,
+                'user_id' => $userId,
             ];
 
             return $this->representativeRepository->update($group->representative->id, $data);
         }
 
         Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
-        return $this->representativeRepository->update($group->representative->id,  [
+        return $this->representativeRepository->update($group->representative->id, [
             'email'  => $representative,
         ]);
     }

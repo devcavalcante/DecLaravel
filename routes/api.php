@@ -48,7 +48,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'members'], function () {
-        Route::put('/{id}', [MemberController::class, 'update']);
         Route::get('/{id}', [MemberController::class, 'show']);
     });
 
@@ -84,6 +83,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{groupId}/members'], function () {
             Route::get('/', [MemberController::class, 'index']);
             Route::post('/', [MemberController::class, 'store']);
+            Route::put('/{id}', [MemberController::class, 'update']);
             Route::delete('/{id}', [MemberController::class, 'destroy']);
         });
 

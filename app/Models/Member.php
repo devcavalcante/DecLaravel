@@ -17,7 +17,7 @@ class Member extends Model
         'user_id',
         'entry_date',
         'departure_date',
-        'email'
+        'email',
     ];
 
     protected $table = 'members';

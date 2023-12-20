@@ -219,9 +219,9 @@ class MemberController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, MemberRequest $request): JsonResponse
+    public function update(string $groupId, string $id, MemberRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
+        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $groupId]);
         $payload = $request->all();
         $member = $this->memberService->edit($id, $payload);
         return response()->json($member);
@@ -270,7 +270,7 @@ class MemberController extends Controller
     public function destroy(string $groupId, string $id): JsonResponse
     {
         $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
-        $this->memberRepository->delete($id);
+        $this->memberService->delete($groupId, $id);
         return response()->json([], 204);
     }
 }

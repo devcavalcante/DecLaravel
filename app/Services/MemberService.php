@@ -3,13 +3,11 @@
 namespace App\Services;
 
 use App\Enums\TypeUserEnum;
-use App\Exceptions\MembersExists;
 use App\Mail\RegisterEmail;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MemberHasGroupRepository;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +41,7 @@ class MemberService
 
             foreach ($data as $payload) {
                 $payload = array_merge($payload, ['group_id' => $groupId]);
-                $this->createGroupHasMembers($payload);
+                $this->createMemberHasGroup($payload);
             }
 
             DB::commit();
@@ -55,7 +53,7 @@ class MemberService
 
     public function edit(string $id, array $data): Model
     {
-        $data = Arr::only($data, ['role', 'phone', 'entry_date', 'departure_date']);
+        $data = Arr::except($data, ['email', 'user_id']);
         return $this->memberRepository->update($id, $data);
     }
 
@@ -64,11 +62,23 @@ class MemberService
      */
     public function delete(string $groupId, string $memberId): void
     {
-        $this->groupRepository->findById($groupId);
-        $this->memberRepository->delete($memberId);
+        try {
+            DB::beginTransaction();
+            $memberHasGroup = $this->memberHasGroupRepository->findByFilters([
+                'member_id' => $memberId,
+                'group_id'  => $groupId,
+            ])->first();
+            $this->groupRepository->findById($groupId);
+            $this->memberHasGroupRepository->delete($memberHasGroup->id);
+            $this->memberRepository->delete($memberId);
+            DB::commit();
+        } catch (Throwable $throwable) {
+            DB::rollBack();
+            throw $throwable;
+        }
     }
 
-    private function createGroupHasMembers(array $data): void
+    private function createMemberHasGroup(array $data): void
     {
         $groupId = Arr::get($data, 'group_id');
         $email = Arr::get($data, 'email');
@@ -86,7 +96,7 @@ class MemberService
 
         $this->memberHasGroupRepository->create([
             'member_id' => $member->id,
-            'group_id'  => $groupId
+            'group_id'  => $groupId,
         ]);
     }
 }

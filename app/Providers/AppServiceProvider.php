@@ -55,8 +55,8 @@ class AppServiceProvider extends ServiceProvider
             GroupRepository::class
         );
         $this->app->bind(
-	        RepresentativeRepositoryInterface::class,
-	        RepresentativeRepository::class
+            RepresentativeRepositoryInterface::class,
+            RepresentativeRepository::class
         );
         $this->app->bind(
             MemberRepositoryInterface::class,

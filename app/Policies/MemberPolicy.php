@@ -24,11 +24,9 @@ class MemberPolicy extends AbstractPolicy
         return $this->isRepresentativeOfGroup($user->id, $groupId);
     }
 
-    public function update(User $user, string $memberId): bool
+    public function update(User $user, string $groupId): bool
     {
-        $member = $this->memberRepository->findById($memberId);
-        $group = $this->groupRepository->findById($member->group_id);
-        return $this->isRepresentativeOfGroup($user->id, $group->id);
+        return $this->isRepresentativeOfGroup($user->id, $groupId);
     }
 
     /**

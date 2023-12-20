@@ -29,7 +29,7 @@ class MemberRequest extends FormRequest
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
 
         return array(
-            '*.email'           => [
+            '*.email'          => [
                 $isRequired,
                 'email',
                 'distinct',
@@ -61,10 +61,10 @@ class MemberRequest extends FormRequest
             '*.entry_date.date'               => 'O campo data de entrada deve ser uma data válida.',
             '*.entry_date.required'           => 'O campo data de entrada deve ser obrigatório.',
             '*.departure_date.after_or_equal' => 'A data de partida deve ser uma data posterior ou igual à data de entrada.',
-            '*.email.string'              => 'O campo do email deve ser uma string.',
-            '*.email.email'               => 'Email invalido.',
-            '*.email.unique'               => 'Esse membro já está cadastrado no grupo',
-            '*.email.distinct'               => 'Cada e-mail deve ser único entre os membros enviados.',
+            '*.email.string'                  => 'O campo do email deve ser uma string.',
+            '*.email.email'                   => 'Email invalido.',
+            '*.email.unique'                  => 'Esse membro já está cadastrado no grupo',
+            '*.email.distinct'                => 'Cada e-mail deve ser único entre os membros enviados.',
         ];
     }
 
