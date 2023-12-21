@@ -7,6 +7,7 @@ use App\Http\Requests\ActivityRequest;
 use App\Models\Activity;
 use App\Repositories\Interfaces\ActivityRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -99,6 +100,76 @@ class ActivityController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *   path="/group/{groupId}/activity/open",
+     *   tags={"activity"},
+     *   summary="Listar todos as atividades em aberto",
+     *   description="Lista todas as atividades em aberto.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function listOpenActivities(string $groupId): JsonResponse
+    {
+        $activities = $this->activityRepository->findByFilters(['done_at' => null, 'group_id' => $groupId]);
+        return response()->json($activities);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/group/{groupId}/activity/concluded",
+     *   tags={"activity"},
+     *   summary="Listar todos as atividades concluidas",
+     *   description="Lista todas as atividades concluídas.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response="403",
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function listClosedActivities(string $groupId): JsonResponse
+    {
+        $activities = $this->activityRepository->findClosedTasks();
+        return response()->json($activities);
+    }
+
+    /**
      * @OA\Post(
      *   path="/group/{groupId}/activity",
      *   tags={"activity"},
@@ -115,9 +186,9 @@ class ActivityController extends Controller
      *   ),
      *   @OA\RequestBody(
      *      @OA\MediaType(
-     *          mediaType="application/json",
+     *       mediaType="application/json",
      *          @OA\Schema(
-     *          @OA\Property(
+     *              @OA\Property(
      *                  property="name",
      *                  type="string",
      *                  description="nome da atividade",
@@ -126,6 +197,16 @@ class ActivityController extends Controller
      *                  property="description",
      *                  type="string",
      *                  description="descrição da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="start_date",
+     *                  type="string",
+     *                  description="data de inicio da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="end_date",
+     *                  type="string",
+     *                  description="data final da atividade",
      *              ),
      *         )
      *     )
@@ -163,7 +244,7 @@ class ActivityController extends Controller
      *   path="/activity/{id}",
      *   tags={"activity"},
      *   summary="Atualiza atividades",
-     *   description="Atualizar documentos, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Atualizar atividades, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -186,6 +267,16 @@ class ActivityController extends Controller
      *                  property="description",
      *                  type="string",
      *                  description="descrição da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="start_date",
+     *                  type="string",
+     *                  description="data de inicio da atividade",
+     *              ),
+     *              @OA\Property(
+     *                  property="end_date",
+     *                  type="string",
+     *                  description="data final da atividade",
      *              ),
      *         )
      *     )
@@ -213,6 +304,88 @@ class ActivityController extends Controller
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, $request->all());
+        return response()->json($activity);
+    }
+
+    /**
+     * @OA\Put(
+     *   path="/activity/{id}/complete",
+     *   tags={"activity"},
+     *   summary="Atualiza tarefa como pronta",
+     *   description="Atualiza tarefa como pronta",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id da atividade",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Atividade not found"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function complete(string $id): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
+        $activity = $this->activityRepository->update($id, ['done_at' => Carbon::now()]);
+        return response()->json($activity);
+    }
+
+    /**
+     * @OA\Put(
+     *   path="/activity/{id}/restore",
+     *   tags={"activity"},
+     *   summary="Atualiza tarefa como aberta",
+     *   description="Atualiza tarefa como aberta",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id da atividade",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="Erro"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Atividade not found"
+     *   )
+     * )
+     * @throws AuthorizationException
+     */
+    public function restore(string $id): JsonResponse
+    {
+        $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
+        $activity = $this->activityRepository->update($id, ['done_at' => null]);
         return response()->json($activity);
     }
 

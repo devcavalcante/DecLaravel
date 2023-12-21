@@ -73,6 +73,14 @@
                                     "description": {
                                         "description": "descrição da atividade",
                                         "type": "string"
+                                    },
+                                    "start_date": {
+                                        "description": "data de inicio da atividade",
+                                        "type": "string"
+                                    },
+                                    "end_date": {
+                                        "description": "data final da atividade",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -132,7 +140,7 @@
                     "activity"
                 ],
                 "summary": "Atualiza atividades",
-                "description": "Atualizar documentos, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Atualizar atividades, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "8a0046ad2f5568277508b8d3ecb52101",
                 "parameters": [
                     {
@@ -157,6 +165,14 @@
                                     "description": {
                                         "description": "descrição da atividade",
                                         "type": "string"
+                                    },
+                                    "start_date": {
+                                        "description": "data de inicio da atividade",
+                                        "type": "string"
+                                    },
+                                    "end_date": {
+                                        "description": "data final da atividade",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -164,6 +180,140 @@
                         }
                     }
                 },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Atividade not found"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/activity/open": {
+            "get": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Listar todos as atividades em aberto",
+                "description": "Lista todas as atividades em aberto.",
+                "operationId": "ad0a8959a4768cd02cdf3047e5d42580",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/group/{groupId}/activity/concluded": {
+            "get": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Listar todos as atividades concluidas",
+                "description": "Lista todas as atividades concluídas.",
+                "operationId": "9485d9981a09ab7bba529503f53f12a2",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "description": "O ID do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            }
+        },
+        "/activity/{id}/complete": {
+            "put": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Atualiza tarefa como pronta",
+                "description": "Atualiza tarefa como pronta",
+                "operationId": "0de1234f0cb4c0fb7a51f5212bfcedff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da atividade",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "500": {
+                        "description": "Erro"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    },
+                    "404": {
+                        "description": "Atividade not found"
+                    }
+                }
+            }
+        },
+        "/activity/{id}/restore": {
+            "put": {
+                "tags": [
+                    "activity"
+                ],
+                "summary": "Atualiza tarefa como aberta",
+                "description": "Atualiza tarefa como aberta",
+                "operationId": "85ef7da7abf150135b34879351670662",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da atividade",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok"
