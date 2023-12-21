@@ -31,10 +31,19 @@ class MemberController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/members",
+     *   path="/group/{groupId}/members",
      *   tags={"members"},
      *   summary="Listar todos os membros",
      *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -78,18 +87,18 @@ class MemberController extends Controller
      *          @OA\Schema(
      *              example={
      *                          {
+     *                              "email": "bar@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",
      *                              "entry_date": "23-10-1998",
-     *                              "departure_date": "23-10-2023",
-     *                              "user_id": "1"
+     *                              "departure_date": "23-10-2023"
      *                          },
      *                          {
+     *                              "email": "outromail@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",
      *                              "entry_date": "23-10-1998",
-     *                              "departure_date": "23-10-2023",
-     *                              "user_id": "2"
+     *                              "departure_date": "23-10-2023"
      *                          }
      *                     }
      *          )
@@ -159,7 +168,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/members/{id}",
+     *   path="/group/{groupId}/members/{id}",
      *   tags={"members"},
      *   summary="Atualizar membro",
      *   description="somente o REPRESENTANTE tem acesso a este endpoint.",
@@ -170,6 +179,15 @@ class MemberController extends Controller
      *     required=true,
      *     @OA\Schema(
      *         type="string"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
      *     )
      *   ),
      *   @OA\RequestBody(
@@ -193,9 +211,9 @@ class MemberController extends Controller
      *                  description="A data de partida do membro (formato YYYY-MM-DD)."
      *              ),
      *              @OA\Property(
-     *                  property="user_id",
+     *                  property="email",
      *                  type="string",
-     *                  description="O ID do usuário associado ao membro."
+     *                  description="Email do membro."
      *              )
      *          )
      *      )
@@ -243,7 +261,7 @@ class MemberController extends Controller
      *     )
      *   ),
      *   @OA\Parameter(
-     *     name="memberId",
+     *     name="id",
      *     in="path",
      *     description="Id do membro",
      *     required=true,

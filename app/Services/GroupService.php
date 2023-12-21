@@ -197,8 +197,8 @@ class GroupService
         return $this->typeGroupRepository->create($data);
     }
 
-    private function editTypeGroup(string $typeGrupId, array $data): void
+    private function editTypeGroup(string $typeGroupId, array $data): void
     {
-        $this->typeGroupRepository->update($typeGrupId, $data);
+        $this->typeGroupRepository->update($typeGroupId, $data);
     }
 }

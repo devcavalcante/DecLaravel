@@ -72,12 +72,6 @@ class GroupController extends Controller
      *      @OA\MediaType(
      *          mediaType="application/json",
      *          @OA\Schema(
-     *             @OA\Property(
-     *                 property="representatives",
-     *                 type="array",
-     *                 @OA\Items(type="integer"),
-     *                 example={2, 4}
-     *             ),
      *              example={
      *                 "entity": "exercitationem",
      *                 "organ": "architecto",
@@ -91,7 +85,7 @@ class GroupController extends Controller
      *                 "internal_concierge": "corrupti",
      *                 "type_group_id": 1,
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
-     *                 "representative": 2,
+     *                 "representative": "representante@mail.com",
      *                 "name": "comissão",
      *                 "type_group": "interno"
      *              }
@@ -185,12 +179,6 @@ class GroupController extends Controller
      *      @OA\MediaType(
      *          mediaType="application/json",
      *          @OA\Schema(
-     *                 @OA\Property(
-     *                 property="representatives",
-     *                 type="array",
-     *                 @OA\Items(type="integer"),
-     *                 example={2, 4}
-     *             ),
      *              example={
      *                 "entity": "exercitationem",
      *                 "organ": "architecto",
@@ -202,9 +190,10 @@ class GroupController extends Controller
      *                 "office_requested": "accusamus",
      *                 "office_indicated": "incidunt",
      *                 "internal_concierge": "corrupti",
-     *                 "type_group_id": 1,
+     *                 "name": "comissão",
+     *                 "type_group": "interno",
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
-     *                 "representatives": {2,4},
+     *                 "representative": "representante@mail.com",
      *              }
      *          )
      *      )
