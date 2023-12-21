@@ -37,8 +37,8 @@ class MemberRequest extends FormRequest
             ],
             '*.role'           => sprintf('%s|string', $isRequired),
             '*.phone'          => sprintf('%s|min:11|max:11|string', $isRequired),
-            '*.entry_date'     => sprintf('%s|date', $isRequired),
-            '*.departure_date' => sprintf('%s|date|after_or_equal:entry_date', $isRequired),
+            '*.entry_date'     => sprintf('%s|date_format:d-m-Y', $isRequired),
+            '*.departure_date' => sprintf('%s|date_format:d-m-Y|after_or_equal:entry_date', $isRequired),
         );
     }
 
@@ -56,9 +56,9 @@ class MemberRequest extends FormRequest
             '*.phone.string'                  => 'O campo telefone deve ser uma string.',
             '*.phone.min'                     => 'O campo telefone deve ter 11 caracteres.',
             '*.phone.max'                     => 'O campo telefone deve ter 11 caracteres.',
-            '*.departure_date.date'           => 'O campo data de saida deve ser uma data válida.',
+            '*.departure_date.date_format'    => 'O campo data de saida deve ser no formato d-m-Y.',
             '*.departure_date.required'       => 'O campo de saida deve ser obrigatório',
-            '*.entry_date.date'               => 'O campo data de entrada deve ser uma data válida.',
+            '*.entry_date.date_format'        => 'O campo data de entrada deve ser no formato d-m-Y.',
             '*.entry_date.required'           => 'O campo data de entrada deve ser obrigatório.',
             '*.departure_date.after_or_equal' => 'A data de partida deve ser uma data posterior ou igual à data de entrada.',
             '*.email.string'                  => 'O campo do email deve ser uma string.',

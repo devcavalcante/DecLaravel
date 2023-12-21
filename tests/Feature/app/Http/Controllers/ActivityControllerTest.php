@@ -99,8 +99,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date' => Carbon::now(),
-            'end_date' => Carbon::now()->addWeek(),
+            'start_date'  => Carbon::now(),
+            'end_date'    => Carbon::now()->addWeek(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -118,8 +118,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date' => Carbon::now(),
-            'end_date' => Carbon::now()->addWeek(),
+            'start_date'  => Carbon::now(),
+            'end_date'    => Carbon::now()->addWeek(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -135,8 +135,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date' => '23-10-2023',
-            'end_date' => '30-10-2023',
+            'start_date'  => '23-10-2023',
+            'end_date'    => '30-10-2023',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', 100), $payload);
@@ -156,8 +156,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date' => '23-10-2023',
-            'end_date' => '30-10-2023',
+            'start_date'  => '23-10-2023',
+            'end_date'    => '30-10-2023',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
