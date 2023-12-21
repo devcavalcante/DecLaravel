@@ -30,6 +30,8 @@ class ActivityRequest extends FormRequest
         return [
             'description' => sprintf('%s|string|min:5', $isRequired),
             'name'        => sprintf('%s|string|min:5', $isRequired),
+            'start_date' => sprintf('%s|required_with:end_date|date', $isRequired),
+            'end_date' => sprintf('%s|required_with:start_date|after_or_equal:start_date|date', $isRequired),
         ];
     }
 
@@ -45,6 +47,12 @@ class ActivityRequest extends FormRequest
             'name.required'        => 'O campo de nome é obrigatório.',
             'description.string'   => 'O campo de descrição deve ser uma string.',
             'description.required' => 'O campo de descrição é obrigatório.',
+            'start_date.date'     => 'O campo data de inicio deve ser uma data válida.',
+            'end_data.date'     => 'O campo data final deve ser uma data válida.',
+            'start_date.required_with'     => 'O campo data final deve estar presente.',
+            'end_data.required_with'     => 'O campo data inicial deve estar presente.',
+            'start_date.required'        => 'O campo de data inicial é obrigatório.',
+            'end_date.required'        => 'O campo de data final é obrigatório.',
         ];
     }
 

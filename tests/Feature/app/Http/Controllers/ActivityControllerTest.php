@@ -8,6 +8,7 @@ use App\Models\Representative;
 use App\Models\Group;
 use App\Models\TypeUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
@@ -63,6 +64,32 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
+    public function testShouldListOpenActivities()
+    {
+        $group = Group::factory()->create();
+        Activity::factory(10)->create(['done_at' => null, 'group_id' => $group->id]);
+        Activity::factory(10)->create(['done_at' => Carbon::now(), 'group_id' => $group->id]);
+
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $response = $this->get(sprintf('api/group/%s/activity/open', $group->id));
+
+        $this->assertCount(10, json_decode($response->getContent(), true));
+    }
+
+    public function testShouldListCompleteActivities()
+    {
+        $group = Group::factory()->create();
+        Activity::factory(10)->create(['done_at' => null, 'group_id' => $group->id]);
+        Activity::factory(20)->create(['done_at' => Carbon::now(), 'group_id' => $group->id]);
+
+        $this->login(TypeUserEnum::REPRESENTATIVE);
+
+        $response = $this->get(sprintf('api/group/%s/activity/concluded', $group->id));
+
+        $this->assertCount(20, json_decode($response->getContent(), true));
+    }
+
     public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
@@ -72,6 +99,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
+            'start_date' => Carbon::now(),
+            'end_date' => Carbon::now()->addWeek(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -89,6 +118,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
+            'start_date' => Carbon::now(),
+            'end_date' => Carbon::now()->addWeek(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -104,6 +135,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
+            'start_date' => '23-10-2023',
+            'end_date' => '30-10-2023',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', 100), $payload);
@@ -123,6 +156,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
+            'start_date' => '23-10-2023',
+            'end_date' => '30-10-2023',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -148,6 +183,36 @@ class ActivityControllerTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals($payload, Arr::only($actual, ['name']));
+    }
+
+    public function testShouldCompleteActivity()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $activity = Activity::factory(['group_id' => $group->id])->create();
+
+        $response = $this->put(sprintf('/api/activity/complete/%s', $activity->id));
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(200);
+        $this->assertNotNull(Arr::get($actual, 'done_at'));
+    }
+
+    public function testShouldRestoreActivity()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $activity = Activity::factory(['group_id' => $group->id])->create();
+
+        $response = $this->put(sprintf('/api/activity/restore/%s', $activity->id));
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(200);
+        $this->assertNull(Arr::get($actual, 'done_at'));
     }
 
     public function testShouldUpdateIsAdmin()

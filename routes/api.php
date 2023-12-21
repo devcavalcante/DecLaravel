@@ -64,6 +64,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'activity'], function () {
+        Route::put('/complete/{id}', [ActivityController::class, 'complete']);
+        Route::put('/restore/{id}', [ActivityController::class, 'restore']);
         Route::put('/{id}', [ActivityController::class, 'update']);
         Route::get('/{id}', [ActivityController::class, 'show']);
     });
@@ -101,6 +103,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         Route::group(['prefix' => '{groupId}/activity'], function () {
             Route::get('/', [ActivityController::class, 'index']);
+            Route::get('/open', [ActivityController::class, 'listOpenActivities']);
+            Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
             Route::post('/', [ActivityController::class, 'store']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });

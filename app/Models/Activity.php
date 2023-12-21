@@ -11,7 +11,7 @@ class Activity extends Model
     use HasFactory;
 
     protected $table = 'activities';
-    protected $fillable = ['name', 'description', 'group_id'];
+    protected $fillable = ['name', 'description', 'group_id', 'start_date', 'end_date', 'done_at'];
 
     public function getNotFoundMessage(): string
     {
