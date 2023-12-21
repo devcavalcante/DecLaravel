@@ -269,7 +269,7 @@ class MemberController extends Controller
      */
     public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
+        $this->authorize(AbilitiesEnum::DELETE, [Member::class, $groupId]);
         $this->memberService->delete($groupId, $id);
         return response()->json([], 204);
     }

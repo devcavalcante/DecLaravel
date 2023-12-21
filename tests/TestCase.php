@@ -14,8 +14,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate');
+        $this->artisan('migrate --seed');
         $this->artisan('passport:install');
-        $this->artisan('db:seed');
     }
 }

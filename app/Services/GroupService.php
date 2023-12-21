@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enums\TypeUserEnum;
 use App\Exceptions\OnlyRepresentativesException;
 use App\Mail\RegisterEmail;
+use App\Repositories\Interfaces\MemberHasGroupRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
@@ -24,6 +26,8 @@ class GroupService
         protected RepresentativeRepositoryInterface $representativeRepository,
         protected UserRepositoryInterface $userRepository,
         protected TypeGroupRepositoryInterface $typeGroupRepository,
+        protected MemberHasGroupRepositoryInterface $memberHasGroupRepository,
+        protected MemberRepositoryInterface $memberRepository,
     ) {
     }
 
@@ -101,6 +105,8 @@ class GroupService
     {
         try {
             DB::beginTransaction();
+            $group = $this->groupRepository->findById($id);
+            $this->deleteMembers($group->members->toArray());
             $group = $this->groupRepository->delete($id);
             $this->typeGroupRepository->delete($group->type_group_id);
             $this->representativeRepository->delete($group->representative_id);
@@ -108,6 +114,15 @@ class GroupService
         } catch (Throwable $throwable) {
             DB::rollBack();
             throw $throwable;
+        }
+    }
+
+    private function deleteMembers(array $members): void
+    {
+        foreach ($members as $member)
+        {
+            $this->memberHasGroupRepository->delete($member['id']);
+            $this->memberRepository->delete($member['id']);
         }
     }
 

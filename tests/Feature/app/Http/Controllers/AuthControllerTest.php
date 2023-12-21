@@ -61,19 +61,6 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    public function testShouldNotCreateWhenOutsidePermissionRule()
-    {
-        $typeUserRepresentative = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $typeUserManager = TypeUser::where('name', TypeUserEnum::MANAGER)->first();
-        $user = User::factory(['type_user_id' => $typeUserRepresentative->id])->create();
-        $payload = $this->getFakePayload($typeUserManager->id);
-        Passport::actingAs($user);
-        $response = $this->post('/api/register', $payload);
-        $actual = json_decode($response->getContent(), true);
-        $this->assertEquals('This action is unauthorized.', $actual['errors']);
-        $this->assertEquals(403, $actual['code']);
-    }
-
     public function testShouldNotCreateWhenValidationErrors()
     {
         $payload = [

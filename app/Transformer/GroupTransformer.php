@@ -35,7 +35,7 @@ class GroupTransformer extends TransformerAbstract
                 'name' => $group->typeGroup->name,
                 'type' => $group->typeGroup->type_group,
             ],
-            'representatives'    => [
+            'representative'    => [
                 'id'    => $group->representative->id,
                 'email' => $group->representative->email,
             ],

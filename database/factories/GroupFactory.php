@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Group;
+use App\Models\Representative;
 use App\Models\TypeGroup;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,6 +16,7 @@ class GroupFactory extends Factory
     {
         $typeGroup = TypeGroup::first();
         $user = User::where(['type_user_id' => 2])->first();
+        $representative = Representative::factory()->create();
 
         return [
             'entity'             => $this->faker->word,
@@ -30,6 +32,7 @@ class GroupFactory extends Factory
             'observations'       => $this->faker->text,
             'type_group_id'      => $typeGroup->id,
             'creator_user_id'    => $user->id,
+            'representative_id'  => $representative->id
         ];
     }
 }

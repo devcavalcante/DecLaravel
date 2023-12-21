@@ -25,7 +25,6 @@ return new class extends Migration
                 $table->softDeletes();
                 $table->string('file_url')->nullable();
                 $table->foreign('type_user_id')->references('id')->on('type_users');
-                $table->foreign('creator_user_id')->references('id')->on('users');
             }
         );
     }

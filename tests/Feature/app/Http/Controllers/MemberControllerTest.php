@@ -4,6 +4,7 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
 use App\Models\Group;
+use App\Models\MemberHasGroup;
 use App\Models\Representative;
 use App\Models\Member;
 use App\Models\TypeUser;
@@ -21,13 +22,17 @@ class MemberControllerTest extends TestCase
     public function testShouldListAll()
     {
         $group = Group::factory()->create();
-        $user = User::factory()->create();
-        Member::factory(['group_id' => $group->id])->create();
-        Member::factory(['user_id' => $user->id, 'group_id' => $group->id])->create();
+        $group2 = Group::factory()->create();
+        $member1 = Member::factory()->create();
+        $member2 = Member::factory()->create();
+        $member = Member::factory()->create();
+        MemberHasGroup::factory(['member_id' => $member1->id, 'group_id' => $group->id])->create();
+        MemberHasGroup::factory(['member_id' => $member2->id, 'group_id' => $group->id])->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group2->id])->create();
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get('api/members');
+        $response = $this->get(sprintf('api/group/%s/members', $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true)['data']);
@@ -36,7 +41,9 @@ class MemberControllerTest extends TestCase
     public function testShouldListOne()
     {
         $group = Group::factory()->create();
-        $member = Member::factory(['group_id' => $group->id])->create();
+        $member = Member::factory()->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
+
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $response = $this->get(sprintf('api/members/%s', $member->id));
@@ -58,27 +65,10 @@ class MemberControllerTest extends TestCase
     public function testShouldCreate()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $payload = [
-            [
-                'phone'          => '93991167653',
-                'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user1->id,
-            ],
-            [
-                'phone'          => '93991778765',
-                'role'           => 'reitor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user2->id,
-            ],
-        ];
+        $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
 
@@ -88,34 +78,15 @@ class MemberControllerTest extends TestCase
         Arr::set($payload, '1.departure_date', '2023-11-01"');
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('members', array_merge($payload[0], ['group_id' => $group->id]));
-        $this->assertDatabaseHas('members', array_merge($payload[1], ['group_id' => $group->id]));
+        $this->assertDatabaseHas('members', $payload[0]);
+        $this->assertDatabaseHas('members', $payload[1]);
     }
 
     public function testShouldNotCreateWhenGroupNotFound()
     {
-        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $payload = [
-            [
-                'phone'          => '93991167653',
-                'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user1->id,
-            ],
-            [
-                'phone'          => '93991778765',
-                'role'           => 'reitor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user2->id,
-            ],
-        ];
+        $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/members', 100), $payload);
 
@@ -127,42 +98,29 @@ class MemberControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $member = Member::factory(['user_id' => $user1->id])->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
-        $payload = [
-            [
-                'phone'          => '93991167653',
-                'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user1->id,
-            ],
-            [
-                'phone'          => '93991778765',
-                'role'           => 'reitor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user2->id,
-            ],
-        ];
+        $payload = $this->getFakePayload();
+        $payload[0]['email'] = $member->email;
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $actual = json_decode($response->getContent(), true)['errors']['0.email'][0];
 
-        $response->assertStatus(400);
-        $this->assertEquals('Membro ja cadastrado no grupo', json_decode($response->getContent(), true)['errors']);
+        $response->assertStatus(422);
+        $this->assertEquals('Esse membro já está cadastrado no grupo', $actual);
     }
 
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
 
         $payload = [
             [
@@ -170,7 +128,7 @@ class MemberControllerTest extends TestCase
                 'role'           => 'professor',
                 'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
-                'user_id'        => (string) $user2->id,
+                'email'          => 'email@email.com',
             ],
         ];
 
@@ -183,16 +141,15 @@ class MemberControllerTest extends TestCase
     public function testShouldUpdate()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $member = Member::factory()->create();
 
         $payload = [
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/members/%s', $member->id), $payload);
+        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, $member->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -203,16 +160,14 @@ class MemberControllerTest extends TestCase
     public function testShouldNotUpdateWhenMemberNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/members/%s', 100), $payload);
+        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -223,18 +178,18 @@ class MemberControllerTest extends TestCase
     public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
-        $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
+        $member = Member::factory()->create();
 
         $payload = [
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/members/%s', $member->id), $payload);
+        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, $member->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -243,10 +198,10 @@ class MemberControllerTest extends TestCase
     public function testShouldDelete()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $member = Member::factory()->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
 
@@ -257,10 +212,10 @@ class MemberControllerTest extends TestCase
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $member = Member::factory()->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', 100, $member->id));
 
@@ -270,11 +225,12 @@ class MemberControllerTest extends TestCase
 
     public function testShouldNotDeleteWhenMemberNotFound()
     {
-        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $user1 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
-        $member = Member::factory(['user_id' => $user1->id, 'group_id' => $group->id])->create();
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $representative = Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $user = User::factory()->create();
+        $member = Member::factory(['user_id' => $user->id])->create();
+        MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, 100));
 
@@ -285,12 +241,12 @@ class MemberControllerTest extends TestCase
     public function testShouldNotDeleteWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $user2 = User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
-        $member = Member::factory(['user_id' => $user2->id, 'group_id' => $group->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
+        $member = Member::factory()->create();
 
         $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
 
@@ -303,14 +259,34 @@ class MemberControllerTest extends TestCase
         return [
             'data' => [
                 'id',
+                'email',
                 'role',
                 'phone',
                 'entry_date',
                 'departure_date',
                 'created_at',
                 'updated_at',
-                'group_id',
                 'user',
+            ],
+        ];
+    }
+
+    private function getFakePayload(): array
+    {
+        return [
+            [
+                'email'          => 'teste@teste.com',
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
+                'departure_date' => '01-11-2023',
+            ],
+            [
+                'email'          => 'teste2@teste.com',
+                'phone'          => '93991778765',
+                'role'           => 'reitor',
+                'entry_date'     => '01-10-2023',
+                'departure_date' => '01-11-2023',
             ],
         ];
     }

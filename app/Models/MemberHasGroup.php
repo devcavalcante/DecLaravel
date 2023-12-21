@@ -15,4 +15,9 @@ class MemberHasGroup extends Model
     ];
 
     protected $table = 'members_has_groups';
+
+    public function getNotFoundMessage(): string
+    {
+        return 'Membro não encontrado';
+    }
 }

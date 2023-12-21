@@ -83,8 +83,8 @@ class GroupControllerTest extends TestCase
 
         $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(201);
-        $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representatives', 'members']));
-        $this->assertDatabaseHasRepresentatives($payload['representatives'], $actual['id']);
+        $this->assertDatabaseHas('groups', Arr::except($actual, ['created_by', 'type_group', 'representative', 'members']));
+        $this->assertDatabaseHas('representatives', Arr::get($actual, 'representative'));
         $this->assertDatabaseHas('type_groups', Arr::only($payload, ['name', 'type_group']));
     }
 
@@ -103,12 +103,9 @@ class GroupControllerTest extends TestCase
     public function testShouldCreateWithOnlyRepresentatives()
     {
         $this->login(TypeUserEnum::MANAGER);
-
-        User::factory(2)->create(['type_user_id' => 1]);
-        $user = User::where(['type_user_id' => 1])->get()->toArray();
-        $ids = array_column($user, 'id');
+        $user = User::factory()->create(['type_user_id' => 1]);
         $payload = $this->fakePayload();
-        $payload['representatives'] = $ids;
+        $payload['representative'] = $user->email;
         $response = $this->post(self::BASE_URL, $payload);
         $actual = json_decode($response->getContent(), true);
         $response->assertStatus(400);
@@ -120,7 +117,6 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::MANAGER);
 
         $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -128,17 +124,17 @@ class GroupControllerTest extends TestCase
         $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(200);
         $this->assertEquals($payload['entity'], $actual['entity']);
-        $this->assertDatabaseHasRepresentatives($payload['representatives'], $group->id);
+        $this->assertDatabaseHas('representatives', $actual['representative']);
     }
 
     public function testShouldUpdateWithOnlyRepresentatives()
     {
         $this->login(TypeUserEnum::MANAGER);
 
+        $user = User::where(['type_user_id' => 1])->first();
         $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
-        $payload['representatives'] = [1, 2];
+        $payload['representative'] = $user->email;
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
@@ -151,7 +147,6 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -168,7 +163,6 @@ class GroupControllerTest extends TestCase
         $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
         $user = User::factory(['type_user_id' => $typeUserId])->create();
         $group = Group::factory(['creator_user_id' => $user->id])->create();
-        Representative::factory(['group_id' => $group->id])->create();
         $payload = $this->fakePayload();
         $payload['entity'] = 'teste';
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
@@ -183,13 +177,13 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::MANAGER);
 
         $typeGroup = TypeGroup::factory()->create();
-        $group = Group::factory(['type_group_id' => $typeGroup->id])->create();
-        $groupHasRepresentative = Representative::factory(['group_id' => $group->id])->create();
+        $representative = Representative::factory()->create();
+        $group = Group::factory(['type_group_id' => $typeGroup->id, 'representative_id' => $representative->id])->create();
         $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('groups', $group->toArray());
-        $this->assertDatabaseMissing('group_has_representatives', $groupHasRepresentative->toArray());
+        $this->assertDatabaseMissing('representatives', $representative->toArray());
         $this->assertDatabaseMissing('type_groups', $typeGroup->toArray());
     }
 
@@ -200,7 +194,6 @@ class GroupControllerTest extends TestCase
         $typeUserId = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first()->id;
         $user = User::factory(['type_user_id' => $typeUserId])->create();
         $group = Group::factory(['creator_user_id' => $user->id])->create();
-        Representative::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('%s/%s', self::BASE_URL, $group->id));
         $actual = json_decode($response->getContent(), true);
@@ -209,23 +202,12 @@ class GroupControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', $actual['errors']);
     }
 
-    private function assertDatabaseHasRepresentatives(array $representatives, string $groupId): void
-    {
-        foreach ($representatives as $representative) {
-            $this->assertDatabaseHas('group_has_representatives', [
-                'group_id' => $groupId,
-                'user_id'  => $representative,
-            ]);
-        }
-    }
-
     private function fakePayload(): array
     {
         $typeGroup = TypeGroup::factory()->create();
-        User::factory(2)->create(['type_user_id' => 3]);
+        User::factory()->create(['type_user_id' => 3]);
 
-        $user = User::where(['type_user_id' => 3])->get()->toArray();
-        $ids = array_column($user, 'id');
+        $user = User::where(['type_user_id' => 3])->first();
         return [
             'entity'             => $this->faker->word,
             'organ'              => $this->faker->word,
@@ -239,7 +221,7 @@ class GroupControllerTest extends TestCase
             'internal_concierge' => $this->faker->word,
             'observations'       => $this->faker->text,
             'type_group_id'      => $typeGroup->id,
-            'representatives'    => $ids,
+            'representative'    => $user->email,
             'name'               => 'Comissão',
             'type_group'         => TypeGroupEnum::INTERNO,
         ];

@@ -38,6 +38,11 @@ class UserPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $id): bool
     {
-        return $user->id == $id;
+        return $user->id == $id || $this->isAdmin();
+    }
+
+    public function restore(User $user, string $id): bool
+    {
+        return $user->id == $id || $this->isAdmin();
     }
 }

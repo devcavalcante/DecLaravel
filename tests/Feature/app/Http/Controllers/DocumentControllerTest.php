@@ -62,8 +62,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldCreate()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
@@ -80,8 +80,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldNotCreateWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'file' => UploadedFile::fake()->create('file.pdf'),
@@ -98,8 +98,8 @@ class DocumentControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'file' => UploadedFile::fake()->create('file.pdf'),
@@ -114,8 +114,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldDelete()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
@@ -128,8 +128,8 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         User::factory()->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', 100, $document->id));
@@ -141,8 +141,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldNotDeleteWhenDocumentNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, 100));
 
@@ -155,8 +155,8 @@ class DocumentControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        Representative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));

@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MemberHasGroupRepository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -64,10 +65,7 @@ class MemberService
     {
         try {
             DB::beginTransaction();
-            $memberHasGroup = $this->memberHasGroupRepository->findByFilters([
-                'member_id' => $memberId,
-                'group_id'  => $groupId,
-            ])->first();
+            $memberHasGroup = $this->memberHasGroupRepository->findByGroupAndMember($memberId, $groupId);
             $this->groupRepository->findById($groupId);
             $this->memberHasGroupRepository->delete($memberHasGroup->id);
             $this->memberRepository->delete($memberId);

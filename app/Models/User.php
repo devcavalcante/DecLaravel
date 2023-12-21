@@ -26,7 +26,6 @@ class User extends Authenticatable
         'email',
         'password',
         'type_user_id',
-        'creator_user_id',
     ];
 
     protected $with = ['typeUser'];
@@ -54,7 +53,7 @@ class User extends Authenticatable
 
     public function getNotFoundMessage(): string
     {
-        return 'Usuario nao encontrado';
+        return 'Usuário não encontrado';
     }
 
     public function typeUser(): BelongsTo
