@@ -12,6 +12,7 @@ use App\Models\User;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -76,6 +77,8 @@ class GroupControllerTest extends TestCase
 
     public function testShouldCreate()
     {
+        Mail::fake();
+
         $this->login(TypeUserEnum::MANAGER);
 
         $payload = $this->fakePayload();
@@ -90,6 +93,8 @@ class GroupControllerTest extends TestCase
 
     public function testShouldOnlyManagersCreate()
     {
+        Mail::fake();
+
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $payload = $this->fakePayload();
@@ -112,8 +117,42 @@ class GroupControllerTest extends TestCase
         $this->assertEquals('Apenas usuarios do tipo representante sao permitidos', $actual['errors']);
     }
 
+    public function testShouldCreateWithRegisteredRepresentativesIntoSystem()
+    {
+        Mail::fake();
+        $this->login(TypeUserEnum::MANAGER);
+
+        $user = User::factory(['type_user_id' => 3])->create();
+        $payload = $this->fakePayload();
+        $payload['representative'] = $user->email;
+
+        $response = $this->post(self::BASE_URL, $payload);
+
+        $representative = Representative::where(['email' => $user->email])->first();
+        $response->assertStatus(201);
+        $this->assertEquals($representative->user_id, $user->id);
+    }
+
+    public function testShouldCreateNotRegisteredRepresentativesIntoSystem()
+    {
+        $this->login(TypeUserEnum::MANAGER);
+
+        $payload = $this->fakePayload();
+        $payload['representative'] = 'outroteste@Mail.com';
+
+        Mail::fake();
+
+        $response = $this->post(self::BASE_URL, $payload);
+
+        $representative = Representative::where(['email' => 'outroteste@Mail.com'])->first();
+        $response->assertStatus(201);
+        $this->assertEquals(null, $representative->user_id);
+    }
+
     public function testShouldUpdate()
     {
+        Mail::fake();
+
         $this->login(TypeUserEnum::MANAGER);
 
         $group = Group::factory()->create();
@@ -170,6 +209,40 @@ class GroupControllerTest extends TestCase
         $actual = json_decode($response->getContent(), true);
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', $actual['errors']);
+    }
+
+    public function testShouldUpdateRepresentativeRegisteredInSystem()
+    {
+        Mail::fake();
+
+        $this->login(TypeUserEnum::MANAGER);
+
+        $group = Group::factory()->create();
+        $payload = $this->fakePayload();
+        $user = User::factory(['type_user_id' => 3])->create();
+        $payload['representative'] = $user->email;
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
+        $actual = json_decode($response->getContent(), true);
+        $representative = Representative::where(['email' => $user->email])->first();
+        $response->assertStatus(200);
+        $this->assertEquals($representative->user_id, $user->id);
+        $this->assertEquals($representative->id, $actual['data']['representative']['id']);
+    }
+
+    public function testShouldUpdateRepresentativeNotRegisteredInSystem()
+    {
+        Mail::fake();
+        $this->login(TypeUserEnum::MANAGER);
+
+        $group = Group::factory()->create();
+        $payload = $this->fakePayload();
+        $payload['representative'] = 'teste@teste.com';
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
+        $actual = json_decode($response->getContent(), true);
+        $representative = Representative::where(['email' => 'teste@teste.com'])->first();
+        $response->assertStatus(200);
+        $this->assertEquals(null, $representative->user_id);
+        $this->assertEquals($representative->id, $actual['data']['representative']['id']);
     }
 
     public function testShouldDelete()

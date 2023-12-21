@@ -39,7 +39,6 @@ class User extends Authenticatable
         'password',
         'c_password',
         'remember_token',
-        'type_user_id',
     ];
 
     /**

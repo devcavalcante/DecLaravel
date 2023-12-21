@@ -11,6 +11,7 @@ use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Mail;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -64,6 +65,8 @@ class MemberControllerTest extends TestCase
 
     public function testShouldCreate()
     {
+        Mail::fake();
+
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
@@ -71,7 +74,6 @@ class MemberControllerTest extends TestCase
         $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
-
         Arr::set($payload, '0.entry_date', '2023-10-01');
         Arr::set($payload, '0.departure_date', '2023-11-01"');
         Arr::set($payload, '1.entry_date', '2023-10-01');
@@ -138,8 +140,60 @@ class MemberControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
+    public function testShouldCreateWithRegisteredMemberIntoSystem()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+
+        $user = User::factory()->create();
+        $payload =  [
+            [
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'email'          => $user->email,
+            ]
+        ];
+
+        Mail::fake();
+
+        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+
+        $member = Member::where(['email' => $user->email])->first();
+        $response->assertStatus(201);
+        $this->assertEquals($member->user_id, $user->id);
+    }
+
+    public function testShouldCreateNotRegisteredMemberIntoSystem()
+    {
+        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+
+        $payload =  [
+            [
+                'phone'          => '93991167653',
+                'role'           => 'professor',
+                'entry_date'     => '01-10-2023',
+                'departure_date' => '01-11-2023',
+                'email'          => 'teste@teste.com',
+            ]
+        ];
+
+        Mail::fake();
+
+        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+
+        $member = Member::where(['email' => $payload[0]['email']])->first();
+        $response->assertStatus(201);
+        $this->assertEquals(null, $member->user_id);
+    }
+
     public function testShouldUpdate()
     {
+        Mail::fake();
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();

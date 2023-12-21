@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Enums\TypeUserEnum;
+use App\Mail\GroupEntry;
 use App\Mail\RegisterEmail;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MemberHasGroupRepository;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -85,6 +85,7 @@ class MemberService
         if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
             $memberData = array_merge($data, ['user_id' => $userId]);
+            Mail::to($email)->send(new GroupEntry(TypeUserEnum::MEMBER));
         } else {
             Mail::to($email)->send(new RegisterEmail(TypeUserEnum::MEMBER));
             $memberData = $data;

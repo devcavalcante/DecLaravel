@@ -570,10 +570,7 @@
                                     "internal_concierge": "corrupti",
                                     "type_group_id": 1,
                                     "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
-                                    "representatives": [
-                                        2,
-                                        4
-                                    ],
+                                    "representative": 2,
                                     "name": "comissão",
                                     "type_group": "interno"
                                 }
@@ -1242,48 +1239,14 @@
                         "description": "Não autorizado"
                     }
                 }
-            }
-        },
-        "/notas/{id}": {
-            "get": {
-                "tags": [
-                    "notes"
-                ],
-                "summary": "Lista o registro de notas por ID",
-                "description": "Lista o registro de notas por ID de referência",
-                "operationId": "0c735c533167555b2d177e69aaf8d940",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id da nota",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "404": {
-                        "description": "Note not found"
-                    },
-                    "200": {
-                        "description": "Ok"
-                    },
-                    "403": {
-                        "description": "Não autorizado"
-                    }
-                }
-            }
-        },
-        "/group/{groupId}/notas": {
+            },
             "post": {
                 "tags": [
                     "notes"
                 ],
                 "summary": "Criar nova nota",
                 "description": "Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "47b8e574f3ff2346bf03153cb2972503",
+                "operationId": "f400bd3c74283e0f8a1d87d886f136e3",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1335,11 +1298,41 @@
             }
         },
         "/notes/{id}": {
+            "get": {
+                "tags": [
+                    "notes"
+                ],
+                "summary": "Lista o registro de notas por ID",
+                "description": "Lista o registro de notas por ID de referência",
+                "operationId": "4ff1db70f3fbc8ab14e315c81fbff433",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da nota",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Note not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "403": {
+                        "description": "Não autorizado"
+                    }
+                }
+            },
             "put": {
                 "tags": [
                     "notes"
                 ],
-                "summary": "Atualiza notas",
+                "summary": "Atualiza notes",
                 "description": "Atualizar notas: somente o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "29a9163f38861fad93ae0510c516c5cd",
                 "parameters": [

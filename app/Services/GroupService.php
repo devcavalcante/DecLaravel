@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TypeUserEnum;
 use App\Exceptions\OnlyRepresentativesException;
+use App\Mail\GroupEntry;
 use App\Mail\RegisterEmail;
 use App\Repositories\Interfaces\MemberHasGroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
@@ -144,6 +145,7 @@ class GroupService
                 'user_id' => $userId,
             ];
 
+            Mail::to($representative)->send(new GroupEntry(TypeUserEnum::REPRESENTATIVE));
             return $this->representativeRepository->create($data);
         }
 
@@ -173,12 +175,14 @@ class GroupService
                 'user_id' => $userId,
             ];
 
+            Mail::to($representative)->send(new GroupEntry(TypeUserEnum::REPRESENTATIVE));
             return $this->representativeRepository->update($group->representative->id, $data);
         }
 
         Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
         return $this->representativeRepository->update($group->representative->id, [
             'email'  => $representative,
+            'user_id' => null,
         ]);
     }
 
