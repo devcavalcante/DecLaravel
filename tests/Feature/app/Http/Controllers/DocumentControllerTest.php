@@ -59,10 +59,28 @@ class DocumentControllerTest extends TestCase
         $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+
+        $file = UploadedFile::fake()->create('file.pdf');
+        $payload = [
+            'file'        => $file,
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['file']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('documents', $response);
+    }
+
+    public function testShouldCreateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $file = UploadedFile::fake()->create('file.pdf');
@@ -111,10 +129,23 @@ class DocumentControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldDelete()
+    public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $document = Document::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('documents', $document->toArray());
+    }
+
+    public function testShouldDeleteIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 

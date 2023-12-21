@@ -63,10 +63,27 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+
+        $payload = [
+            'name'        => 'teste teste',
+            'description' => $this->faker->text,
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('activities', array_merge($payload, ['group_id' => $group->id]));
+    }
+
+    public function testShouldCreateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
@@ -95,7 +112,6 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
@@ -115,10 +131,29 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldUpdate()
+    public function testShouldUpdateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $activity = Activity::factory(['group_id' => $group->id])->create();
+
+        $payload = [
+            'name' => 'teste 2',
+        ];
+
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $activity->id), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(200);
+        $this->assertEquals($payload, Arr::only($actual, ['name']));
+    }
+
+    public function testShouldUpdateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
@@ -167,10 +202,23 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldDelete()
+    public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $activity = Activity::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('activities', $activity->toArray());
+    }
+
+    public function testShouldDeleteIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 

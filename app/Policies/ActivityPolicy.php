@@ -23,13 +23,13 @@ class ActivityPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 
     public function update(User $user, string $activityId): bool
     {
         $activity = $this->activityRepository->findById($activityId);
-        return $this->isRepresentativeOfGroup($user->id, $activity->group_id);
+        return $this->isRepresentativeOfGroup($user->id, $activity->group_id) || $this->isAdmin();
     }
 
     /**
@@ -37,6 +37,6 @@ class ActivityPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 }

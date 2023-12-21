@@ -18,7 +18,7 @@
                     "activity"
                 ],
                 "summary": "Listar todos as atividades",
-                "description": "Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+                "description": "Lista todas as atividades, ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
                 "operationId": "f0acb07d5e32cc06eb9239e645d8730b",
                 "parameters": [
                     {
@@ -48,7 +48,7 @@
                     "activity"
                 ],
                 "summary": "Criar nova atividade",
-                "description": "Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Cria uma nova atividade, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "d1ead45e1fb6738ad0a9375a5efb7831",
                 "parameters": [
                     {
@@ -132,7 +132,7 @@
                     "activity"
                 ],
                 "summary": "Atualiza atividades",
-                "description": "Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Atualizar documentos, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "8a0046ad2f5568277508b8d3ecb52101",
                 "parameters": [
                     {
@@ -186,7 +186,7 @@
                     "activity"
                 ],
                 "summary": "Deletar atividade",
-                "description": "Deletar atividade por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Deletar atividade por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "0d3be6468f3efcea49b77af0003feb6f",
                 "parameters": [
                     {
@@ -349,7 +349,7 @@
                     "documents"
                 ],
                 "summary": "Criar novo documento",
-                "description": "Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Cria um novo documento, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "3beed3e3aeaa9b0a0a5ea431400b26d0",
                 "parameters": [
                     {
@@ -435,7 +435,7 @@
                     "documents"
                 ],
                 "summary": "Deletar documento",
-                "description": "Deletar documento por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Deletar documento por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "2b113906220faa6735e222ca942fde22",
                 "parameters": [
                     {
@@ -744,7 +744,7 @@
                     "meetings"
                 ],
                 "summary": "Criar um novo histórico de reunião para o grupo especificado",
-                "description": "Cria um novo histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "description": "Cria um novo histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
                 "operationId": "8780f16fcb540ebde6c005d88f159339",
                 "parameters": [
                     {
@@ -836,7 +836,7 @@
                     "meetings"
                 ],
                 "summary": "Atualizar o histórico de reunião para o grupo especificado",
-                "description": "Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "description": "Atualiza o histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
                 "operationId": "6f666e36a8c2093c601dd92311dddac8",
                 "parameters": [
                     {
@@ -902,7 +902,7 @@
                     "meetings"
                 ],
                 "summary": "Excluir histórico de reunião",
-                "description": "Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+                "description": "Excluir histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
                 "operationId": "82906fec0bf575b59b66fc6e61666c02",
                 "parameters": [
                     {
@@ -1236,7 +1236,7 @@
                     "notes"
                 ],
                 "summary": "Criar nova nota",
-                "description": "Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Cria uma nova nota, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "f400bd3c74283e0f8a1d87d886f136e3",
                 "parameters": [
                     {
@@ -1323,8 +1323,8 @@
                 "tags": [
                     "notes"
                 ],
-                "summary": "Atualiza notes",
-                "description": "Atualizar notas: somente o REPRESENTANTE tem acesso a este endpoint.",
+                "summary": "Atualiza notas",
+                "description": "Atualizar notas: somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "29a9163f38861fad93ae0510c516c5cd",
                 "parameters": [
                     {
@@ -1382,7 +1382,7 @@
                     "notes"
                 ],
                 "summary": "Deletar notas",
-                "description": "Deletar nota por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+                "description": "Deletar nota por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
                 "operationId": "628089016c53242300d6689edbff078b",
                 "parameters": [
                     {
@@ -1772,7 +1772,7 @@
     "tags": [
         {
             "name": "activity",
-            "description": "CRUD das atividades, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
+            "description": "CRUD das atividades, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar atividades"
         },
         {
             "name": "auth",
@@ -1780,7 +1780,7 @@
         },
         {
             "name": "documents",
-            "description": "CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar documentos"
+            "description": "CRUD dos documentos, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar documentos"
         },
         {
             "name": "group",
@@ -1788,7 +1788,7 @@
         },
         {
             "name": "meetings",
-            "description": "CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar historico de reuniões"
+            "description": "CRUD das reuniõe, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
         },
         {
             "name": "members",
@@ -1796,7 +1796,7 @@
         },
         {
             "name": "notes",
-            "description": "CRUD das notas, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
+            "description": "CRUD das notas, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar notas"
         },
         {
             "name": "type-user",

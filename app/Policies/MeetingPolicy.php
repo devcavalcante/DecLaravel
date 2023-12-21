@@ -21,13 +21,13 @@ class MeetingPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 
     public function update(User $user, string $meetingId): bool
     {
         $meeting = $this->meetingRepository->findById($meetingId);
-        return $this->isRepresentativeOfGroup($user->id, $meeting->group_id);
+        return $this->isRepresentativeOfGroup($user->id, $meeting->group_id) || $this->isAdmin();
     }
 
     /**
@@ -35,6 +35,6 @@ class MeetingPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 }
