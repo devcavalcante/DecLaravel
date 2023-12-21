@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface GroupHasRepresentativeRepositoryInterface
+interface RepresentativeRepositoryInterface
 {
     public function create(array $data): Model;
     public function findById(string $id): Model;

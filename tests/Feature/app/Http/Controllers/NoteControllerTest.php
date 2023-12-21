@@ -4,7 +4,7 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\ColorsEnum;
 use App\Enums\TypeUserEnum;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\Group;
 use App\Models\Note;
 use App\Models\TypeUser;
@@ -67,8 +67,8 @@ class NoteControllerTest extends TestCase
     public function testShouldCreate()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'title'       => 'teste teste',
@@ -85,8 +85,8 @@ class NoteControllerTest extends TestCase
     public function testShouldNotCreateWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'title'       => 'teste teste',
@@ -104,10 +104,11 @@ class NoteControllerTest extends TestCase
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
 
         $payload = [
             'title'       => 'teste teste',
@@ -124,8 +125,8 @@ class NoteControllerTest extends TestCase
     public function testShouldUpdate()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -143,8 +144,6 @@ class NoteControllerTest extends TestCase
     public function testShouldNotUpdateWhenNoteNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
 
         $payload = [
             'title' => 'teste ajskajska',
@@ -159,10 +158,11 @@ class NoteControllerTest extends TestCase
     public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -178,8 +178,8 @@ class NoteControllerTest extends TestCase
     public function testShouldDelete()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
@@ -191,8 +191,8 @@ class NoteControllerTest extends TestCase
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/notes/%s', 100, $note->id));
@@ -204,8 +204,8 @@ class NoteControllerTest extends TestCase
     public function testShouldNotDeleteWhenNoteNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, 100));
 
@@ -216,10 +216,11 @@ class NoteControllerTest extends TestCase
     public function testShouldNotDeleteWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
-        $this->login(TypeUserEnum::REPRESENTATIVE);
+        $userRepresentativeLogged = $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        Representative::factory(['user_id' => $userRepresentativeLogged->id])->create();
+        $representative2 = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative2->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));

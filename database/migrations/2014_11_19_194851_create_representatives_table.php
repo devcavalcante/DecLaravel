@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('members', function (Blueprint $table) {
-            $table->dropPrimary('members_pkey');
+        Schema::create('representatives', function (Blueprint $table) {
+            $table->id();
+            $table->string('email');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('members', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('representatives');
     }
 };

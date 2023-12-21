@@ -26,7 +26,6 @@ class User extends Authenticatable
         'email',
         'password',
         'type_user_id',
-        'creator_user_id',
     ];
 
     protected $with = ['typeUser'];
@@ -40,7 +39,6 @@ class User extends Authenticatable
         'password',
         'c_password',
         'remember_token',
-        'type_user_id',
     ];
 
     /**
@@ -54,7 +52,7 @@ class User extends Authenticatable
 
     public function getNotFoundMessage(): string
     {
-        return 'Usuario nao encontrado';
+        return 'Usuário não encontrado';
     }
 
     public function typeUser(): BelongsTo
@@ -70,10 +68,5 @@ class User extends Authenticatable
     public function role(): string
     {
         return $this->typeUser->name;
-    }
-
-    public function groupsRepresentatives(): BelongsToMany
-    {
-        return $this->belongsToMany(Group::class, 'group_has_representatives', 'user_id', 'group_id');
     }
 }

@@ -25,14 +25,10 @@ abstract class AbstractPolicy
         return $authenticatedUser->role() == TypeUserEnum::REPRESENTATIVE;
     }
 
-    protected function isAuthorized(string $userId, string $groupId): bool
+    protected function isRepresentativeOfGroup(string $userId, string $groupId): bool
     {
         $group = $this->groupRepository->findById($groupId);
-        $representatives = $group->representatives()->get()->toArray();
-        $representativeIds = array_column($representatives, 'id');
-        $isRepresentativeOfTheGroup = array_filter($representativeIds, function ($representativeId) use ($userId) {
-            return $representativeId == $userId;
-        });
-        return !empty($isRepresentativeOfTheGroup);
+        $representativeId = $group->representative->user_id;
+        return $representativeId == $userId;
     }
 }

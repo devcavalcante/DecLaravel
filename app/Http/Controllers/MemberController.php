@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
-use App\Exceptions\MembersExists;
 use App\Http\Requests\MemberRequest;
 use App\Models\Member;
+use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Services\MemberService;
 use App\Transformer\MemberTransformer;
@@ -24,16 +24,26 @@ class MemberController extends Controller
 {
     public function __construct(
         private readonly MemberRepositoryInterface $memberRepository,
-        private readonly MemberService $memberService
+        private readonly MemberService $memberService,
+        private readonly GroupRepositoryInterface $groupRepository,
     ) {
     }
 
     /**
      * @OA\Get(
-     *   path="/members",
+     *   path="/group/{groupId}/members",
      *   tags={"members"},
      *   summary="Listar todos os membros",
      *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -48,9 +58,11 @@ class MemberController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $members = $this->memberRepository->listAll();
+        $group = $this->groupRepository->findById($groupId);
+        $members = $group->members;
+
         return response()->json($this->transform(new MemberTransformer(), $members));
     }
 
@@ -75,18 +87,18 @@ class MemberController extends Controller
      *          @OA\Schema(
      *              example={
      *                          {
+     *                              "email": "bar@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",
      *                              "entry_date": "23-10-1998",
-     *                              "departure_date": "23-10-2023",
-     *                              "user_id": "1"
+     *                              "departure_date": "23-10-2023"
      *                          },
      *                          {
+     *                              "email": "outromail@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",
      *                              "entry_date": "23-10-1998",
-     *                              "departure_date": "23-10-2023",
-     *                              "user_id": "2"
+     *                              "departure_date": "23-10-2023"
      *                          }
      *                     }
      *          )
@@ -110,7 +122,7 @@ class MemberController extends Controller
      *   )
      * )
      * @throws AuthorizationException
-     * @throws MembersExists|Throwable
+     * @throws Throwable
      */
     public function store(MemberRequest $request, string $groupId): JsonResponse
     {
@@ -156,7 +168,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/members/{id}",
+     *   path="/group/{groupId}/members/{id}",
      *   tags={"members"},
      *   summary="Atualizar membro",
      *   description="somente o REPRESENTANTE tem acesso a este endpoint.",
@@ -167,6 +179,15 @@ class MemberController extends Controller
      *     required=true,
      *     @OA\Schema(
      *         type="string"
+     *     )
+     *   ),
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
      *     )
      *   ),
      *   @OA\RequestBody(
@@ -190,9 +211,9 @@ class MemberController extends Controller
      *                  description="A data de partida do membro (formato YYYY-MM-DD)."
      *              ),
      *              @OA\Property(
-     *                  property="user_id",
+     *                  property="email",
      *                  type="string",
-     *                  description="O ID do usuário associado ao membro."
+     *                  description="Email do membro."
      *              )
      *          )
      *      )
@@ -216,9 +237,9 @@ class MemberController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, MemberRequest $request): JsonResponse
+    public function update(string $groupId, string $id, MemberRequest $request): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $id]);
+        $this->authorize(AbilitiesEnum::UPDATE, [Member::class, $groupId]);
         $payload = $request->all();
         $member = $this->memberService->edit($id, $payload);
         return response()->json($member);
@@ -240,7 +261,7 @@ class MemberController extends Controller
      *     )
      *   ),
      *   @OA\Parameter(
-     *     name="memberId",
+     *     name="id",
      *     in="path",
      *     description="Id do membro",
      *     required=true,
@@ -266,8 +287,8 @@ class MemberController extends Controller
      */
     public function destroy(string $groupId, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [Member::class, $groupId]);
-        $this->memberRepository->delete($id);
+        $this->authorize(AbilitiesEnum::DELETE, [Member::class, $groupId]);
+        $this->memberService->delete($groupId, $id);
         return response()->json([], 204);
     }
 }
