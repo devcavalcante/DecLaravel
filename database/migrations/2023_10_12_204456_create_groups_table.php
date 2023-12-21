@@ -24,11 +24,13 @@ return new class extends Migration
             $table->string('office_indicated')->nullable();
             $table->string('internal_concierge')->nullable();
             $table->longText('observations')->nullable();
-            $table->integer('creator_user_id');
+            $table->unsignedBigInteger('creator_user_id');
             $table->unsignedBigInteger('type_group_id');
+            $table->unsignedBigInteger('representative_id');
 
             $table->foreign('creator_user_id')->references('id')->on('users');
             $table->foreign('type_group_id')->references('id')->on('type_groups');
+            $table->foreign('representative_id')->references('id')->on('representatives');
 
             $table->timestamps();
         });

@@ -108,7 +108,7 @@ class UserControllerTest extends TestCase
         $userLogged = $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário no banco de dados usando o model factory
-        $user = User::factory(['creator_user_id' => $userLogged->id])->create();
+        $user = User::factory()->create();
 
         // Envia uma solicitação para excluir o usuário criado
         $response = $this->deleteJson('/api/users/' . $user->id);
@@ -122,7 +122,7 @@ class UserControllerTest extends TestCase
 
     public function testShouldNotDestroyUserWithoutPermission()
     {
-        $userLogged = $this->login(TypeUserEnum::ADMIN);
+        $this->login(TypeUserEnum::VIEWER);
 
         // Cria um usuário no banco de dados usando o model factory
         $user = User::factory()->create();
@@ -153,7 +153,7 @@ class UserControllerTest extends TestCase
         $userLogged = $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário e apaga ele
-        $user = User::factory(['creator_user_id' => $userLogged])->create();
+        $user = User::factory()->create();
         $this->delete("/api/users/delete/{$user->id}");
 
         // Envia uma solicitação para restaurar o usuário
@@ -188,7 +188,7 @@ class UserControllerTest extends TestCase
         $userLogged = $this->login(TypeUserEnum::ADMIN);
 
         // Cria um usuário e apaga ele
-        $user = User::factory(['creator_user_id' => $userLogged])->create();
+        $user = User::factory()->create();
         $this->delete("/api/users/delete/{$user->id}");
 
         $this->login(TypeUserEnum::REPRESENTATIVE);

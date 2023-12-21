@@ -41,7 +41,6 @@ class AuthController extends Controller
      *                  "email": "Email do usuário",
      *                  "password": "Senha do usuário",
      *                  "c_password": "Confirmação de senha",
-     *                  "type_user_id": "ID do tipo de usuário"
      *              }
      *          )
      *      )
@@ -68,8 +67,6 @@ class AuthController extends Controller
      */
     public function register(UserRequest $userRequest): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::CREATE, [User::class, $userRequest]);
-
         $data = $userRequest->all();
         $user = $this->authService->register($data);
         return response()->json($user, 201);

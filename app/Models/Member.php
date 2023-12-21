@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Member extends Model
 {
@@ -14,9 +15,9 @@ class Member extends Model
         'role',
         'phone',
         'user_id',
-        'group_id',
         'entry_date',
         'departure_date',
+        'email',
     ];
 
     protected $table = 'members';
@@ -36,8 +37,8 @@ class Member extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function group(): BelongsTo
+    public function groups(): BelongsToMany
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsToMany(Group::class, 'members_has_groups', 'member_id', 'group_id');
     }
 }

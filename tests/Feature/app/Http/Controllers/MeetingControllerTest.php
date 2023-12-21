@@ -4,7 +4,7 @@ namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
 use App\Models\Document;
-use App\Models\GroupHasRepresentative;
+use App\Models\Representative;
 use App\Models\Meeting;
 use App\Models\Group;
 use App\Models\TypeUser;
@@ -70,8 +70,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'teste teste',
@@ -112,8 +112,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotCreateWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'tetstststs',
@@ -133,8 +133,8 @@ class MeetingControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'tetstststs',
@@ -152,8 +152,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldUpdateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -194,8 +194,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotUpdateWhenMeetingNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'summary' => $this->faker->text,
@@ -215,8 +215,8 @@ class MeetingControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -233,8 +233,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
@@ -259,8 +259,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', 100, $meeting->id));
@@ -272,8 +272,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotDeleteWhenMeetingNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, 100));
 
@@ -286,8 +286,8 @@ class MeetingControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));

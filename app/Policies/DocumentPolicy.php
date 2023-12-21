@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class DocumentPolicy extends AbstractPolicy
 {
-    use HandlesAuthorization, PolicyTrait;
+    use HandlesAuthorization;
 
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
@@ -22,7 +22,7 @@ class DocumentPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId) || $this->isAdmin();
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 
     /**
@@ -30,6 +30,6 @@ class DocumentPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId)|| $this->isAdmin();
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 }

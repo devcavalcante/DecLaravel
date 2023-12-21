@@ -2,13 +2,17 @@
 
 namespace App\Services;
 
-use App\Exceptions\MembersExists;
+use App\Enums\TypeUserEnum;
+use App\Mail\GroupEntry;
+use App\Mail\RegisterEmail;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\MemberHasGroupRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class MemberService
@@ -16,6 +20,8 @@ class MemberService
     public function __construct(
         private GroupRepositoryInterface $groupRepository,
         private MemberRepositoryInterface $memberRepository,
+        private UserRepositoryInterface $userRepository,
+        private MemberHasGroupRepository $memberHasGroupRepository
     ) {
     }
 
@@ -26,7 +32,6 @@ class MemberService
     }
 
     /**
-     * @throws MembersExists
      * @throws Throwable
      */
     public function createMany(string $groupId, array $data): void
@@ -36,8 +41,8 @@ class MemberService
             $this->groupRepository->findById($groupId);
 
             foreach ($data as $payload) {
-                $this->checkIfGroupExistsUser($payload['user_id'], $groupId);
-                $this->memberRepository->create(array_merge($payload, ['group_id' => $groupId]));
+                $payload = array_merge($payload, ['group_id' => $groupId]);
+                $this->createMemberHasGroup($payload);
             }
 
             DB::commit();
@@ -49,7 +54,7 @@ class MemberService
 
     public function edit(string $id, array $data): Model
     {
-        $data = Arr::only($data, ['role', 'phone', 'entry_date', 'departure_date']);
+        $data = Arr::except($data, ['email', 'user_id']);
         return $this->memberRepository->update($id, $data);
     }
 
@@ -58,19 +63,39 @@ class MemberService
      */
     public function delete(string $groupId, string $memberId): void
     {
-        $this->groupRepository->findById($groupId);
-        $this->memberRepository->delete($memberId);
+        try {
+            DB::beginTransaction();
+            $memberHasGroup = $this->memberHasGroupRepository->findByGroupAndMember($memberId, $groupId);
+            $this->groupRepository->findById($groupId);
+            $this->memberHasGroupRepository->delete($memberHasGroup->id);
+            $this->memberRepository->delete($memberId);
+            DB::commit();
+        } catch (Throwable $throwable) {
+            DB::rollBack();
+            throw $throwable;
+        }
     }
 
-    /**
-     * @throws MembersExists
-     */
-    private function checkIfGroupExistsUser(string $userId, string $groupId): void
+    private function createMemberHasGroup(array $data): void
     {
-        $member = $this->memberRepository->findByFilters(['user_id' => $userId, 'group_id' => $groupId]);
+        $groupId = Arr::get($data, 'group_id');
+        $email = Arr::get($data, 'email');
+        $user = $this->userRepository->findByFilters(['email' => $email]);
 
-        if (!$member->isEmpty()) {
-            throw new MembersExists();
+        if ($user->isNotEmpty()) {
+            $userId = $user->first()->id;
+            $memberData = array_merge($data, ['user_id' => $userId]);
+            Mail::to($email)->send(new GroupEntry(TypeUserEnum::MEMBER));
+        } else {
+            Mail::to($email)->send(new RegisterEmail(TypeUserEnum::MEMBER));
+            $memberData = $data;
         }
+
+        $member = $this->memberRepository->create($memberData);
+
+        $this->memberHasGroupRepository->create([
+            'member_id' => $member->id,
+            'group_id'  => $groupId,
+        ]);
     }
 }
