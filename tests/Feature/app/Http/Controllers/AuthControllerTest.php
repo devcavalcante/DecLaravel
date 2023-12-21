@@ -34,10 +34,10 @@ class AuthControllerTest extends TestCase
         $representative = Representative::factory(['email' => 'teste@teste.com'])->create();
 
         $payload = [
-            'name'         => 'Test Name',
-            'email'        => $representative->email,
-            'password'     => '12345678',
-            'c_password'   => '12345678',
+            'name'       => 'Test Name',
+            'email'      => $representative->email,
+            'password'   => '12345678',
+            'c_password' => '12345678',
         ];
         $response = $this->post('/api/register', $payload);
         $actual = json_decode($response->getContent(), true);
@@ -53,10 +53,10 @@ class AuthControllerTest extends TestCase
         $member = Member::factory(['email' => 'teste@teste.com'])->create();
 
         $payload = [
-            'name'         => 'Test Name',
-            'email'        =>  $member->email,
-            'password'     => '12345678',
-            'c_password'   => '12345678',
+            'name'       => 'Test Name',
+            'email'      =>  $member->email,
+            'password'   => '12345678',
+            'c_password' => '12345678',
         ];
         $response = $this->post('/api/register', $payload);
         $actual = json_decode($response->getContent(), true);
@@ -70,10 +70,10 @@ class AuthControllerTest extends TestCase
     public function testShouldNotCreateWhenValidationErrors()
     {
         $payload = [
-            'name'         => 'Test Name',
-            'email'        => 'teste',
-            'password'     => '12345678',
-            'c_password'   => '12345678',
+            'name'       => 'Test Name',
+            'email'      => 'teste',
+            'password'   => '12345678',
+            'c_password' => '12345678',
         ];
 
         $this->login(TypeUserEnum::ADMIN);
@@ -135,10 +135,10 @@ class AuthControllerTest extends TestCase
     private function getFakePayload(): array
     {
         return [
-            'name'         => 'Test Name',
-            'email'        => 'teste@email.com',
-            'password'     => '12345678',
-            'c_password'   => '12345678',
+            'name'       => 'Test Name',
+            'email'      => 'teste@email.com',
+            'password'   => '12345678',
+            'c_password' => '12345678',
         ];
     }
 }

@@ -181,7 +181,7 @@ class GroupService
 
         Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
         return $this->representativeRepository->update($group->representative->id, [
-            'email'  => $representative,
+            'email'   => $representative,
             'user_id' => null,
         ]);
     }

@@ -154,7 +154,7 @@ class MemberControllerTest extends TestCase
                 'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
                 'email'          => $user->email,
-            ]
+            ],
         ];
 
         Mail::fake();
@@ -179,7 +179,7 @@ class MemberControllerTest extends TestCase
                 'entry_date'     => '01-10-2023',
                 'departure_date' => '01-11-2023',
                 'email'          => 'teste@teste.com',
-            ]
+            ],
         ];
 
         Mail::fake();
