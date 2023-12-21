@@ -99,8 +99,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date'  => Carbon::now(),
-            'end_date'    => Carbon::now()->addWeek(),
+            'start_date'  => '2023-12-01',
+            'end_date'    => '2024-01-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
@@ -115,12 +115,7 @@ class ActivityControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $payload = [
-            'name'        => 'teste teste',
-            'description' => $this->faker->text,
-            'start_date'  => Carbon::now(),
-            'end_date'    => Carbon::now()->addWeek(),
-        ];
+        $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
 
@@ -135,8 +130,8 @@ class ActivityControllerTest extends TestCase
         $payload = [
             'name'        => 'teste teste',
             'description' => $this->faker->text,
-            'start_date'  => '23-10-2023',
-            'end_date'    => '30-10-2023',
+            'start_date'  => '2023-10-01',
+            'end_date'    => '2024-12-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/activity', 100), $payload);
@@ -153,12 +148,7 @@ class ActivityControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $user1->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $payload = [
-            'name'        => 'teste teste',
-            'description' => $this->faker->text,
-            'start_date'  => '23-10-2023',
-            'end_date'    => '30-10-2023',
-        ];
+        $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
 
@@ -342,6 +332,16 @@ class ActivityControllerTest extends TestCase
             'group_id',
             'created_at',
             'updated_at',
+        ];
+    }
+
+    private function getFakePayload(): array
+    {
+        return [
+            'name'        => 'teste teste',
+            'description' => $this->faker->text,
+            'start_date'  => '2025-12-01',
+            'end_date'    => '2025-12-02',
         ];
     }
 }

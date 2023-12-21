@@ -33,7 +33,7 @@ class MeetingRequest extends FormRequest
                 '%s|mimes:xml,pdf,docx,doc,zip',
                 $isRequired
             ),
-            'date_meet' => sprintf('%s|date_format:d-m-Y', $isRequired),
+            'date_meet' => sprintf('%s|date_format:Y-m-d', $isRequired),
         ];
     }
     /**
@@ -53,7 +53,7 @@ class MeetingRequest extends FormRequest
             'ata.required'          => 'O campo ata é obrigatório.',
             'ata.string'            => 'O campo ata deve ser uma string.',
             'ata.min'               => 'O campo ata deve ter no mínimo 5 caracteres.',
-            'date_meet.date_format' => 'O campo data da reunião deve ser no formato d-m-Y.',
+            'date_meet.date_format' => 'O campo data da reunião deve ser no formato Y-m-d.',
             'date_meet.required'    => 'O campo data da reunião deve ser obrigatório.',
         ];
     }
