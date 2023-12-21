@@ -114,7 +114,6 @@ class ActivityControllerTest extends TestCase
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
