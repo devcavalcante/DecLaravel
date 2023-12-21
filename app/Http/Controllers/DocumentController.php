@@ -9,12 +9,15 @@ use App\Repositories\Interfaces\DocumentRepositoryInterface;
 use App\Services\DocumentService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @OA\Tag(
  *     name="documents",
- *     description="CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar documentos"
+ *     description="CRUD dos documentos, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar documentos"
  * )
  */
 class DocumentController extends Controller
@@ -27,10 +30,19 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/documents",
+     *   path="/group/{groupId}/documents",
      *   tags={"documents"},
-     *   summary="Listar todos os membros",
-     *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   summary="Listar todos os documentos",
+     *   description="Lista todos os documentos: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   @OA\Parameter(
+     *     name="groupId",
+     *     in="path",
+     *     description="O ID do grupo",
+     *     required=true,
+     *     @OA\Schema(
+     *       type="integer"
+     *     )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Ok"
@@ -45,9 +57,9 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function index(): JsonResponse
+    public function index(string $groupId): JsonResponse
     {
-        $documents = $this->documentRepository->listAll();
+        $documents = $this->documentService->listAll($groupId);
 
         return response()->json($documents);
     }
@@ -93,7 +105,7 @@ class DocumentController extends Controller
      *   path="/group/{groupId}/documents",
      *   tags={"documents"},
      *   summary="Criar novo documento",
-     *   description="Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Cria um novo documento, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -147,69 +159,11 @@ class DocumentController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *   path="/documents/{id}",
-     *   tags={"documents"},
-     *   summary="Atualiza documentos",
-     *   description="Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
-     *   @OA\Parameter(
-     *     name="id",
-     *     in="path",
-     *     description="Id do documento",
-     *     required=true,
-     *     @OA\Schema(
-     *         type="string"
-     *     )
-     *   ),
-     *   @OA\RequestBody(
-     *      @OA\MediaType(
-     *          mediaType="multipart/form-data",
-     *          @OA\Schema(
-     *              @OA\Property(
-     *                  property="description",
-     *                  type="string",
-     *                  description="descrição do documento",
-     *              ),
-     *              @OA\Property(
-     *                  description="anexo da tarefa",
-     *                  property="file",
-     *                  type="file",
-     *              ),
-     *         )
-     *     )
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Ok"
-     *   ),
-     *   @OA\Response(
-     *     response="500",
-     *     description="Erro"
-     *   ),
-     *   @OA\Response(
-     *     response=403,
-     *     description="Não autorizado"
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="Documento not found"
-     *   )
-     * )
-     * @throws AuthorizationException
-     */
-    public function update(string $id, DocumentRequest $request): JsonResponse
-    {
-        $this->authorize(AbilitiesEnum::UPDATE, [Document::class, $id]);
-        $document = $this->documentService->edit($id, $request->all());
-        return response()->json($document);
-    }
-
-    /**
      * @OA\Delete(
      *   path="/group/{groupId}/documents/{documentId}",
      *   tags={"documents"},
      *   summary="Deletar documento",
-     *   description="Deletar documento por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Deletar documento por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -248,5 +202,47 @@ class DocumentController extends Controller
         $this->authorize(AbilitiesEnum::CREATE, [Document::class, $groupId]);
         $this->documentService->delete($groupId, $id);
         return response()->json([], 204);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/documents/download/{id}",
+     *   tags={"documents"},
+     *   summary="Faz download do documento",
+     *   description="faz download do documento por ID",
+     *   @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     description="Id do documento",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="string"
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Documento not found"
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Ok"
+     *   ),
+     *   @OA\Response(
+     *     response=403,
+     *     description="Não autorizado"
+     *   )
+     * )
+     */
+    public function download(string $documentId): BinaryFileResponse|JsonResponse
+    {
+        $document = $this->documentRepository->findById($documentId);
+        $filePath = $document->file;
+        $fileName = substr($filePath, 7);
+
+        if (Storage::disk('local')->exists($filePath)) {
+            return Response::download(storage_path("app/{$filePath}"), $fileName);
+        }
+
+        return response()->json(['error' => 'Arquivo não encontrado'], 404);
     }
 }

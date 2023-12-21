@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable();
             $table->string('file');
-            $table->unsignedBigInteger('file_size')->nullable();
+            $table->string('file_size');
             $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups');
             $table->timestamps();

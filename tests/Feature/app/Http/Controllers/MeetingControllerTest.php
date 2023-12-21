@@ -3,7 +3,8 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Enums\TypeUserEnum;
-use App\Models\GroupHasRepresentative;
+use App\Models\Document;
+use App\Models\Representative;
 use App\Models\Meeting;
 use App\Models\Group;
 use App\Models\TypeUser;
@@ -11,7 +12,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Faker\Factory as FakerFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
@@ -36,7 +39,7 @@ class MeetingControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(self::BASE_URL);
+        $response = $this->get(sprintf('api/group/%s/meeting-history', $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));
@@ -64,35 +67,58 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'teste teste',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20020',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('meetings', array_merge($payload, ['group_id' => $group->id]));
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
+    }
+
+    public function testShouldCreateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+
+        $payload = [
+            'content'   => 'teste teste',
+            'summary'   => $this->faker->text,
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
+            'date_meet' => Carbon::now(),
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
     }
 
     public function testShouldNotCreateWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
@@ -102,19 +128,18 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
     }
 
-
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
-            'ata'       => 'ata numero 20',
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
             'date_meet' => Carbon::now(),
         ];
 
@@ -124,38 +149,60 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldUpdate()
+    public function testShouldUpdateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
-            'content' => 'tetstststs',
-            'summary' => $this->faker->text,
-            'ata'     => 'ata numero 20',
+            'content' => $this->faker->text,
+            'ata'     => UploadedFile::fake()->create('file.pdf'),
+            'method'  => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
-
-        $actual = json_decode($response->getContent(), true);
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
 
         $response->assertStatus(200);
-        $this->assertEquals($payload, Arr::only($actual, ['content', 'ata', 'summary']));
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
+    }
+
+    public function testShouldUpdateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
+
+        $payload = [
+            'content' => $this->faker->text,
+            'ata'     => UploadedFile::fake()->create('file.pdf'),
+            'method'  => 'PUT',
+        ];
+
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
     }
 
     public function testShouldNotUpdateWhenMeetingNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'summary' => $this->faker->text,
+            'method'  => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', 100), $payload);
+        $response = $this->post(sprintf('api/meeting-history/%s', 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -168,25 +215,39 @@ class MeetingControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
             'summary' => $this->faker->text,
+            'method'  => 'PUT',
         ];
 
-        $response = $this->put(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldDelete()
+    public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('meetings', $meeting->toArray());
+    }
+
+    public function testShouldDeleteIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
@@ -198,8 +259,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotDeleteWhenGroupNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', 100, $meeting->id));
@@ -211,8 +272,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldNotDeleteWhenMeetingNotFound()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, 100));
 
@@ -225,14 +286,28 @@ class MeetingControllerTest extends TestCase
         $typeUser = TypeUser::where('name', TypeUserEnum::REPRESENTATIVE)->first();
         $this->login(TypeUserEnum::REPRESENTATIVE);
         $user1 = User::factory(['type_user_id' => $typeUser->id])->create();
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $user1->id])->create();
+        $representative = Representative::factory(['user_id' => $user1->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
+    }
+
+    public function testShouldDownload()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+        $file = UploadedFile::fake()->create('file.pdf');
+        $file =  Storage::disk('local')->put('atas', $file);
+
+        $meeting = Meeting::factory()->create(['ata' => $file]);
+
+        $response = $this->get("/api/meeting-history/download/{$meeting->id}");
+
+        $response->assertStatus(200);
+        Storage::disk('local')->delete($file);
     }
 
     private function getJsonStructure(): array

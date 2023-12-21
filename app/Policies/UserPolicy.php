@@ -2,13 +2,10 @@
 
 namespace App\Policies;
 
-use App\Enums\TypeUserEnum;
-use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Auth;
 
 class UserPolicy extends AbstractPolicy
 {

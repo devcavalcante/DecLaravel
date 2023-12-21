@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class NotePolicy extends AbstractPolicy
 {
-    use HandlesAuthorization, PolicyTrait;
+    use HandlesAuthorization;
 
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
@@ -22,14 +22,14 @@ class NotePolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 
     public function update(User $user, string $activityId): bool
     {
         $activity = $this->noteRepository->findById($activityId);
         $group = $this->groupRepository->findById($activity->group_id);
-        return $this->isAuthorized($user->id, $group->id);
+        return $this->isRepresentativeOfGroup($user->id, $group->id) || $this->isAdmin();
     }
 
     /**
@@ -37,6 +37,6 @@ class NotePolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isAuthorized($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isAdmin();
     }
 }

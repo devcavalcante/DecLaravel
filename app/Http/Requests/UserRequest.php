@@ -29,20 +29,17 @@ class UserRequest extends FormRequest
     {
         $method = request()->method;
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
-        $isForbidden = $method !== 'POST' ? 'prohibited' : 'required';
         return [
-            'name'            => sprintf('%s|min:4|string', $isRequired),
-            'email'           => sprintf('%s|email|string', $isRequired),
-            'password'        => sprintf('%s|min:8|string', $isRequired),
-            'c_password'      => sprintf('%s|same:password|min:8|string', $isRequired),
-            'type_user_id'    => [$isForbidden, Rule::in(GetValues::listOfKeysTypeUserEnum())],
-            'file_url'        => [
+            'name'       => sprintf('%s|min:4|string', $isRequired),
+            'email'      => sprintf('%s|email|string', $isRequired),
+            'password'   => sprintf('%s|min:8|string', $isRequired),
+            'c_password' => sprintf('%s|same:password|min:8|string', $isRequired),
+            'file_url'   => [
                 File::image()
                     ->min(1024) // Tamanho mínimo do arquivo em kilobytes (1MB)
                     ->max(12 * 1024) // Tamanho máximo do arquivo em kilobytes (12MB)
                     ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)), // Dimensões máximas da imagem
             ],
-            'creator_user_id' => 'exists:users,id',
         ];
     }
     /**

@@ -27,6 +27,7 @@ class Group extends Model
         'internal_concierge',
         'observations',
         'type_group_id',
+        'representative_id',
         'creator_user_id',
     ];
 
@@ -35,33 +36,26 @@ class Group extends Model
         'creator_user_id',
     ];
 
-    protected $with = ['typeGroup', 'user', 'representatives', 'userMembers'];
+    protected $with = ['typeGroup', 'user', 'representative', 'members'];
 
     public function getNotFoundMessage(): string
     {
         return 'Grupo não encontrado';
     }
 
-    public function representatives(): BelongsToMany
+    public function representative(): BelongsTo
     {
-        return $this->belongsToMany(User::class, 'group_has_representatives', 'group_id', 'user_id')->withTimestamps();
-    }
-
-    public function userMembers(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id')
-            ->withTimestamps()
-            ->withPivot('id', 'role', 'phone', 'entry_date', 'departure_date', 'created_at', 'updated_at');
+        return $this->belongsTo(Representative::class, 'representative_id');
     }
 
     public function typeGroup(): BelongsTo
     {
-        return $this->belongsTo(TypeGroup::class, 'type_group_id', 'id');
+        return $this->belongsTo(TypeGroup::class, 'type_group_id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id');
     }
 
     public function document(): HasMany
@@ -82,5 +76,10 @@ class Group extends Model
     public function note(): HasMany
     {
         return $this->hasMany(Note::class);
+    }
+
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(Member::class, 'members_has_groups', 'group_id', 'member_id');
     }
 }

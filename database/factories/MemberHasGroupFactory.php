@@ -3,13 +3,15 @@
 namespace Database\Factories;
 
 use App\Models\Group;
-use App\Models\Meeting;
+use App\Models\Member;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class MeetingFactory extends Factory
+/**
+ * @extends Factory<User>
+ */
+class MemberHasGroupFactory extends Factory
 {
-    protected $model = Meeting::class;
-
     /**
      * Define the model's default state.
      *
@@ -17,13 +19,11 @@ class MeetingFactory extends Factory
      */
     public function definition(): array
     {
+        $member = Member::factory()->create();
         $group = Group::factory()->create();
 
         return [
-            'content'   => $this->faker->word,
-            'summary'   => $this->faker->text,
-            'ata'       => $this->faker->url,
-            'date_meet' => $this->faker->date,
+            'member_id' => $member->id,
             'group_id'  => $group->id,
         ];
     }

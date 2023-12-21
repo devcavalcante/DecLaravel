@@ -42,7 +42,6 @@ class AuthController extends Controller
      *                  "email": "Email do usuário",
      *                  "password": "Senha do usuário",
      *                  "c_password": "Confirmação de senha",
-     *                  "type_user_id": "ID do tipo de usuário"
      *              }
      *          )
      *      )

@@ -5,6 +5,8 @@ namespace App\Services\Auth;
 use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
 use App\Exceptions\EmailExists;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -20,7 +22,9 @@ class AuthService
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected TokenRepository $tokenRepository,
+        protected RepresentativeRepositoryInterface $representativeRepository,
         protected TypeUserRepositoryInterface $typeUserRepository,
+        protected MemberRepositoryInterface $memberRepository,
     ) {
     }
 
@@ -31,20 +35,15 @@ class AuthService
     {
         try {
             DB::beginTransaction();
-            $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::ADMIN])->first();
-
             $data['password'] = bcrypt($data['password']);
-            $data['type_user_id'] = $typeUser->id;
-
-            $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')]);
+            $email = Arr::get($data, 'email');
+            $user = $this->userRepository->findByFilters(['email' => $email]);
 
             if ($user->isNotEmpty()) {
                 throw new EmailExists();
             }
 
-            $data = Arr::except($data, 'c_password');
-            $user = $this->userRepository->create($data);
-            $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
+            $user = $this->createUser($data);
             DB::commit();
             return $user;
         } catch (Throwable $throwable) {
@@ -61,11 +60,11 @@ class AuthService
         $auth = Auth::guard('web');
         if ($auth->attempt(['email' => $data['email'], 'password' => $data['password']])) {
             $user = $auth->user();
-            $user['token'] =  $user->createToken(env('APP_NAME'))->accessToken;
+            $user['token'] =  $user->createToken(env('APP_NAME'))-> accessToken;
             return $user;
         }
 
-        throw new AuthorizedException('Não autorizado', 401);
+        throw new AuthorizedException('Nao autorizado', 401);
     }
 
     /**
@@ -74,5 +73,44 @@ class AuthService
     public function logout(): void
     {
         $this->tokenRepository->revokeAccessToken(Auth::guard('api')->user()->token()->id);
+    }
+
+    private function createUser(array $data): Model
+    {
+        $email = Arr::get($data, 'email');
+        $representative = $this->representativeRepository->findByFilters(['email' => $email]);
+        $member = $this->memberRepository->findByFilters(['email' => $email]);
+
+        $typeUserId = $this->getTypeUserId($representative);
+
+        $user = $this->userRepository->create(array_merge($data, ['type_user_id' => $typeUserId]));
+        $this->updateRepresentativeOrMember($representative, $member, $user->id);
+        $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
+
+        return $user;
+    }
+
+    private function getTypeUserId($representative): string
+    {
+        if ($representative->isNotEmpty()) {
+            return $this->getTypeUserIdByName(TypeUserEnum::REPRESENTATIVE);
+        }
+        return $this->getTypeUserIdByName(TypeUserEnum::VIEWER);
+    }
+
+    private function getTypeUserIdByName(string $typeName): string
+    {
+        return $this->typeUserRepository->findByFilters(['name' => $typeName])->first()->id;
+    }
+
+    private function updateRepresentativeOrMember($representative, $member, $userId): void
+    {
+        $payload = ['user_id' => $userId];
+        if ($representative->isNotEmpty()) {
+            $this->representativeRepository->update($representative->first()->id, $payload);
+        }
+        if ($member->isNotEmpty()) {
+            $this->memberRepository->update($member->first()->id, $payload);
+        }
     }
 }

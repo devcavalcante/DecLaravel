@@ -103,6 +103,51 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function testDestroyUser()
+    {
+        $userLogged = $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um usuário no banco de dados usando o model factory
+        $user = User::factory()->create();
+
+        // Envia uma solicitação para excluir o usuário criado
+        $response = $this->deleteJson('/api/users/' . $user->id);
+
+        // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
+        $response->assertStatus(204);
+
+        // Verifica se o usuário foi removido corretamente do banco de dados
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+
+    public function testShouldNotDestroyUserWithoutPermission()
+    {
+        $this->login(TypeUserEnum::VIEWER);
+
+        // Cria um usuário no banco de dados usando o model factory
+        $user = User::factory()->create();
+
+        // Envia uma solicitação para excluir o usuário criado
+        $response = $this->deleteJson('/api/users/' . $user->id);
+
+        // Verifica se a solicitação foi bem-sucedida e se a resposta está vazia (204)
+        $response->assertStatus(403);
+    }
+
+    public function testDestroyNonExistingUser()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+
+        // Cria um ID inválido para um usuário inexistente
+        $invalidId = 999;
+
+        // Envia uma solicitação para excluir o usuário inexistente
+        $response = $this->deleteJson('/api/users/' . $invalidId);
+
+        // Verifica se a solicitação retornou um erro 404
+        $response->assertStatus(404);
+    }
+
     public function testShouldUpdate()
     {
         $user = $this->login(TypeUserEnum::ADMIN);
@@ -131,7 +176,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testShouldDestrou()
+    public function testShouldDestroy()
     {
         $this->login(TypeUserEnum::ADMIN);
         $user = User::factory()->create();

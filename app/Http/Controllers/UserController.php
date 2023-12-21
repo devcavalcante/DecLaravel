@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AbilitiesEnum;
 use App\Http\Requests\UserRequest;
-use App\Models\Group;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\UserService;

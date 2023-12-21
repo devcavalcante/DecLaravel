@@ -4,26 +4,31 @@ namespace App\Services;
 
 use App\Enums\TypeUserEnum;
 use App\Exceptions\OnlyRepresentativesException;
-use App\Repositories\Interfaces\GroupHasRepresentativeRepositoryInterface;
+use App\Mail\GroupEntry;
+use App\Mail\RegisterEmail;
+use App\Repositories\Interfaces\MemberHasGroupRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
-use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class GroupService
 {
     public function __construct(
         protected GroupRepositoryInterface $groupRepository,
-        protected GroupHasRepresentativeRepositoryInterface $groupHasRepresentativeRepository,
+        protected RepresentativeRepositoryInterface $representativeRepository,
         protected UserRepositoryInterface $userRepository,
         protected TypeGroupRepositoryInterface $typeGroupRepository,
-        protected TypeUserRepositoryInterface $typeUserRepository,
+        protected MemberHasGroupRepositoryInterface $memberHasGroupRepository,
+        protected MemberRepositoryInterface $memberRepository,
     ) {
     }
 
@@ -46,13 +51,17 @@ class GroupService
 
             $payloadTypeGroup = Arr::only($data, ['name', 'type_group']);
             $typeGroup = $this->createTypeGroup($payloadTypeGroup);
+            $payloadGroup = Arr::except($data, ['name', 'type_group']);
 
-            $data['creator_user_id'] = Auth::id();
-            $data['type_group_id'] = $typeGroup->id;
-            $group = $this->groupRepository->create(Arr::except($data, ['name', 'type_group']));
+            $representative = Arr::get($data, 'representative');
+            $representative = $this->createGroupHasRepresentative($representative);
 
-            $representatives = Arr::get($data, 'representatives');
-            $this->createGroupHasRepresentatives($representatives, $group->id);
+            $payloadGroup = array_merge($payloadGroup, [
+                'representative_id' => $representative->id,
+                'creator_user_id'   => Auth::id(),
+                'type_group_id'     => $typeGroup->id,
+            ]);
+            $group = $this->groupRepository->create($payloadGroup);
 
             DB::commit();
             return $group;
@@ -71,18 +80,19 @@ class GroupService
             DB::beginTransaction();
             $typeGroup = Arr::only($data, ['name', 'type_group']);
 
-            $group = $this->groupRepository->update($groupId, $data);
+            $representative = Arr::get($data, 'representative');
+            if (!empty($representative)) {
+                $representative = $this->updateGroupHasRepresentative($representative, $groupId);
+                $data['representative_id'] = $representative->id;
+            }
 
+            $group = $this->groupRepository->update($groupId, $data);
             if (!empty($typeGroup)) {
                 $this->editTypeGroup($group->typeGroup->id, $typeGroup);
             }
 
-            $representatives = Arr::get($data, 'representatives');
-            if (!empty($representatives)) {
-                $this->updateGroupHasRepresentatives($representatives, $groupId);
-            }
             DB::commit();
-            return $group->load('representatives');
+            return $group;
         } catch (Throwable $throwable) {
             DB::rollBack();
             throw $throwable;
@@ -97,19 +107,10 @@ class GroupService
         try {
             DB::beginTransaction();
             $group = $this->groupRepository->findById($id);
-            $groupRepresentatives = $this->groupHasRepresentativeRepository->findByFilters([
-                'group_id' => $group->id,
-            ])->toArray();
-            $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
-            $typeGroupId = $group->typeGroup->id;
-
-            foreach ($groupRepresentatives as $groupRepresentative) {
-                $this->groupHasRepresentativeRepository->delete($groupRepresentative['id']);
-            }
-
-            $this->setTypeUser($typeUser->id, $groupRepresentatives, null);
-            $this->groupRepository->delete($id);
-            $this->typeGroupRepository->delete($typeGroupId);
+            $this->deleteMembers($group->members->toArray());
+            $group = $this->groupRepository->delete($id);
+            $this->typeGroupRepository->delete($group->type_group_id);
+            $this->representativeRepository->delete($group->representative_id);
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();
@@ -117,52 +118,78 @@ class GroupService
         }
     }
 
-    /**
-     * @throws OnlyRepresentativesException
-     */
-    private function createGroupHasRepresentatives(array $representatives, string $groupId): void
+    private function deleteMembers(array $members): void
     {
-        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::REPRESENTATIVE])->first();
-
-        foreach ($representatives as $representative) {
-            if ($this->checkIfUserIsNotRepresentative($representative)) {
-                throw new OnlyRepresentativesException();
-            }
-            $data = [
-                'user_id'  => $representative,
-                'group_id' => $groupId,
-            ];
-            $this->userRepository->update($representative, ['type_user_id' => $typeUser->id]);
-            $this->groupHasRepresentativeRepository->create($data);
+        foreach ($members as $member) {
+            $this->memberHasGroupRepository->delete($member['id']);
+            $this->memberRepository->delete($member['id']);
         }
     }
 
     /**
      * @throws OnlyRepresentativesException
      */
-    private function updateGroupHasRepresentatives(array $representatives, string $groupId): void
+    private function createGroupHasRepresentative(string $representative): Model
     {
-        $isManager = array_filter($representatives, function ($representative) {
-            return $this->checkIfUserIsNotRepresentative($representative);
-        });
+        $user = $this->userRepository->findByFilters(['email' => $representative]);
 
-        if (!empty($isManager)) {
-            throw new OnlyRepresentativesException();
+        if ($user->isNotEmpty()) {
+            $userId = $user->first()->id;
+
+            if (!$this->checkIfIsRepresentative($userId)) {
+                throw new OnlyRepresentativesException();
+            }
+
+            $data = [
+                'email'   => $representative,
+                'user_id' => $userId,
+            ];
+
+            Mail::to($representative)->send(new GroupEntry(TypeUserEnum::REPRESENTATIVE));
+            return $this->representativeRepository->create($data);
         }
 
-        $typeUserRepresentative = $this->typeUserRepository->findByFilters([
-            'name' => TypeUserEnum::REPRESENTATIVE,
-        ])->first();
-        $typeUserViewer = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
+        Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
+        return $this->representativeRepository->create([
+            'email'  => $representative,
+        ]);
+    }
 
-        $this->setTypeUser($typeUserRepresentative->id, null, $representatives);
+    /**
+     * @throws OnlyRepresentativesException
+     */
+    private function updateGroupHasRepresentative(string $representative, string $groupId): Model
+    {
+        $user = $this->userRepository->findByFilters(['email' => $representative]);
         $group = $this->groupRepository->findById($groupId);
-        $groupRepresentatives = $group->representatives();
 
-        $this->setTypeUser($typeUserViewer->id, $groupRepresentatives->get()->toArray(), null);
+        if ($user->isNotEmpty()) {
+            $userId = $user->first()->id;
 
-        $groupRepresentatives->sync($representatives);
-        $group->refresh();
+            if (!$this->checkIfIsRepresentative($userId)) {
+                throw new OnlyRepresentativesException();
+            }
+
+            $data = [
+                'email'   => $representative,
+                'user_id' => $userId,
+            ];
+
+            Mail::to($representative)->send(new GroupEntry(TypeUserEnum::REPRESENTATIVE));
+            return $this->representativeRepository->update($group->representative->id, $data);
+        }
+
+        Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
+        return $this->representativeRepository->update($group->representative->id, [
+            'email'   => $representative,
+            'user_id' => null,
+        ]);
+    }
+
+    private function checkIfIsRepresentative(string $userId): bool
+    {
+        $user = $this->userRepository->findById($userId);
+        return $user->role() == TypeUserEnum::REPRESENTATIVE;
     }
 
     private function createTypeGroup(array $data): Model
@@ -170,24 +197,8 @@ class GroupService
         return $this->typeGroupRepository->create($data);
     }
 
-    private function editTypeGroup(string $typeGrupId, array $data): void
+    private function editTypeGroup(string $typeGroupId, array $data): void
     {
-        $this->typeGroupRepository->update($typeGrupId, $data);
-    }
-
-    private function setTypeUser(string $typeUserId, ?array $data, ?array $values): void
-    {
-        if (!is_null($data)) {
-            $ids = array_column($data, 'id');
-            $this->userRepository->updateWhereIn($ids, ['type_user_id' => $typeUserId]);
-            return;
-        }
-        $this->userRepository->updateWhereIn($values, ['type_user_id' => $typeUserId]);
-    }
-
-    private function checkIfUserIsNotRepresentative(string $id): bool
-    {
-        $user = $this->userRepository->findById($id);
-        return $user->role() != TypeUserEnum::REPRESENTATIVE;
+        $this->typeGroupRepository->update($typeGroupId, $data);
     }
 }

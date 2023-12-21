@@ -9,10 +9,12 @@ use App\Repositories\Interfaces\ApiTokenRepositoryInterface;
 use App\Repositories\Interfaces\MeetingRepositoryInterface;
 use App\Repositories\DocumentRepository;
 use App\Repositories\Interfaces\DocumentRepositoryInterface;
+use App\Repositories\Interfaces\MemberHasGroupRepositoryInterface;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
-use App\Repositories\GroupHasRepresentativeRepository;
+use App\Repositories\MemberHasGroupRepository;
+use App\Repositories\RepresentativeRepository;
 use App\Repositories\GroupRepository;
-use App\Repositories\Interfaces\GroupHasRepresentativeRepositoryInterface;
+use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\NoteRepositoryInterface;
 use App\Repositories\Interfaces\TypeGroupRepositoryInterface;
@@ -55,10 +57,6 @@ class AppServiceProvider extends ServiceProvider
             GroupRepository::class
         );
         $this->app->bind(
-            GroupHasRepresentativeRepositoryInterface::class,
-            GroupHasRepresentativeRepository::class
-        );
-        $this->app->bind(
             MemberRepositoryInterface::class,
             MemberRepository::class
         );
@@ -81,6 +79,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ApiTokenRepositoryInterface::class,
             ApiTokenRepository::class
+        );
+        $this->app->bind(
+            RepresentativeRepositoryInterface::class,
+            RepresentativeRepository::class
+        );
+        $this->app->bind(
+            MemberHasGroupRepositoryInterface::class,
+            MemberHasGroupRepository::class
         );
 
         $this->app->register(L5SwaggerServiceProvider::class);

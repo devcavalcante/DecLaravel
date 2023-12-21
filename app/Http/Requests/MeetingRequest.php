@@ -24,12 +24,15 @@ class MeetingRequest extends FormRequest
      */
     public function rules(): array
     {
-        $method = request()->method;
+        $method = $this->request->get('method');
         $isRequired = $method == 'POST' ? 'required' : 'sometimes';
         return [
             'content'   => sprintf('%s|min:5|string', $isRequired),
             'summary'   => sprintf('%s|min:5|string', $isRequired),
-            'ata'       => sprintf('%s|min:5|string', $isRequired),
+            'ata'       => sprintf(
+                '%s|mimes:xml,pdf,docx,doc,zip',
+                $isRequired
+            ),
             'date_meet' => sprintf('%s|date', $isRequired),
         ];
     }
