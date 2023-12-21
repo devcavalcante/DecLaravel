@@ -32,7 +32,7 @@ class GroupFactory extends Factory
             'observations'       => $this->faker->text,
             'type_group_id'      => $typeGroup->id,
             'creator_user_id'    => $user->id,
-            'representative_id'  => $representative->id
+            'representative_id'  => $representative->id,
         ];
     }
 }

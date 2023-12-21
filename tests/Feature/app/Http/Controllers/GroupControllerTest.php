@@ -221,7 +221,7 @@ class GroupControllerTest extends TestCase
             'internal_concierge' => $this->faker->word,
             'observations'       => $this->faker->text,
             'type_group_id'      => $typeGroup->id,
-            'representative'    => $user->email,
+            'representative'     => $user->email,
             'name'               => 'Comissão',
             'type_group'         => TypeGroupEnum::INTERNO,
         ];

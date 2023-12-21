@@ -23,8 +23,8 @@ class MemberHasGroupFactory extends Factory
         $group = Group::factory()->create();
 
         return [
-            'member_id'        => $member->id,
-            'group_id' => $group->id
+            'member_id' => $member->id,
+            'group_id'  => $group->id,
         ];
     }
 }

@@ -119,8 +119,7 @@ class GroupService
 
     private function deleteMembers(array $members): void
     {
-        foreach ($members as $member)
-        {
+        foreach ($members as $member) {
             $this->memberHasGroupRepository->delete($member['id']);
             $this->memberRepository->delete($member['id']);
         }

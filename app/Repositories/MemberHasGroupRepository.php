@@ -26,7 +26,7 @@ class MemberHasGroupRepository implements MemberHasGroupRepositoryInterface
             'group_id'  => $groupId,
         ]);
 
-        if($memberHasGroup->isEmpty()){
+        if ($memberHasGroup->isEmpty()) {
             throw new NotFoundHttpException($this->model->getNotFoundMessage());
         }
 
