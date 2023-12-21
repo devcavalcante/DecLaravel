@@ -67,11 +67,32 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+
+        $payload = [
+            'content'   => 'teste teste',
+            'summary'   => $this->faker->text,
+            'ata'       => UploadedFile::fake()->create('ata.pdf'),
+            'date_meet' => Carbon::now(),
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
+    }
+
+    public function testShouldCreateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
 
         $payload = [
             'content'   => 'teste teste',
@@ -129,11 +150,32 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldUpdate()
+    public function testShouldUpdateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
+
+        $payload = [
+            'content' => $this->faker->text,
+            'ata'     => UploadedFile::fake()->create('file.pdf'),
+            'method'  => 'PUT',
+        ];
+
+        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['ata']);
+        $response = json_decode($response->getContent(), true);
+        $this->assertDatabaseHas('meetings', $response);
+    }
+
+    public function testShouldUpdateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -189,11 +231,24 @@ class MeetingControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldDelete()
+    public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $meeting = Meeting::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('meetings', $meeting->toArray());
+    }
+
+    public function testShouldDeleteIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));

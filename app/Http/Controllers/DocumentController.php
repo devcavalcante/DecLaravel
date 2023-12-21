@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 /**
  * @OA\Tag(
  *     name="documents",
- *     description="CRUD dos documentos, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar documentos"
+ *     description="CRUD dos documentos, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar documentos"
  * )
  */
 class DocumentController extends Controller
@@ -105,7 +105,7 @@ class DocumentController extends Controller
      *   path="/group/{groupId}/documents",
      *   tags={"documents"},
      *   summary="Criar novo documento",
-     *   description="Cria um novo documento, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Cria um novo documento, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -163,7 +163,7 @@ class DocumentController extends Controller
      *   path="/group/{groupId}/documents/{documentId}",
      *   tags={"documents"},
      *   summary="Deletar documento",
-     *   description="Deletar documento por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Deletar documento por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",

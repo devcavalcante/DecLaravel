@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 /**
  * @OA\Tag(
  *     name="meetings",
- *     description="CRUD das reuniõe, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar historico de reuniões"
+ *     description="CRUD das reuniõe, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
  * )
  */
 class MeetingController extends Controller
@@ -71,7 +71,7 @@ class MeetingController extends Controller
      *   path="/group/{groupId}/meeting-history",
      *   tags={"meetings"},
      *   summary="Criar um novo histórico de reunião para o grupo especificado",
-     *   description="Cria um novo histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   description="Cria um novo histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -175,7 +175,7 @@ class MeetingController extends Controller
      *   path="/group/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Atualizar o histórico de reunião para o grupo especificado",
-     *   description="Atualiza o histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   description="Atualiza o histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -250,7 +250,7 @@ class MeetingController extends Controller
      *   path="/group/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Excluir histórico de reunião",
-     *   description="Excluir histórico de reunião para o grupo especificado: somente o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
+     *   description="Excluir histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",

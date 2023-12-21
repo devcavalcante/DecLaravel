@@ -14,7 +14,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="activity",
- *     description="CRUD das atividades, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
+ *     description="CRUD das atividades, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar atividades"
  * )
  */
 class ActivityController extends Controller
@@ -30,7 +30,7 @@ class ActivityController extends Controller
      *   path="/group/{groupId}/activity",
      *   tags={"activity"},
      *   summary="Listar todos as atividades",
-     *   description="Lista todas as atividades: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
+     *   description="Lista todas as atividades, ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -103,7 +103,7 @@ class ActivityController extends Controller
      *   path="/group/{groupId}/activity",
      *   tags={"activity"},
      *   summary="Criar nova atividade",
-     *   description="Cria uma nova atividade, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Cria uma nova atividade, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -163,7 +163,7 @@ class ActivityController extends Controller
      *   path="/activity/{id}",
      *   tags={"activity"},
      *   summary="Atualiza atividades",
-     *   description="Atualizar documentos: somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Atualizar documentos, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -221,7 +221,7 @@ class ActivityController extends Controller
      *   path="/group/{groupId}/activity/{activityId}",
      *   tags={"activity"},
      *   summary="Deletar atividade",
-     *   description="Deletar atividade por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Deletar atividade por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",

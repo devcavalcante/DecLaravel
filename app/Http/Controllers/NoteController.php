@@ -16,7 +16,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="notes",
- *     description="CRUD das notas, apenas usuários do tipo REPRESENTANTES podem criar, atualizar e editar atividades"
+ *     description="CRUD das notas, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar notas"
  * )
  */
 class NoteController extends Controller
@@ -105,7 +105,7 @@ class NoteController extends Controller
      *   path="/group/{groupId}/notas",
      *   tags={"notes"},
      *   summary="Criar nova nota",
-     *   description="Cria uma nova nota, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Cria uma nova nota, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *  @OA\Parameter(
      *     name="groupId",
      *     in="path",
@@ -170,7 +170,7 @@ class NoteController extends Controller
      *   path="/notes/{id}",
      *   tags={"notes"},
      *   summary="Atualiza notas",
-     *   description="Atualizar notas: somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Atualizar notas: somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -233,7 +233,7 @@ class NoteController extends Controller
      *   path="/group/{groupId}/notes/{noteId}",
      *   tags={"notes"},
      *   summary="Deletar notas",
-     *   description="Deletar nota por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
+     *   description="Deletar nota por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
      *   @OA\Parameter(
      *     name="groupId",
      *     in="path",

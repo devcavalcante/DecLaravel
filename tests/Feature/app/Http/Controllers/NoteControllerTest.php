@@ -64,11 +64,29 @@ class NoteControllerTest extends TestCase
         $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldCreate()
+    public function testShouldCreateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+
+        $payload = [
+            'title'       => 'teste teste',
+            'description' => $this->faker->text,
+            'color'       => ColorsEnum::GREEN,
+        ];
+
+        $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('notes', array_merge($payload, ['group_id' => $group->id]));
+    }
+
+    public function testShouldCreateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
 
         $payload = [
             'title'       => 'teste teste',
@@ -121,11 +139,30 @@ class NoteControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldUpdate()
+    public function testShouldUpdateIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $note = Note::factory(['group_id' => $group->id])->create();
+
+        $payload = [
+            'title' => 'teste 2',
+        ];
+
+        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $note->id), $payload);
+
+        $actual = json_decode($response->getContent(), true);
+
+        $response->assertStatus(200);
+        $this->assertEquals($payload, Arr::only($actual, ['title']));
+    }
+
+    public function testShouldUpdateIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -175,11 +212,24 @@ class NoteControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
     }
 
-    public function testShouldDelete()
+    public function testShouldDeleteIsRepresentative()
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $group = Group::factory()->create();
         GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userRepresentative->id])->create();
+        $note = Note::factory(['group_id' => $group->id])->create();
+
+        $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('notes', $note->toArray());
+    }
+
+    public function testShouldDeleteIsAdmin()
+    {
+        $userAdmin = $this->login(TypeUserEnum::ADMIN);
+        $group = Group::factory()->create();
+        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
