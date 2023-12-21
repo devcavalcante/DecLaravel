@@ -5,6 +5,7 @@ Olá,
 
 Você foi adicionado a um novo grupo de trabalho como {{$role}} no sistema de Gerenciamento de Grupos e Documentos da UFOPA.
 
+Acesse a plataforma para visualizar seus grupos.
 **Ao explorar a plataforma, você terá acesso a informações exclusivas e recursos relacionados ao grupo de trabalho.**
 
 Atenciosamente,<br>
