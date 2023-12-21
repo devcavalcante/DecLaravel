@@ -91,8 +91,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldCreateIsAdmin()
     {
         $userAdmin = $this->login(TypeUserEnum::ADMIN);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'content'   => 'teste teste',
@@ -173,8 +173,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldUpdateIsAdmin()
     {
         $userAdmin = $this->login(TypeUserEnum::ADMIN);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $payload = [
@@ -246,8 +246,8 @@ class MeetingControllerTest extends TestCase
     public function testShouldDeleteIsAdmin()
     {
         $userAdmin = $this->login(TypeUserEnum::ADMIN);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));

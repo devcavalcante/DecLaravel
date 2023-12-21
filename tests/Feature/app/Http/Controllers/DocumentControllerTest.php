@@ -80,8 +80,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldCreateIsAdmin()
     {
         $userAdmin = $this->login(TypeUserEnum::ADMIN);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
 
         $file = UploadedFile::fake()->create('file.pdf');
         $payload = [
@@ -145,8 +145,8 @@ class DocumentControllerTest extends TestCase
     public function testShouldDeleteIsAdmin()
     {
         $userAdmin = $this->login(TypeUserEnum::ADMIN);
-        $group = Group::factory()->create();
-        GroupHasRepresentative::factory(['group_id' => $group->id, 'user_id' => $userAdmin->id])->create();
+        $representative = Representative::factory(['user_id' => $userAdmin->id])->create();
+        $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
         $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
