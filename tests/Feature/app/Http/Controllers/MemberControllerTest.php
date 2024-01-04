@@ -74,10 +74,10 @@ class MemberControllerTest extends TestCase
         $payload = $this->getFakePayload();
 
         $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
-        Arr::set($payload, '0.entry_date', '2023-10-01');
-        Arr::set($payload, '0.departure_date', '2023-11-01"');
-        Arr::set($payload, '1.entry_date', '2023-10-01');
-        Arr::set($payload, '1.departure_date', '2023-11-01"');
+        Arr::set($payload, '0.entry_date', '2024-01-01');
+        Arr::set($payload, '0.departure_date', '2024-01-01');
+        Arr::set($payload, '1.entry_date', '2024-01-01');
+        Arr::set($payload, '1.departure_date', '2024-01-01');
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('members', $payload[0]);
@@ -128,8 +128,8 @@ class MemberControllerTest extends TestCase
             [
                 'phone'          => '93991167653',
                 'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
+                'entry_date'     => '2023-01-10',
+                'departure_date' => '2023-01-11',
                 'email'          => 'email@email.com',
             ],
         ];
@@ -151,8 +151,8 @@ class MemberControllerTest extends TestCase
             [
                 'phone'          => '93991167653',
                 'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
+                'entry_date'     => '2023-01-10',
+                'departure_date' => '2023-01-11',
                 'email'          => $user->email,
             ],
         ];
@@ -176,8 +176,8 @@ class MemberControllerTest extends TestCase
             [
                 'phone'          => '93991167653',
                 'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
+                'entry_date'     => '2023-01-10',
+                'departure_date' => '2023-01-11',
                 'email'          => 'teste@teste.com',
             ],
         ];
@@ -332,15 +332,15 @@ class MemberControllerTest extends TestCase
                 'email'          => 'teste@teste.com',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
+                'entry_date'     => '2024-01-01',
+                'departure_date' => '2024-01-01',
             ],
             [
                 'email'          => 'teste2@teste.com',
                 'phone'          => '93991778765',
                 'role'           => 'reitor',
-                'entry_date'     => '01-10-2023',
-                'departure_date' => '01-11-2023',
+                'entry_date'     => '2024-01-01',
+                'departure_date' => '2024-01-01',
             ],
         ];
     }

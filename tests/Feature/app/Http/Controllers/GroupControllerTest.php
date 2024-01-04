@@ -285,7 +285,7 @@ class GroupControllerTest extends TestCase
             'entity'             => $this->faker->word,
             'organ'              => $this->faker->word,
             'council'            => $this->faker->word,
-            'acronym'            => $this->faker->word,
+            'acronym'            => 'SIGLA',
             'team'               => $this->faker->word,
             'unit'               => $this->faker->word,
             'email'              => $this->faker->email,

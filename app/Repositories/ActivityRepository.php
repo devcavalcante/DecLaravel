@@ -16,4 +16,9 @@ class ActivityRepository implements ActivityRepositoryInterface
     {
         $this->model = $model;
     }
+
+    public function findClosedTasks()
+    {
+        return $this->model->whereNotNull('done_at')->get();
+    }
 }
