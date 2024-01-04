@@ -13,8 +13,7 @@ abstract class AbstractAuthService
         Collection $representative,
         Collection $member,
         string $userId
-    ): void
-    {
+    ): void {
         $payload = ['user_id' => $userId];
         if ($representative->isNotEmpty()) {
             $this->representativeRepository->update($representative->first()->id, $payload);
