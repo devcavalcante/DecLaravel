@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -72,7 +73,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exceptionMessage, 'code' => 403], 403);
         }
 
-        if ($exception instanceof QueryException) {
+        if ($exception instanceof QueryException || $exception instanceof TransportException) {
             preg_match('#\[(.*?)]#', $exception->getMessage(), $match);
             if ($match[1] == '23503') {
                 return response([

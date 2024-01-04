@@ -77,7 +77,7 @@ class MeetingControllerTest extends TestCase
             'content'   => 'teste teste',
             'summary'   => $this->faker->text,
             'ata'       => UploadedFile::fake()->create('ata.pdf'),
-            'date_meet' => Carbon::now(),
+            'date_meet' => '2024-01-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
@@ -98,7 +98,7 @@ class MeetingControllerTest extends TestCase
             'content'   => 'teste teste',
             'summary'   => $this->faker->text,
             'ata'       => UploadedFile::fake()->create('ata.pdf'),
-            'date_meet' => Carbon::now(),
+            'date_meet' => '2024-01-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
@@ -119,7 +119,7 @@ class MeetingControllerTest extends TestCase
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
             'ata'       => UploadedFile::fake()->create('ata.pdf'),
-            'date_meet' => Carbon::now(),
+            'date_meet' => '2024-01-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', 100), $payload);
@@ -140,7 +140,7 @@ class MeetingControllerTest extends TestCase
             'content'   => 'tetstststs',
             'summary'   => $this->faker->text,
             'ata'       => UploadedFile::fake()->create('ata.pdf'),
-            'date_meet' => Carbon::now(),
+            'date_meet' => '2024-01-01',
         ];
 
         $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
