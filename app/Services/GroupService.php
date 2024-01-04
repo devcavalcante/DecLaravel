@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Enums\TypeUserEnum;
-use App\Exceptions\OnlyRepresentativesException;
 use App\Mail\GroupEntry;
 use App\Mail\RegisterEmail;
 use App\Repositories\Interfaces\MemberHasGroupRepositoryInterface;
@@ -126,19 +125,12 @@ class GroupService
         }
     }
 
-    /**
-     * @throws OnlyRepresentativesException
-     */
     private function createGroupHasRepresentative(string $representative): Model
     {
         $user = $this->userRepository->findByFilters(['email' => $representative]);
 
         if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
-
-            if (!$this->checkIfIsRepresentative($userId)) {
-                throw new OnlyRepresentativesException();
-            }
 
             $data = [
                 'email'   => $representative,
@@ -155,9 +147,6 @@ class GroupService
         ]);
     }
 
-    /**
-     * @throws OnlyRepresentativesException
-     */
     private function updateGroupHasRepresentative(string $representative, string $groupId): Model
     {
         $user = $this->userRepository->findByFilters(['email' => $representative]);
@@ -165,10 +154,6 @@ class GroupService
 
         if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
-
-            if (!$this->checkIfIsRepresentative($userId)) {
-                throw new OnlyRepresentativesException();
-            }
 
             $data = [
                 'email'   => $representative,
@@ -184,12 +169,6 @@ class GroupService
             'email'   => $representative,
             'user_id' => null,
         ]);
-    }
-
-    private function checkIfIsRepresentative(string $userId): bool
-    {
-        $user = $this->userRepository->findById($userId);
-        return $user->role() == TypeUserEnum::REPRESENTATIVE;
     }
 
     private function createTypeGroup(array $data): Model

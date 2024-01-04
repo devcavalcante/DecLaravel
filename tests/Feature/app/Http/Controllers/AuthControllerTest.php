@@ -114,7 +114,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
         $actual = json_decode($response->getContent(), true);
 
-        $this->assertEquals('Nao autorizado', $actual['errors']);
+        $this->assertEquals('Não autorizado', $actual['errors']);
     }
 
     public function testShouldLogout()

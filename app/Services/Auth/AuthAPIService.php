@@ -5,6 +5,8 @@ namespace App\Services\Auth;
 use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
 use App\Repositories\Interfaces\ApiTokenRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Carbon\Carbon;
@@ -18,7 +20,7 @@ use Illuminate\Support\Str;
 use Laravel\Passport\TokenRepository;
 use Throwable;
 
-class AuthAPIService
+class AuthAPIService extends AbstractAuthService
 {
     const CODE = 'code';
 
@@ -26,7 +28,9 @@ class AuthAPIService
         protected UserRepositoryInterface $userRepository,
         protected TokenRepository $tokenRepository,
         protected TypeUserRepositoryInterface $typeUserRepository,
-        protected ApiTokenRepositoryInterface $apiTokenRepository
+        protected ApiTokenRepositoryInterface $apiTokenRepository,
+        protected RepresentativeRepositoryInterface $representativeRepository,
+        protected MemberRepositoryInterface $memberRepository,
     ) {
     }
 
@@ -104,7 +108,7 @@ class AuthAPIService
         $user = $this->userRepository->findByFilters(['email' => Arr::get($data, 'email')])->first();
 
         if (!$user) {
-            $user = $this->userRepository->create($data);
+            $user = $this->createUserWithType($data);
         }
 
         $this->createOrUpdateApiToken($token, $user->id);

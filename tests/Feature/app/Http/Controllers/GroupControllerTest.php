@@ -105,18 +105,6 @@ class GroupControllerTest extends TestCase
         $this->assertEquals('This action is unauthorized.', $actual['errors']);
     }
 
-    public function testShouldCreateWithOnlyRepresentatives()
-    {
-        $this->login(TypeUserEnum::MANAGER);
-        $user = User::factory()->create(['type_user_id' => 1]);
-        $payload = $this->fakePayload();
-        $payload['representative'] = $user->email;
-        $response = $this->post(self::BASE_URL, $payload);
-        $actual = json_decode($response->getContent(), true);
-        $response->assertStatus(400);
-        $this->assertEquals('Apenas usuários do tipo representante sao permitidos', $actual['errors']);
-    }
-
     public function testShouldCreateWithRegisteredRepresentativesIntoSystem()
     {
         Mail::fake();
@@ -164,21 +152,6 @@ class GroupControllerTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals($payload['entity'], $actual['entity']);
         $this->assertDatabaseHas('representatives', $actual['representative']);
-    }
-
-    public function testShouldUpdateWithOnlyRepresentatives()
-    {
-        $this->login(TypeUserEnum::MANAGER);
-
-        $user = User::where(['type_user_id' => 1])->first();
-        $group = Group::factory()->create();
-        $payload = $this->fakePayload();
-        $payload['representative'] = $user->email;
-        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
-
-        $actual = json_decode($response->getContent(), true);
-        $response->assertStatus(400);
-        $this->assertEquals('Apenas usuários do tipo representante sao permitidos', $actual['errors']);
     }
 
     public function testShouldOnlyManagersUpdate()
