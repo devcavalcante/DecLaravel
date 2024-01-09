@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('office_indicated')->nullable();
             $table->string('internal_concierge')->nullable();
             $table->longText('observations')->nullable();
+            $table->enum('status', ['EM ANDAMENTO', 'FINALIZADO'])->default('EM ANDAMENTO');
             $table->unsignedBigInteger('creator_user_id');
             $table->unsignedBigInteger('type_group_id');
             $table->unsignedBigInteger('representative_id');

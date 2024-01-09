@@ -26,6 +26,7 @@ class Group extends Model
         'office_indicated',
         'internal_concierge',
         'observations',
+        'status',
         'type_group_id',
         'representative_id',
         'creator_user_id',

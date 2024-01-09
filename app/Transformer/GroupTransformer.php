@@ -22,6 +22,7 @@ class GroupTransformer extends TransformerAbstract
             'office_indicated'   => $group->office_indicated,
             'internal_concierge' => $group->internal_concierge,
             'observations'       => $group->observations,
+            'status'             => $group->status,
             'created_at'         => $group->created_at,
             'updated_at'         => $group->updated_at,
             'created_by'         => [
