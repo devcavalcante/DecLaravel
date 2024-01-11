@@ -30,6 +30,7 @@ class GroupFactory extends Factory
             'office_indicated'   => $this->faker->word,
             'internal_concierge' => $this->faker->word,
             'observations'       => $this->faker->text,
+            'status'             => $this->faker->randomElement(['EM ANDAMENTO', 'FINALIZADO']),
             'type_group_id'      => $typeGroup->id,
             'creator_user_id'    => $user->id,
             'representative_id'  => $representative->id,
