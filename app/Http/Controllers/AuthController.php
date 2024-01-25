@@ -8,8 +8,10 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\AuthService;
+use http\Env\Response;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 use Throwable;
 
@@ -136,5 +138,12 @@ class AuthController extends Controller
     {
         $this->authService->logout();
         return response()->json([], 204);
+    }
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $response = $this->authService->sendResetPasswordEmail($request->only('email'));
+        return response()->json($response);
     }
 }

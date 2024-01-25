@@ -5,16 +5,18 @@ namespace App\Services;
 use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
 use App\Exceptions\EmailExists;
+use App\Mail\ResetPassword;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Repositories\RepresentativeRepository;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Laravel\Passport\TokenRepository;
 use Throwable;
 
@@ -74,6 +76,26 @@ class AuthService
     public function logout(): void
     {
         $this->tokenRepository->revokeAccessToken(Auth::guard('api')->user()->token()->id);
+    }
+
+    public function sendResetPasswordEmail($email): string
+    {
+        // Enviar e-mail de redefinição de senha
+//        Mail::to($email)->send(new ResetPassword($token));
+        return Password::sendResetLink(
+            $email
+        );
+    }
+
+    public function resetPassword(array $data): Model
+    {
+        $email = Arr::get($data, 'email');
+        $token = Arr::get($data, 'token');
+        $password = Arr::get($data, 'password');
+
+        $user = $this->userRepository->findByFilters(['email'=>$email])->first();
+        return $this->userRepository->update($user->id, ['password'=>$password]);
+
     }
 
     private function createUser(array $data): Model

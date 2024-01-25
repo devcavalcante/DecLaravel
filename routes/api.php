@@ -27,7 +27,7 @@ Route::get('health', function () {
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-
+Route::post('/forgot-password',[AuthController::class,'forgotPassword']);
 Route::group(['middleware' => 'auth:api'], function () {
 
     Route::group(['prefix' => '/type-user'], function () {
