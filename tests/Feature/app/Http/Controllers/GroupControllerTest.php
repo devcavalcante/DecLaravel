@@ -34,7 +34,7 @@ class GroupControllerTest extends TestCase
         $this->login(TypeUserEnum::MANAGER);
         Group::factory(10)->create();
 
-        $response = $this->get(self::BASE_URL);
+        $response = $this->get(self::BASE_URL, ['status' => 'EM ANDAMENTO']);
 
         $response->assertStatus(200);
         $this->assertCount(10, Group::all());
@@ -46,7 +46,7 @@ class GroupControllerTest extends TestCase
         $user = User::factory()->create();
         Group::factory(['creator_user_id' => $user])->create();
 
-        $response = $this->get(self::BASE_URL, ['creator_user_id' => $user->id]);
+        $response = $this->get(self::BASE_URL, ['creator_user_id' => $user->id, ['status' => 'EM ANDAMENTO']]);
 
         $response->assertStatus(200);
         $this->assertCount(1, json_decode($response->getContent(), true)['data']);
@@ -266,6 +266,7 @@ class GroupControllerTest extends TestCase
             'office_indicated'   => $this->faker->word,
             'internal_concierge' => $this->faker->word,
             'observations'       => $this->faker->text,
+            'status'             => $this->faker->randomElement(['EM ANDAMENTO', 'FINALIZADO']),
             'type_group_id'      => $typeGroup->id,
             'representative'     => $user->email,
             'name'               => 'Comissão',
