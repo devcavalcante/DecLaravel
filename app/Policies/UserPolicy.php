@@ -25,6 +25,11 @@ class UserPolicy extends AbstractPolicy
         return $this->isAdmin() || $this->isManager() || $this->isRepresentative();
     }
 
+    public function create(): bool
+    {
+        return $this->isAdmin();
+    }
+
     /**
      * Determine whether the user can update the model.
      */
