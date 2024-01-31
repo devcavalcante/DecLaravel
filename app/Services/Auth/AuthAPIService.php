@@ -164,17 +164,16 @@ class AuthAPIService extends AbstractAuthService
      */
     private function makeRequestAuthorization(string $code): array
     {
-        $client = new Client();
+        $authServerUrl = env('AUTH_SERVER_URL');
+        $clientID = env('CLIENT_ID');
+        $clientSecret = env('CLIENT_SECRET');
+        $redirectUri = env('REDIRECT_URI');
+        $grantType = 'authorization_code';
 
-        $response = $client->post(env('AUTH_SERVER_URL') . '/token', [
-            'form_params' => [
-                'client_id'     => env('CLIENT_ID'),
-                'client_secret' => env('CLIENT_SECRET'),
-                'redirect_uri'  => env('REDIRECT_URI'),
-                'grant_type'    => 'authorization_code',
-                'code'          => $code,
-            ],
-        ]);
+        $endpoint = "{$authServerUrl}token?client_id={$clientID}&client_secret={$clientSecret}&redirect_uri={$redirectUri}&grant_type={$grantType}&code={$code}";
+
+        $client = new Client();
+        $response = $client->post($endpoint);
 
         return json_decode($response->getBody()->getContents(), true);
     }

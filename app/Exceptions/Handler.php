@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use HttpException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -73,7 +74,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exceptionMessage, 'code' => 403], 403);
         }
 
-        if ($exception instanceof QueryException || $exception instanceof TransportException) {
+        if ($exception instanceof QueryException) {
             preg_match('#\[(.*?)]#', $exception->getMessage(), $match);
             if ($match[1] == '23503') {
                 return response([
@@ -82,6 +83,17 @@ class Handler extends ExceptionHandler
                 ], 400);
             }
             return response(['errors' => $exception->getMessage()], 400);
+        }
+
+        if($exception instanceof TransportException)
+        {
+            return response(['errors' => $exception->getMessage()], 400);
+        }
+
+        if($exception instanceof ClientException)
+        {
+            $message = json_decode($exception->getResponse()->getBody()->getContents(), true);
+            return response(['errors' => $message], 400);
         }
 
         return parent::render($request, $exception);
