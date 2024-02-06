@@ -199,9 +199,9 @@ class UserController extends Controller
 
     /**
      * @OA\PUT(
-     *   path="/users/set-manager/{id}",
+     *   path="/users/set-user/{id}",
      *   tags={"users"},
-     *   summary="Atualiza usuário para se tornar gerente",
+     *   summary="Atualiza usuário para se tornar gerente ou volta usuário para visualizador",
      *   description="Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
      *   @OA\Parameter(
      *     name="id",
@@ -212,6 +212,16 @@ class UserController extends Controller
      *         type="string"
      *     )
      *   ),
+     *   @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="application/json",
+     *           @OA\Schema(
+     *               example={
+     *                   "isManager": true,
+     *               }
+     *           )
+     *       )
+     *    ),
      *   @OA\Response(
      *     response=204,
      *     description="No Content"
@@ -231,10 +241,12 @@ class UserController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function setManager(string $id): JsonResponse
+    public function setTypeUser(Request $request, string $id): JsonResponse
     {
+        $request->validate(['isManager' => 'required|bool']);
+        $request = $request->get('isManager');
         $this->authorize(AbilitiesEnum::CREATE, User::class);
-        $user = $this->userService->updateTypeUser($id);
+        $user = $this->userService->updateTypeUser($id, $request);
         return response()->json($user);
     }
 }

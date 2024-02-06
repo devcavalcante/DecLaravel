@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\UnauthorizedException;
@@ -57,7 +58,7 @@ class Handler extends ExceptionHandler
      *
      * @throws Throwable
      */
-    public function render($request, Throwable $exception): Response|JsonResponse
+    public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();
@@ -85,8 +86,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exception->getMessage()], 400);
         }
 
-        if($exception instanceof TransportException)
-        {
+        if ($exception instanceof TransportException) {
             return response(['errors' => $exception->getMessage()], 400);
         }
 

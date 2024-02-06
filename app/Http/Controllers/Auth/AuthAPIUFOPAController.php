@@ -9,7 +9,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use OpenApi\Annotations as OA;
 use Throwable;
 
 class AuthAPIUFOPAController extends Controller

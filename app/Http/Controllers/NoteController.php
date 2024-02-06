@@ -29,7 +29,7 @@ class NoteController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/notes",
+     *   path="/groups/{groupId}/notes",
      *   tags={"notes"},
      *   summary="Listar todos as notas",
      *   description="Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
@@ -66,7 +66,7 @@ class NoteController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/notes/{id}",
+     *   path="/groups/{groupId}/notes/{id}",
      *   tags={"notes"},
      *   summary="Lista o registro de notas por ID",
      *   description="Lista o registro de notas por ID de referência",
@@ -102,7 +102,7 @@ class NoteController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/notes",
+     *   path="/groups/{groupId}/notes",
      *   tags={"notes"},
      *   summary="Criar nova nota",
      *   description="Cria uma nova nota, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -167,7 +167,7 @@ class NoteController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/notes/{id}",
+     *   path="/groups/{groupId}/notes/{id}",
      *   tags={"notes"},
      *   summary="Atualiza notas",
      *   description="Atualizar notas: somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -230,7 +230,7 @@ class NoteController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/notes/{noteId}",
+     *   path="/groups/{groupId}/notes/{noteId}",
      *   tags={"notes"},
      *   summary="Deletar notas",
      *   description="Deletar nota por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",

@@ -43,9 +43,13 @@ class UserService
         return $this->userRepository->update($id, $data);
     }
 
-    public function updateTypeUser(string $id): Model
+    public function updateTypeUser(string $id, bool $isManager): Model
     {
-        $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::MANAGER])->first();
+        if ($isManager) {
+            $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::MANAGER])->first();
+        } else {
+            $typeUser = $this->typeUserRepository->findByFilters(['name' => TypeUserEnum::VIEWER])->first();
+        }
 
         return $this->userRepository->update($id, ['type_user_id' => $typeUser->id]);
     }

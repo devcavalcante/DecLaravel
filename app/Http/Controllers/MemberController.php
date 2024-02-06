@@ -31,7 +31,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/members",
+     *   path="/groups/{groupId}/members",
      *   tags={"members"},
      *   summary="Listar todos os membros",
      *   description="Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
@@ -68,7 +68,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/members",
+     *   path="/groups/{groupId}/members",
      *   tags={"members"},
      *   summary="Criar novo membro",
      *   description="Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
@@ -133,7 +133,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/members/{id}",
+     *   path="/groups/{groupId}/members/{id}",
      *   tags={"members"},
      *   summary="Lista o registro de membro por ID",
      *   description="Lista o registro de membro por ID de referência.",
@@ -168,7 +168,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/group/{groupId}/members/{id}",
+     *   path="/groups/{groupId}/members/{id}",
      *   tags={"members"},
      *   summary="Atualizar membro",
      *   description="somente o REPRESENTANTE tem acesso a este endpoint.",
@@ -247,7 +247,7 @@ class MemberController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/members/{memberID}",
+     *   path="/groups/{groupId}/members/{memberID}",
      *   tags={"members"},
      *   summary="Deletar membro",
      *   description="Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",

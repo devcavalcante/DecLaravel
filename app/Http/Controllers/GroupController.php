@@ -15,7 +15,7 @@ use Throwable;
 
 /**
  * @OA\Tag(
- *     name="group",
+ *     name="groups",
  *     description="Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
  * )
  */
@@ -29,8 +29,8 @@ class GroupController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group",
-     *   tags={"group"},
+     *   path="/groups",
+     *   tags={"groups"},
      *   summary="Listar todos os grupos",
      *   description="Lista todos os grupos",
      *   @OA\Parameter(
@@ -64,8 +64,8 @@ class GroupController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group",
-     *   tags={"group"},
+     *   path="/groups",
+     *   tags={"groups"},
      *   summary="Criar novo grupo",
      *   description="Cria novo grupo",
      *   @OA\RequestBody(
@@ -128,8 +128,8 @@ class GroupController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{id}",
-     *   tags={"group"},
+     *   path="/groups/{id}",
+     *   tags={"groups"},
      *   summary="Lista o registro de grupos por ID",
      *   description="Lista o registro de grupos por ID de referência",
      *   @OA\Parameter(
@@ -163,8 +163,8 @@ class GroupController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/group/{id}",
-     *   tags={"group"},
+     *   path="/groups/{id}",
+     *   tags={"groups"},
      *   summary="Atualizar grupo",
      *   description="Atualizar grupo",
      *   @OA\Parameter(
@@ -235,8 +235,8 @@ class GroupController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{id}",
-     *   tags={"group"},
+     *   path="/groups/{id}",
+     *   tags={"groups"},
      *   summary="Deletar grupo",
      *   description="Deletargrupo por ID de referência",
      *   @OA\Parameter(
