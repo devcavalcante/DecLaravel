@@ -29,10 +29,7 @@ class MeetingRequest extends FormRequest
         return [
             'content'   => sprintf('%s|min:5|string', $isRequired),
             'summary'   => sprintf('%s|min:5|string', $isRequired),
-            'ata'       => sprintf(
-                '%s|mimes:xml,pdf,docx,doc,zip',
-                $isRequired
-            ),
+            'ata'       => 'mimes:xml,pdf,docx,doc,zip',
             'date_meet' => sprintf('%s|date_format:Y-m-d', $isRequired),
         ];
     }
@@ -50,9 +47,6 @@ class MeetingRequest extends FormRequest
             'summary.required'      => 'O campo summary é obrigatório.',
             'summary.string'        => 'O campo summary deve ser uma string.',
             'summary.min'           => 'O campo summary deve ter no mínimo 5 caracteres.',
-            'ata.required'          => 'O campo ata é obrigatório.',
-            'ata.string'            => 'O campo ata deve ser uma string.',
-            'ata.min'               => 'O campo ata deve ter no mínimo 5 caracteres.',
             'date_meet.date_format' => 'O campo data da reunião deve ser no formato Y-m-d.',
             'date_meet.required'    => 'O campo data da reunião deve ser obrigatório.',
         ];
