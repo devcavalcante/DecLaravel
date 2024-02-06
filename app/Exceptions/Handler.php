@@ -90,8 +90,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exception->getMessage()], 400);
         }
 
-        if($exception instanceof ClientException)
-        {
+        if ($exception instanceof ClientException) {
             $message = json_decode($exception->getResponse()->getBody()->getContents(), true);
             return response(['errors' => $message], 400);
         }
