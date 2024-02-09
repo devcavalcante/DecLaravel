@@ -29,11 +29,9 @@ jobs:
       - name: Install composer dependencies
         run: |
           composer install --no-scripts
-
       - name: Prepare Laravel Application
         run: |
           cp .env.ci .env
           php artisan key:generate
-
       - name: Run Testsuite
-        run: vendor/bin/phpunit tests/
+        run: vendor/bin/phpunit --configuration phpunit-ci.xml tests/
