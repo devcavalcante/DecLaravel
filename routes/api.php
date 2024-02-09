@@ -69,7 +69,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{groupId}/documents'], function () {
             Route::get('/', [DocumentController::class, 'index']);
             Route::get('/{id}', [DocumentController::class, 'show']);
-            Route::get('download/{id}', [DocumentController::class, 'download']);
+            Route::get('{id}/download', [DocumentController::class, 'download']);
             Route::delete('/{id}', [DocumentController::class, 'destroy']);
             Route::post('/', [DocumentController::class, 'store']);
         });
@@ -78,7 +78,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/', [MeetingController::class, 'index']);
             Route::post('/{id}', [MeetingController::class, 'update']);
             Route::get('/{id}', [MeetingController::class, 'show']);
-            Route::get('/download/{id}', [MeetingController::class, 'download']);
+            Route::get('/{id}/download', [MeetingController::class, 'download']);
             Route::post('/', [MeetingController::class, 'store']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
         });
@@ -87,8 +87,8 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/', [ActivityController::class, 'index']);
             Route::get('/open', [ActivityController::class, 'listOpenActivities']);
             Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
-            Route::put('/complete/{id}', [ActivityController::class, 'complete']);
-            Route::put('/restore/{id}', [ActivityController::class, 'restore']);
+            Route::put('{id}/complete', [ActivityController::class, 'complete']);
+            Route::patch('{id}/restore/', [ActivityController::class, 'restore']);
             Route::put('/{id}', [ActivityController::class, 'update']);
             Route::get('/{id}', [ActivityController::class, 'show']);
             Route::post('/', [ActivityController::class, 'store']);

@@ -21,7 +21,7 @@ class GroupControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
-    const BASE_URL = 'api/group';
+    const BASE_URL = 'api/groups';
 
     public function setUp(): void
     {

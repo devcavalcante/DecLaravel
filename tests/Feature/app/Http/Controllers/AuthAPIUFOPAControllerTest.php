@@ -2,21 +2,13 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
-use App\Enums\TypeUserEnum;
 use App\Http\Controllers\Auth\AuthAPIUFOPAController;
-use App\Models\TypeUser;
-use App\Models\User;
 use App\Services\Auth\AuthAPIService;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use Laravel\Passport\Passport;
 use Mockery;
-use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
 
 class AuthAPIUFOPAControllerTest extends TestCase

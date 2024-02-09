@@ -11,7 +11,6 @@ use App\Services\MemberService;
 use App\Transformer\MemberTransformer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use OpenApi\Annotations as OA;
 use Throwable;
 
 /**
@@ -160,7 +159,7 @@ class MemberController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $user = $this->memberRepository->findById($id);
         return response()->json($this->transform(new MemberTransformer(), $user));

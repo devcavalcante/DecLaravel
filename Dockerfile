@@ -25,7 +25,7 @@ COPY . /app
 
 RUN chown -R www-data:www-data /app && chmod -R 755 /app
 
-RUN cp -R ./docker/gitHooks/ ./.git/hooks/
+RUN 190
 RUN composer clearcache && composer install --no-interaction --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache
 

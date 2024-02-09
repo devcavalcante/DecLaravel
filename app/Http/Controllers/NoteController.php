@@ -93,7 +93,7 @@ class NoteController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $note = $this->noteRepository->findById($id);
 
@@ -221,7 +221,7 @@ class NoteController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, NoteRequest $request): JsonResponse
+    public function update(string $groupId, string $id, NoteRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Note::class, $id]);
         $note = $this->noteRepository->update($id, $request->all());

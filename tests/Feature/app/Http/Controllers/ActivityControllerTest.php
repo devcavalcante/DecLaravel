@@ -20,7 +20,7 @@ class ActivityControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
-    const BASE_URL = 'api/activity';
+    const BASE_URL = 'api/groups';
 
     public function setUp(): void
     {
@@ -36,7 +36,7 @@ class ActivityControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/activity', $group->id));
+        $response = $this->get(sprintf('%s/%s/activity', self::BASE_URL, $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));
@@ -48,7 +48,7 @@ class ActivityControllerTest extends TestCase
         $activity = Activity::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, $activity->id));
+        $response = $this->get(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
@@ -56,9 +56,10 @@ class ActivityControllerTest extends TestCase
 
     public function testNotShouldListOneWhenNotFoundActivity()
     {
+        $group = Group::factory()->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, 100));
+        $response = $this->get(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -72,7 +73,7 @@ class ActivityControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/activity/open', $group->id));
+        $response = $this->get(sprintf('%s/%s/activity/open', self::BASE_URL, $group->id));
 
         $this->assertCount(10, json_decode($response->getContent(), true));
     }
@@ -85,7 +86,7 @@ class ActivityControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/activity/concluded', $group->id));
+        $response = $this->get(sprintf('%s/%s/activity/concluded', self::BASE_URL, $group->id));
 
         $this->assertCount(20, json_decode($response->getContent(), true));
     }
@@ -103,7 +104,7 @@ class ActivityControllerTest extends TestCase
             'end_date'    => '2024-01-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/activity', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('activities', array_merge($payload, ['group_id' => $group->id]));
@@ -117,7 +118,7 @@ class ActivityControllerTest extends TestCase
 
         $payload = $this->getFakePayload();
 
-        $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/activity', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('activities', array_merge($payload, ['group_id' => $group->id]));
@@ -134,7 +135,7 @@ class ActivityControllerTest extends TestCase
             'end_date'    => '2024-12-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/activity', 100), $payload);
+        $response = $this->post(sprintf('%s/%s/activity', self::BASE_URL, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -150,7 +151,7 @@ class ActivityControllerTest extends TestCase
 
         $payload = $this->getFakePayload();
 
-        $response = $this->post(sprintf('/api/group/%s/activity', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/activity', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -167,7 +168,7 @@ class ActivityControllerTest extends TestCase
             'name' => 'teste 2',
         ];
 
-        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $activity->id), $payload);
+        $response = $this->put(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -182,7 +183,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->put(sprintf('/api/activity/complete/%s', $activity->id));
+        $response = $this->put(sprintf('%s/%s/activity/%s/complete/', self::BASE_URL, $group->id, $activity->id));
 
         $actual = json_decode($response->getContent(), true);
 
@@ -197,7 +198,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->put(sprintf('/api/activity/restore/%s', $activity->id));
+        $response = $this->patch(sprintf('%s/%s/activity/%s/restore', self::BASE_URL, $group->id, $activity->id));
 
         $actual = json_decode($response->getContent(), true);
 
@@ -216,7 +217,7 @@ class ActivityControllerTest extends TestCase
             'name' => 'teste 2',
         ];
 
-        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $activity->id), $payload);
+        $response = $this->put(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -226,13 +227,14 @@ class ActivityControllerTest extends TestCase
 
     public function testShouldNotUpdateWhenActivityNotFound()
     {
+        $group = Group::factory()->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $payload = [
             'name' => 'teste ajskajska',
         ];
 
-        $response = $this->put(sprintf('api/activity/%s', 100), $payload);
+        $response = $this->put(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -251,7 +253,7 @@ class ActivityControllerTest extends TestCase
             'description' => $this->faker->text,
         ];
 
-        $response = $this->put(sprintf('api/activity/%s', $activity->id), $payload);
+        $response = $this->put(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -264,7 +266,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));
+        $response = $this->delete(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('activities', $activity->toArray());
@@ -277,7 +279,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));
+        $response = $this->delete(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('activities', $activity->toArray());
@@ -290,7 +292,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/activity/%s', 100, $activity->id));
+        $response = $this->delete(sprintf('%s/%s/activity/%s', self::BASE_URL, 100, $activity->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -302,7 +304,7 @@ class ActivityControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Atividade não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -317,7 +319,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/activity/%s', $group->id, $activity->id));
+        $response = $this->delete(sprintf('%s/%s/activity/%s', self::BASE_URL, $group->id, $activity->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);

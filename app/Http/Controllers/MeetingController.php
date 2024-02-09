@@ -164,7 +164,7 @@ class MeetingController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $meeting = $this->meetingRepository->findById($id);
         return response()->json($meeting);
@@ -238,7 +238,7 @@ class MeetingController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, MeetingRequest $request): JsonResponse
+    public function update(string $groupId, string $id, MeetingRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Meeting::class, $id]);
         $meeting = $this->meetingService->edit($id, $request->all());
@@ -294,7 +294,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/groups/{groupId}/meeting-history/download/{id}",
+     *   path="/groups/{groupId}/meeting-history/{id}/download/",
      *   tags={"meetings"},
      *   summary="Faz download da ata",
      *   description="faz download da ata por ID",
@@ -317,7 +317,7 @@ class MeetingController extends Controller
      *   ),
      * )
      */
-    public function download(string $meetingId): BinaryFileResponse|JsonResponse
+    public function download(string $groupId, string $meetingId): BinaryFileResponse|JsonResponse
     {
         $document = $this->meetingRepository->findById($meetingId);
         $filePath = $document->ata;

@@ -93,7 +93,7 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $document = $this->documentRepository->findById($id);
 
@@ -206,7 +206,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/groups/{groupId}/documents/download/{id}",
+     *   path="/groups/{groupId}/documents/{id}/download",
      *   tags={"documents"},
      *   summary="Faz download do documento",
      *   description="faz download do documento por ID",
@@ -233,7 +233,7 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function download(string $documentId): BinaryFileResponse|JsonResponse
+    public function download(string $groupId, string $documentId): BinaryFileResponse|JsonResponse
     {
         $document = $this->documentRepository->findById($documentId);
         $filePath = $document->file;

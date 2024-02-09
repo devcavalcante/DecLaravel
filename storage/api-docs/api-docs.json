@@ -708,14 +708,14 @@
                 }
             }
         },
-        "/groups/{groupId}/documents/download/{id}": {
+        "/groups/{groupId}/documents/{id}/download": {
             "get": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Faz download do documento",
                 "description": "faz download do documento por ID",
-                "operationId": "846d35f078c34b1216f06595c0b6eb1d",
+                "operationId": "195c578ba093ac3fa319a62bd112a826",
                 "parameters": [
                     {
                         "name": "id",
@@ -1177,14 +1177,14 @@
                 }
             }
         },
-        "/groups/{groupId}/meeting-history/download/{id}": {
+        "/groups/{groupId}/meeting-history/{id}/download/": {
             "get": {
                 "tags": [
                     "meetings"
                 ],
                 "summary": "Faz download da ata",
                 "description": "faz download da ata por ID",
-                "operationId": "90fd38390967720720cfad572d6ea29e",
+                "operationId": "aaa8746e96184797bae7e1bc13aa29f9",
                 "parameters": [
                     {
                         "name": "id",

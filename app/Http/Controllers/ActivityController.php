@@ -92,7 +92,7 @@ class ActivityController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $activity = $this->activityRepository->findById($id);
 
@@ -300,7 +300,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, ActivityRequest $request): JsonResponse
+    public function update(string $groupId, string $id, ActivityRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, $request->all());
@@ -341,7 +341,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function complete(string $id): JsonResponse
+    public function complete(string $groupId, string $id): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, ['done_at' => Carbon::now()]);
@@ -382,7 +382,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function restore(string $id): JsonResponse
+    public function restore(string $groupId, string $id): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, ['done_at' => null]);
