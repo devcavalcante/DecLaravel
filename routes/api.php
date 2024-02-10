@@ -88,7 +88,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/open', [ActivityController::class, 'listOpenActivities']);
             Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
             Route::put('{id}/complete', [ActivityController::class, 'complete']);
-            Route::patch('{id}/restore/', [ActivityController::class, 'restore']);
+            Route::put('{id}/restore/', [ActivityController::class, 'restore']);
             Route::put('/{id}', [ActivityController::class, 'update']);
             Route::get('/{id}', [ActivityController::class, 'show']);
             Route::post('/', [ActivityController::class, 'store']);
