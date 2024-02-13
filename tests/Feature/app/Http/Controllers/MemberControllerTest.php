@@ -329,6 +329,7 @@ class MemberControllerTest extends TestCase
     {
         return [
             [
+                'name'           => 'teste',
                 'email'          => 'teste@teste.com',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
@@ -336,6 +337,7 @@ class MemberControllerTest extends TestCase
                 'departure_date' => '2024-01-01',
             ],
             [
+                'name'           => 'teste',
                 'email'          => 'teste2@teste.com',
                 'phone'          => '93991778765',
                 'role'           => 'reitor',
