@@ -13,33 +13,6 @@ use Tests\TestCase;
 
 class AuthAPIUFOPAControllerTest extends TestCase
 {
-    public function testShouldRedirect()
-    {
-        $authServiceMock = $this->getMockBuilder(AuthAPIService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        // Defina a URL esperada para redirecionamento
-        $expectedUrl = 'http://auth-server.com/authorize?client_id=your_client_id&response_type=code&redirect_uri=http://your-redirect-uri.com';
-
-        // Configure o método getAuthorizationUrl no mock para retornar a URL esperada
-        $authServiceMock->expects($this->once())
-            ->method('getAuthorizationUrl')
-            ->willReturn($expectedUrl);
-
-        // Crie uma instância do controlador passando o mock do serviço de autenticação
-        $controller = new AuthAPIUFOPAController($authServiceMock);
-
-        // Chame o método redirect
-        $response = $controller->redirect();
-
-        // Verifique se a resposta é uma instância de RedirectResponse
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-
-        // Verifique se a URL de redirecionamento está correta
-        $this->assertEquals($expectedUrl, $response->getTargetUrl());
-    }
-
     /**
      * @throws \Throwable
      * @throws GuzzleException

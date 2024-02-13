@@ -198,7 +198,7 @@ class ActivityControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $activity = Activity::factory(['group_id' => $group->id])->create();
 
-        $response = $this->patch(sprintf('%s/%s/activity/%s/restore', self::BASE_URL, $group->id, $activity->id));
+        $response = $this->put(sprintf('%s/%s/activity/%s/restore', self::BASE_URL, $group->id, $activity->id));
 
         $actual = json_decode($response->getContent(), true);
 
