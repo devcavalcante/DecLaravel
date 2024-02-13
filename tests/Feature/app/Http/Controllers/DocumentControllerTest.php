@@ -20,6 +20,8 @@ class DocumentControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
+    const BASE_URL = 'api/groups';
+
     public function setUp(): void
     {
         $this->faker = FakerFactory::create();
@@ -28,22 +30,25 @@ class DocumentControllerTest extends TestCase
 
     public function testShouldListAll()
     {
-        $document = Document::factory(2)->create();
+        $group = Group::factory()->create();
+        Document::factory(['group_id' => $group->id])->create();
+        Document::factory(['group_id' => $group->id])->create();
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/documents', $document->first()->group_id));
+        $response = $this->get(sprintf('%s/%s/documents', self::BASE_URL, $group->id));
 
         $response->assertStatus(200);
-        $this->assertCount(1, json_decode($response->getContent(), true));
+        $this->assertCount(2, json_decode($response->getContent(), true));
     }
 
     public function testShouldListOne()
     {
-        $document = Document::factory()->create();
+        $group = Group::factory()->create();
+        $document = Document::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/documents/%s', $document->id));
+        $response = $this->get(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, $document->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
@@ -51,9 +56,11 @@ class DocumentControllerTest extends TestCase
 
     public function testNotShouldListOneWhenNotFoundDocument()
     {
+        $group = Group::factory()->create();
+
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/documents/%s', 100));
+        $response = $this->get(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -70,7 +77,7 @@ class DocumentControllerTest extends TestCase
             'file'        => $file,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/documents', self::BASE_URL, $group->id), $payload);
         $response->assertStatus(201);
         $response->assertJsonStructure(['file']);
         $response = json_decode($response->getContent(), true);
@@ -88,7 +95,7 @@ class DocumentControllerTest extends TestCase
             'file'        => $file,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/documents', self::BASE_URL, $group->id), $payload);
         $response->assertStatus(201);
         $response->assertJsonStructure(['file']);
         $response = json_decode($response->getContent(), true);
@@ -99,13 +106,13 @@ class DocumentControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
-        $group = Group::factory(['representative_id' => $representative->id])->create();
+        Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', 100), $payload);
+        $response = $this->post(sprintf('%s/%s/documents', self::BASE_URL, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -123,7 +130,7 @@ class DocumentControllerTest extends TestCase
             'file' => UploadedFile::fake()->create('file.pdf'),
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/documents', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/documents', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -136,7 +143,7 @@ class DocumentControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+        $response = $this->delete(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, $document->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('documents', $document->toArray());
@@ -149,7 +156,7 @@ class DocumentControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+        $response = $this->delete(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, $document->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('documents', $document->toArray());
@@ -163,7 +170,7 @@ class DocumentControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', 100, $document->id));
+        $response = $this->delete(sprintf('%s/%s/documents/%s', self::BASE_URL, 100, $document->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -175,7 +182,7 @@ class DocumentControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/documents/%s',self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -190,7 +197,7 @@ class DocumentControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $document = Document::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/documents/%s', $group->id, $document->id));
+        $response = $this->delete(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, $document->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -202,9 +209,10 @@ class DocumentControllerTest extends TestCase
         $file = UploadedFile::fake()->create('file.pdf');
         $file =  Storage::disk('local')->put('docs', $file);
 
-        $document = Document::factory()->create(['file' => $file]);
+        $group = Group::factory()->create();
+        $document = Document::factory()->create(['file' => $file, 'group_id' => $group->id]);
 
-        $response = $this->get("/api/documents/download/{$document->id}");
+        $response = $this->get(sprintf('%s/%s/documents/%s/download', self::BASE_URL, $group->id, $document->id));
 
         $response->assertStatus(200);
         Storage::disk('local')->delete($file);

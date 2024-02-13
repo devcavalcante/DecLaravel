@@ -106,7 +106,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Atualizar usuário",
-     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
+     *   description="Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -161,7 +161,7 @@ class UserController extends Controller
      *   path="/users/{id}",
      *   tags={"users"},
      *   summary="Deletar usuário",
-     *   description="Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
+     *   description="Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o administrador",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -198,11 +198,11 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Patch(
-     *   path="/users/restore/{id}",
+     * @OA\PUT(
+     *   path="/users/set-user/{id}",
      *   tags={"users"},
-     *   summary="Restaurar usuário",
-     *   description="Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
+     *   summary="Atualiza usuário para se tornar gerente ou volta usuário para visualizador",
+     *   description="Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
      *   @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -212,25 +212,41 @@ class UserController extends Controller
      *         type="string"
      *     )
      *   ),
+     *   @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="application/json",
+     *           @OA\Schema(
+     *               example={
+     *                   "isManager": true,
+     *               }
+     *           )
+     *       )
+     *    ),
      *   @OA\Response(
-     *     response=200,
-     *     description="Ok"
+     *     response=204,
+     *     description="No Content"
      *   ),
      *   @OA\Response(
      *     response="500",
      *     description="Error"
      *   ),
      *   @OA\Response(
-     *     response="404",
-     *     description="Usuário not found"
+     *     response=403,
+     *     description="Unauthorized"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Usuario Not Found"
      *   )
      * )
      * @throws AuthorizationException
      */
-    public function restore(string $id): JsonResponse
+    public function setTypeUser(Request $request, string $id): JsonResponse
     {
-        $this->authorize(AbilitiesEnum::RESTORE, [User::class, $id]);
-        $user = $this->userRepository->restore($id);
-        return response()->json($this->transform(new UserTransformer(), $user));
+        $request->validate(['isManager' => 'required|bool']);
+        $request = $request->get('isManager');
+        $this->authorize(AbilitiesEnum::CREATE, User::class);
+        $user = $this->userService->updateTypeUser($id, $request);
+        return response()->json($user);
     }
 }

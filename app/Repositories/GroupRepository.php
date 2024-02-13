@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Group;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Traits\CRUDTrait;
-use Illuminate\Database\Eloquent\Collection;
 
 class GroupRepository implements GroupRepositoryInterface
 {

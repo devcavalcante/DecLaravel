@@ -1,15 +1,16 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthAPIUFOPAController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TypeUserController;
-use App\Http\Controllers\MeetingController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +27,11 @@ Route::get('health', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => 'auth:api'], function () {
-
-    Route::group(['prefix' => '/type-user'], function () {
+    Route::group(['prefix' => '/type-users'], function () {
         Route::post('/', [TypeUserController::class, 'store']);
         Route::get('/{id}', [TypeUserController::class, 'show']);
         Route::put('/{id}', [TypeUserController::class, 'update']);
@@ -41,41 +42,15 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => '/users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/logout-ufopa', [AuthAPIUFOPAController::class, 'logoutUser']);
         Route::get('/{id}', [UserController::class, 'show']);
         Route::put('/{id}', [UserController::class, 'update']);
+        Route::put('/set-user/{id}', [UserController::class, 'setTypeUser']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::patch('/restore/{id}', [UserController::class, 'restore']);
     });
 
-    Route::group(['prefix' => 'members'], function () {
-        Route::get('/{id}', [MemberController::class, 'show']);
-    });
-
-    Route::group(['prefix' => 'documents'], function () {
-        Route::post('/{id}', [DocumentController::class, 'update']);
-        Route::get('/{id}', [DocumentController::class, 'show']);
-        Route::get('download/{id}', [DocumentController::class, 'download']);
-    });
-
-    Route::group(['prefix' => 'meeting-history'], function () {
-        Route::post('/{id}', [MeetingController::class, 'update']);
-        Route::get('/{id}', [MeetingController::class, 'show']);
-        Route::get('download/{id}', [MeetingController::class, 'download']);
-    });
-
-    Route::group(['prefix' => 'activity'], function () {
-        Route::put('/complete/{id}', [ActivityController::class, 'complete']);
-        Route::put('/restore/{id}', [ActivityController::class, 'restore']);
-        Route::put('/{id}', [ActivityController::class, 'update']);
-        Route::get('/{id}', [ActivityController::class, 'show']);
-    });
-
-    Route::group(['prefix' => 'notes'], function () {
-        Route::put('/{id}', [NoteController::class, 'update']);
-        Route::get('/{id}', [NoteController::class, 'show']);
-    });
-
-    Route::group(['prefix' => '/group'], function () {
+    Route::group(['prefix' => '/groups'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
         Route::get('/{id}', [GroupController::class, 'show']);
@@ -84,6 +59,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         Route::group(['prefix' => '{groupId}/members'], function () {
             Route::get('/', [MemberController::class, 'index']);
+            Route::get('/{id}', [MemberController::class, 'show']);
             Route::post('/', [MemberController::class, 'store']);
             Route::put('/{id}', [MemberController::class, 'update']);
             Route::delete('/{id}', [MemberController::class, 'destroy']);
@@ -91,13 +67,19 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         Route::group(['prefix' => '{groupId}/documents'], function () {
             Route::get('/', [DocumentController::class, 'index']);
+            Route::get('/{id}', [DocumentController::class, 'show']);
+            Route::get('{id}/download', [DocumentController::class, 'download']);
             Route::delete('/{id}', [DocumentController::class, 'destroy']);
             Route::post('/', [DocumentController::class, 'store']);
         });
 
         Route::group(['prefix' => '{groupId}/meeting-history'], function () {
             Route::get('/', [MeetingController::class, 'index']);
+            Route::put('/{id}', [MeetingController::class, 'update']);
+            Route::get('/{id}', [MeetingController::class, 'show']);
+            Route::get('/{id}/download', [MeetingController::class, 'download']);
             Route::post('/', [MeetingController::class, 'store']);
+            Route::put('/{id}', [MeetingController::class, 'update']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
         });
 
@@ -106,12 +88,18 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/open', [ActivityController::class, 'listOpenActivities']);
             Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
             Route::post('/', [ActivityController::class, 'store']);
+            Route::put('{id}/complete', [ActivityController::class, 'complete']);
+            Route::put('{id}/restore/', [ActivityController::class, 'restore']);
+            Route::put('/{id}', [ActivityController::class, 'update']);
+            Route::get('/{id}', [ActivityController::class, 'show']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });
 
         Route::group(['prefix' => '{groupId}/notes'], function () {
             Route::get('/', [NoteController::class, 'index']);
             Route::post('/', [NoteController::class, 'store']);
+            Route::put('/{id}', [NoteController::class, 'update']);
+            Route::get('/{id}', [NoteController::class, 'show']);
             Route::delete('/{id}', [NoteController::class, 'destroy']);
         });
     });
