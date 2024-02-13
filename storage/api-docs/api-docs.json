@@ -371,24 +371,6 @@
                 }
             }
         },
-        "/redirect": {
-            "get": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Redireciona o usuário para o login da ufopa",
-                "description": "Endpoint para redirecionar para o login da ufopa",
-                "operationId": "676d0819334d1d5703f6a645afc1e0b7",
-                "responses": {
-                    "default": {
-                        "description": "Redireciona para a URL de autorização"
-                    },
-                    "500": {
-                        "description": "Error"
-                    }
-                }
-            }
-        },
         "/callback": {
             "get": {
                 "tags": [
