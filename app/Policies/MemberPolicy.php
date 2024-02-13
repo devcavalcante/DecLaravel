@@ -21,12 +21,12 @@ class MemberPolicy extends AbstractPolicy
      */
     public function create(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isManager();
     }
 
     public function update(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isManager();
     }
 
     /**
@@ -34,6 +34,6 @@ class MemberPolicy extends AbstractPolicy
      */
     public function delete(User $user, string $groupId): bool
     {
-        return $this->isRepresentativeOfGroup($user->id, $groupId);
+        return $this->isRepresentativeOfGroup($user->id, $groupId) || $this->isManager();
     }
 }
