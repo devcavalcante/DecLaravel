@@ -80,6 +80,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/{id}', [MeetingController::class, 'show']);
             Route::get('/{id}/download', [MeetingController::class, 'download']);
             Route::post('/', [MeetingController::class, 'store']);
+            Route::put('/{id}', [MeetingController::class, 'update']);
             Route::delete('/{id}', [MeetingController::class, 'destroy']);
         });
 
@@ -89,7 +90,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
             Route::post('/', [ActivityController::class, 'store']);
             Route::put('{id}/complete', [ActivityController::class, 'complete']);
-            Route::patch('{id}/restore/', [ActivityController::class, 'restore']);
+            Route::put('{id}/restore/', [ActivityController::class, 'restore']);
             Route::put('/{id}', [ActivityController::class, 'update']);
             Route::get('/{id}', [ActivityController::class, 'show']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
