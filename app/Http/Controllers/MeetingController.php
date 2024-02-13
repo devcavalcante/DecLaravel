@@ -33,7 +33,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/meeting-history",
+     *   path="/groups/{groupId}/meeting-history",
      *   tags={"meetings"},
      *   summary="Listar todos os históricos de reuniões do grupo",
      *   description="Lista todos os históricos de reuniões do grupo especificado",
@@ -68,7 +68,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/meeting-history",
+     *   path="/groups/{groupId}/meeting-history",
      *   tags={"meetings"},
      *   summary="Criar um novo histórico de reunião para o grupo especificado",
      *   description="Cria um novo histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
@@ -134,7 +134,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/meeting-history/{id}",
+     *   path="/groups/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Exibir o histórico de uma reunião",
      *   description="Exibe uma reunião no grupo especificado",
@@ -164,7 +164,7 @@ class MeetingController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $meeting = $this->meetingRepository->findById($id);
         return response()->json($meeting);
@@ -172,7 +172,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/group/{groupId}/meeting-history/{id}",
+     *   path="/groups/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Atualizar o histórico de reunião para o grupo especificado",
      *   description="Atualiza o histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
@@ -238,7 +238,7 @@ class MeetingController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, MeetingRequest $request): JsonResponse
+    public function update(string $groupId, string $id, MeetingRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Meeting::class, $id]);
         $meeting = $this->meetingService->edit($id, $request->all());
@@ -247,7 +247,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/meeting-history/{id}",
+     *   path="/groups/{groupId}/meeting-history/{id}",
      *   tags={"meetings"},
      *   summary="Excluir histórico de reunião",
      *   description="Excluir histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
@@ -294,7 +294,7 @@ class MeetingController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/meeting-history/download/{id}",
+     *   path="/groups/{groupId}/meeting-history/{id}/download/",
      *   tags={"meetings"},
      *   summary="Faz download da ata",
      *   description="faz download da ata por ID",
@@ -317,7 +317,7 @@ class MeetingController extends Controller
      *   ),
      * )
      */
-    public function download(string $meetingId): BinaryFileResponse|JsonResponse
+    public function download(string $groupId, string $meetingId): BinaryFileResponse|JsonResponse
     {
         $document = $this->meetingRepository->findById($meetingId);
         $filePath = $document->ata;

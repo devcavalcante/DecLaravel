@@ -25,6 +25,11 @@ class UserPolicy extends AbstractPolicy
         return $this->isAdmin() || $this->isManager() || $this->isRepresentative();
     }
 
+    public function create(): bool
+    {
+        return $this->isAdmin();
+    }
+
     /**
      * Determine whether the user can update the model.
      */
@@ -37,11 +42,6 @@ class UserPolicy extends AbstractPolicy
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, string $id): bool
-    {
-        return $user->id == $id || $this->isAdmin();
-    }
-
-    public function restore(User $user, string $id): bool
     {
         return $user->id == $id || $this->isAdmin();
     }

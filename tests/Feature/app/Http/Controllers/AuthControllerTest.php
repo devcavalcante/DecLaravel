@@ -114,7 +114,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
         $actual = json_decode($response->getContent(), true);
 
-        $this->assertEquals('Nao autorizado', $actual['errors']);
+        $this->assertEquals('Não autorizado', $actual['errors']);
     }
 
     public function testShouldLogout()
@@ -129,7 +129,7 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
         $actual = json_decode($response->getContent(), true);
-        $this->assertEquals('Unauthorized.', $actual['errors']);
+        $this->assertEquals('Não autorizado', $actual['errors']);
     }
 
     private function getFakePayload(): array

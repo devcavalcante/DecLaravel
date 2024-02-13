@@ -20,7 +20,7 @@ class NoteControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
-    const BASE_URL = 'api/notes';
+    const BASE_URL = 'api/groups';
 
     public function setUp(): void
     {
@@ -36,7 +36,7 @@ class NoteControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/notes', $group->id));
+        $response = $this->get(sprintf('%s/%s/notes', self::BASE_URL, $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));
@@ -48,7 +48,7 @@ class NoteControllerTest extends TestCase
         $note = Note::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, $note->id));
+        $response = $this->get(sprintf('%s/%s/notes/%s', self::BASE_URL,  $group->id, $note->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
@@ -56,9 +56,10 @@ class NoteControllerTest extends TestCase
 
     public function testNotShouldListOneWhenNotFoundNote()
     {
+        $group = Group::factory()->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, 100));
+        $response = $this->get(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -76,7 +77,7 @@ class NoteControllerTest extends TestCase
             'color'       => ColorsEnum::GREEN,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/notes', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('notes', array_merge($payload, ['group_id' => $group->id]));
@@ -94,7 +95,7 @@ class NoteControllerTest extends TestCase
             'color'       => ColorsEnum::GREEN,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/notes', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('notes', array_merge($payload, ['group_id' => $group->id]));
@@ -104,7 +105,7 @@ class NoteControllerTest extends TestCase
     {
         $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
-        $group = Group::factory(['representative_id' => $representative->id])->create();
+        Group::factory(['representative_id' => $representative->id])->create();
 
         $payload = [
             'title'       => 'teste teste',
@@ -112,7 +113,7 @@ class NoteControllerTest extends TestCase
             'color'       => ColorsEnum::YELLOW,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/notes', 100), $payload);
+        $response = $this->post(sprintf('%s/%s/notes', self::BASE_URL, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -133,7 +134,7 @@ class NoteControllerTest extends TestCase
             'color'       => ColorsEnum::YELLOW,
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/notes', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/notes', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -150,7 +151,7 @@ class NoteControllerTest extends TestCase
             'title' => 'teste 2',
         ];
 
-        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $note->id), $payload);
+        $response = $this->put(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -169,7 +170,7 @@ class NoteControllerTest extends TestCase
             'title' => 'teste 2',
         ];
 
-        $response = $this->put(sprintf('%s/%s', self::BASE_URL, $note->id), $payload);
+        $response = $this->put(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -179,13 +180,14 @@ class NoteControllerTest extends TestCase
 
     public function testShouldNotUpdateWhenNoteNotFound()
     {
-        $userRepresentative = $this->login(TypeUserEnum::REPRESENTATIVE);
+        $group = Group::factory()->create();
+        $this->login(TypeUserEnum::REPRESENTATIVE);
 
         $payload = [
             'title' => 'teste ajskajska',
         ];
 
-        $response = $this->put(sprintf('api/notes/%s', 100), $payload);
+        $response = $this->put(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -205,7 +207,7 @@ class NoteControllerTest extends TestCase
             'description' => $this->faker->text,
         ];
 
-        $response = $this->put(sprintf('api/notes/%s', $note->id), $payload);
+        $response = $this->put(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -218,7 +220,7 @@ class NoteControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
+        $response = $this->delete(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('notes', $note->toArray());
@@ -231,7 +233,7 @@ class NoteControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
+        $response = $this->delete(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('notes', $note->toArray());
@@ -244,7 +246,7 @@ class NoteControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/notes/%s', 100, $note->id));
+        $response = $this->delete(sprintf('%s/%s/notes/%s', self::BASE_URL, 100, $note->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -256,7 +258,7 @@ class NoteControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Nota não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -272,7 +274,7 @@ class NoteControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative2->id])->create();
         $note = Note::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/notes/%s', $group->id, $note->id));
+        $response = $this->delete(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);

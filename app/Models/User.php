@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'users';
 
@@ -24,11 +24,13 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
         'type_user_id',
+        'active',
+        'url_photo',
+        'password',
     ];
 
-    protected $with = ['typeUser'];
+    protected $with = ['typeUser', 'apiToken'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -58,6 +60,11 @@ class User extends Authenticatable
     public function typeUser(): BelongsTo
     {
         return $this->belongsTo(TypeUser::class);
+    }
+
+    public function apiToken(): HasOne
+    {
+        return $this->hasOne(ApiToken::class, 'user_id');
     }
 
     public function groupsMembers(): BelongsToMany

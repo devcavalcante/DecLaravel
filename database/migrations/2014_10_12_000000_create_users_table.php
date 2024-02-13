@@ -17,13 +17,13 @@ return new class extends Migration
                 $table->id();
                 $table->string('name');
                 $table->string('email')->unique();
-                $table->timestamp('email_verified_at')->nullable();
-                $table->string('password');
+                $table->string('password')->nullable();
+                $table->boolean('active')->nullable();
+                $table->string('url_photo')->nullable();
                 $table->unsignedBigInteger('type_user_id');
                 $table->rememberToken();
                 $table->timestamps();
-                $table->softDeletes();
-                $table->string('file_url')->nullable();
+
                 $table->foreign('type_user_id')->references('id')->on('type_users');
             }
         );

@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use App\Enums\AbilitiesEnum;
 use App\Exceptions\AuthorizedException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -31,7 +32,7 @@ class AuthController extends Controller
      *   path="/register",
      *   tags={"auth"},
      *   summary="Criar novo usuário",
-     *   description="Cria novo usuário: Administradores podem criar qualquer tipo de usuário, Gerentes podem criar REPRESENTANTES, Representantes podem criar MEMBROS E VISUALIZADORES",
+     *   description="Criação de novo usuário",
      *   @OA\RequestBody(
      *      @OA\MediaType(
      *          mediaType="application/json",
@@ -57,10 +58,6 @@ class AuthController extends Controller
      *     response="422",
      *     description="Erro de validação"
      *   ),
-     *   @OA\Response(
-     *     response="401",
-     *     description="Unauthorized"
-     *   )
      * )
      * @throws AuthorizationException
      * @throws Throwable

@@ -12,7 +12,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="type-user",
+ *     name="type-users",
  *     description="Controle dos tipos de usuário: apenas usuários com o tipo de usuário ADMINISTRADOR tem acesso a esses endpoints"
  * )
  */
@@ -24,8 +24,8 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/type-user",
-     *   tags={"type-user"},
+     *   path="/type-users",
+     *   tags={"type-users"},
      *   summary="Criar novo tipo de usuário",
      *   description="Cria novo tipo de usuário",
      *   @OA\RequestBody(
@@ -68,8 +68,8 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/type-user/{id}",
-     *   tags={"type-user"},
+     *   path="/type-users/{id}",
+     *   tags={"type-users"},
      *   summary="Lista o registro de tipos de usuários por ID",
      *   description="Lista o registro de tipos de usuários por ID de referência",
      *   @OA\Parameter(
@@ -106,8 +106,8 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/type-user/{id}",
-     *   tags={"type-user"},
+     *   path="/type-users/{id}",
+     *   tags={"type-users"},
      *   summary="Atualizar tipo de usuário",
      *   description="Atualizar tipo de usuário",
      *   @OA\Parameter(
@@ -159,8 +159,8 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/type-user/{id}",
-     *   tags={"type-user"},
+     *   path="/type-users/{id}",
+     *   tags={"type-users"},
      *   summary="Deletar tipo de usuário",
      *   description="Deletar tipo de usuário por ID de referência",
      *   @OA\Parameter(
@@ -201,8 +201,8 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/type-user",
-     *   tags={"type-user"},
+     *   path="/type-users",
+     *   tags={"type-users"},
      *   summary="Listar todos os tipos de usuários",
      *   description="Lista todos os tipos de usuários",
      *   @OA\Response(

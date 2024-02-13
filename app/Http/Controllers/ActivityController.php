@@ -28,7 +28,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/activity",
+     *   path="/groups/{groupId}/activity",
      *   tags={"activity"},
      *   summary="Listar todos as atividades",
      *   description="Lista todas as atividades, ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
@@ -65,7 +65,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/activity/{id}",
+     *   path="/groups/{groupId}/activity/{id}",
      *   tags={"activity"},
      *   summary="Lista o registro de atividades por ID",
      *   description="Lista o registro de atividades por ID de referência",
@@ -92,7 +92,7 @@ class ActivityController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $activity = $this->activityRepository->findById($id);
 
@@ -101,7 +101,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/activity/open",
+     *   path="/groups/{groupId}/activity/open",
      *   tags={"activity"},
      *   summary="Listar todos as atividades em aberto",
      *   description="Lista todas as atividades em aberto.",
@@ -136,7 +136,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/activity/concluded",
+     *   path="/groups/{groupId}/activity/concluded",
      *   tags={"activity"},
      *   summary="Listar todos as atividades concluidas",
      *   description="Lista todas as atividades concluídas.",
@@ -171,7 +171,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/activity",
+     *   path="/groups/{groupId}/activity",
      *   tags={"activity"},
      *   summary="Criar nova atividade",
      *   description="Cria uma nova atividade, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -241,7 +241,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/activity/{id}",
+     *   path="/groups/{groupId}/activity/{id}",
      *   tags={"activity"},
      *   summary="Atualiza atividades",
      *   description="Atualizar atividades, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -300,7 +300,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function update(string $id, ActivityRequest $request): JsonResponse
+    public function update(string $groupId, string $id, ActivityRequest $request): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, $request->all());
@@ -309,7 +309,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/activity/{id}/complete",
+     *   path="/groups/{groupId}/activity/{id}/complete",
      *   tags={"activity"},
      *   summary="Atualiza tarefa como pronta",
      *   description="Atualiza tarefa como pronta",
@@ -341,7 +341,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function complete(string $id): JsonResponse
+    public function complete(string $groupId, string $id): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, ['done_at' => Carbon::now()]);
@@ -350,7 +350,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Put(
-     *   path="/activity/{id}/restore",
+     *   path="/groups/{groupId}/activity/{id}/restore",
      *   tags={"activity"},
      *   summary="Atualiza tarefa como aberta",
      *   description="Atualiza tarefa como aberta",
@@ -382,7 +382,7 @@ class ActivityController extends Controller
      * )
      * @throws AuthorizationException
      */
-    public function restore(string $id): JsonResponse
+    public function restore(string $groupId, string $id): JsonResponse
     {
         $this->authorize(AbilitiesEnum::UPDATE, [Activity::class, $id]);
         $activity = $this->activityRepository->update($id, ['done_at' => null]);
@@ -391,7 +391,7 @@ class ActivityController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/activity/{activityId}",
+     *   path="/groups/{groupId}/activity/{activityId}",
      *   tags={"activity"},
      *   summary="Deletar atividade",
      *   description="Deletar atividade por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",

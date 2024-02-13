@@ -25,7 +25,7 @@ class UserControllerTest extends TestCase
 
         // Verifica se a solicitação foi bem-sucedida e se a resposta contém os usuários
         $response->assertStatus(200);
-        $this->assertCount(10, User::all());
+        $this->assertCount(15, User::all());
     }
 
     public function testShouldListByFilters()
@@ -117,7 +117,7 @@ class UserControllerTest extends TestCase
         $response->assertStatus(204);
 
         // Verifica se o usuário foi removido corretamente do banco de dados
-        $this->assertSoftDeleted('users', ['id' => $user->id]);
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
     public function testShouldNotDestroyUserWithoutPermission()
@@ -148,58 +148,6 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function testRestoreUser()
-    {
-        $userLogged = $this->login(TypeUserEnum::ADMIN);
-
-        // Cria um usuário e apaga ele
-        $user = User::factory()->create();
-        $this->delete("/api/users/delete/{$user->id}");
-
-        // Envia uma solicitação para restaurar o usuário
-        $response = $this->patchJson("/api/users/restore/{$user->id}");
-
-        // Verifica se a solicitação foi bem-sucedida
-        $response->assertStatus(200);
-
-        // Verifica se o usuário foi restaurado corretamente
-        $this->assertDatabaseHas('users', [
-            'id'         => $user->id,
-            'deleted_at' => null,
-        ]);
-    }
-
-    public function testRestoreNotExistingUser()
-    {
-        $this->login(TypeUserEnum::ADMIN);
-
-        // Cria um ID inválido para um usuário inexistente
-        $invalidId = 999;
-
-        // Envia uma solicitação para restaurar o usuário inexistente
-        $response = $this->patchJson("/api/users/restore/{$invalidId}");
-
-        // Verifica se a solicitação retornou um erro 404
-        $response->assertStatus(404);
-    }
-
-    public function testShouldNotRestoreUserWithoutPermission()
-    {
-        $userLogged = $this->login(TypeUserEnum::ADMIN);
-
-        // Cria um usuário e apaga ele
-        $user = User::factory()->create();
-        $this->delete("/api/users/delete/{$user->id}");
-
-        $this->login(TypeUserEnum::REPRESENTATIVE);
-
-        // Envia uma solicitação para restaurar o usuário
-        $response = $this->patchJson("/api/users/restore/{$user->id}");
-
-        // Verifica se a solicitação foi bem-sucedida
-        $response->assertStatus(403);
-    }
-
     public function testShouldUpdate()
     {
         $user = $this->login(TypeUserEnum::ADMIN);
@@ -228,22 +176,22 @@ class UserControllerTest extends TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testShouldDestroy()
+    {
+        $this->login(TypeUserEnum::ADMIN);
+        $user = User::factory()->create();
+
+        $response = $this->delete(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
+
+        $this->assertEquals(204, $response->getStatusCode());
+    }
+
     public function testShouldNotDestroyWithoutPermissions()
     {
         $this->login(TypeUserEnum::VIEWER);
         $user = User::factory()->create();
 
         $response = $this->delete(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
-
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testShouldNotRestoreWithoutPermissions()
-    {
-        $this->login(TypeUserEnum::VIEWER);
-        $user = User::factory()->create();
-
-        $response = $this->patch(sprintf('api/users/restore/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
     }
