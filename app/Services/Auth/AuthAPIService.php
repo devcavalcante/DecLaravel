@@ -149,8 +149,9 @@ class AuthAPIService extends AbstractAuthService
     private function makeRequestGetUserInfo(string $token): array
     {
         $client = new Client();
+        $baseUrl = env('BASE_URL');
 
-        $response = $client->get('https://api.dev.ufopa.edu.br/usuario/v1/usuarios/info', [
+        $response = $client->get(sprintf('%s/usuario/v1/usuarios/info', $baseUrl), [
             'headers' => [
                 'Authorization' => sprintf('Bearer %s', $token),
             ],
