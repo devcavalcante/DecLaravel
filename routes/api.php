@@ -76,7 +76,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         Route::group(['prefix' => '{groupId}/meeting-history'], function () {
             Route::get('/', [MeetingController::class, 'index']);
-            Route::post('/{id}', [MeetingController::class, 'update']);
+            Route::put('/{id}', [MeetingController::class, 'update']);
             Route::get('/{id}', [MeetingController::class, 'show']);
             Route::get('/{id}/download', [MeetingController::class, 'download']);
             Route::post('/', [MeetingController::class, 'store']);
@@ -87,19 +87,19 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/', [ActivityController::class, 'index']);
             Route::get('/open', [ActivityController::class, 'listOpenActivities']);
             Route::get('/concluded', [ActivityController::class, 'listClosedActivities']);
+            Route::post('/', [ActivityController::class, 'store']);
             Route::put('{id}/complete', [ActivityController::class, 'complete']);
             Route::patch('{id}/restore/', [ActivityController::class, 'restore']);
             Route::put('/{id}', [ActivityController::class, 'update']);
             Route::get('/{id}', [ActivityController::class, 'show']);
-            Route::post('/', [ActivityController::class, 'store']);
             Route::delete('/{id}', [ActivityController::class, 'destroy']);
         });
 
         Route::group(['prefix' => '{groupId}/notes'], function () {
             Route::get('/', [NoteController::class, 'index']);
+            Route::post('/', [NoteController::class, 'store']);
             Route::put('/{id}', [NoteController::class, 'update']);
             Route::get('/{id}', [NoteController::class, 'show']);
-            Route::post('/', [NoteController::class, 'store']);
             Route::delete('/{id}', [NoteController::class, 'destroy']);
         });
     });
