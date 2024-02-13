@@ -18,27 +18,6 @@ class AuthAPIUFOPAController extends Controller
     }
 
     /**
-     * @OA\GET(
-     *   path="/redirect",
-     *   tags={"auth"},
-     *   summary="Redireciona o usuário para o login da ufopa",
-     *   description="Endpoint para redirecionar para o login da ufopa",
-     *   @OA\Response(
-     *    response="default", description="Redireciona para a URL de autorização"
-     *   ),
-     *   @OA\Response(
-     *     response="500",
-     *     description="Error"
-     *   ),
-     * )
-     */
-    public function redirect(): RedirectResponse
-    {
-        $authorizationUrl = $this->authService->getAuthorizationUrl();
-        return Redirect::away($authorizationUrl);
-    }
-
-    /**
      * @OA\Get(
      *     path="/callback",
      *     tags={"auth"},

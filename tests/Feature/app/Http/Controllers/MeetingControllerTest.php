@@ -160,10 +160,9 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content' => $this->faker->text,
             'ata'     => UploadedFile::fake()->create('file.pdf'),
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['ata']);
@@ -181,10 +180,9 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content' => $this->faker->text,
             'ata'     => UploadedFile::fake()->create('file.pdf'),
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['ata']);
@@ -200,10 +198,9 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, 100), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -222,10 +219,9 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);

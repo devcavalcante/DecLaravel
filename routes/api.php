@@ -27,7 +27,6 @@ Route::get('health', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/redirect', [AuthAPIUFOPAController::class, 'redirect']);
 Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
 
