@@ -129,6 +129,7 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
@@ -152,6 +153,7 @@ class MemberControllerTest extends TestCase
         $user = User::factory()->create();
         $payload =  [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
@@ -177,6 +179,7 @@ class MemberControllerTest extends TestCase
 
         $payload =  [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
