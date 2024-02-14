@@ -35,6 +35,7 @@ class MemberRequest extends FormRequest
                 'distinct',
                 Rule::unique('members', 'email')->ignore(request()->route('id')),
             ],
+            '*.name'           => sprintf('%s|min:4|string', $isRequired),
             '*.role'           => sprintf('%s|string', $isRequired),
             '*.phone'          => sprintf('%s|min:11|max:11|string', $isRequired),
             '*.entry_date'     => sprintf('%s|date_format:Y-m-d', $isRequired),
