@@ -7,8 +7,12 @@ use App\Models\Member;
 use App\Models\Representative;
 use App\Models\TypeUser;
 use App\Models\User;
+use App\Services\Auth\AuthService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Laravel\Passport\Passport;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
@@ -88,7 +92,7 @@ class AuthControllerTest extends TestCase
     public function testShouldNotCreateWhenUserExists()
     {
         $typeUser = TypeUser::where('name', TypeUserEnum::ADMIN)->first();
-        $user = User::factory(['type_user_id' => $typeUser->id])->create();
+        User::factory(['type_user_id' => $typeUser->id])->create();
         $payload = Arr::except($this->getFakePayload($typeUser->id), 'c_password');
 
         User::factory($payload)->create();
@@ -130,6 +134,66 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson(sprintf('%s/logout', self::BASE_URL));
         $actual = json_decode($response->getContent(), true);
         $this->assertEquals('Não autorizado', $actual['errors']);
+    }
+
+    public function testShouldForgotPassword()
+    {
+        Mail::fake();
+        $user = User::first();
+        $response = $this->post('api/forgot-password', ['email' => $user->email]);
+        $actual = json_decode($response->getContent(), true);
+
+        $this->assertEquals('Enviamos seu link de redefinição de senha por e-mail!', $actual['status']);
+    }
+
+    public function testShouldNotForgotPassword()
+    {
+        Mail::fake();
+        $response = $this->post('api/forgot-password', ['email' => 'abc@mail.com']);
+        $actual = json_decode($response->getContent(), true);
+
+        $this->assertEquals('Não encontramos um usuário com esse endereço de e-mail.', $actual['status']);
+    }
+
+    public function testShouldResetPassword()
+    {
+        // Crie um usuário de teste
+        $user = User::factory()->create(['email' => 'test@example.com']);
+
+        // Crie dados de redefinição de senha simulados
+        $resetData = [
+            'email' => 'test@example.com',
+            'token' => 'fake-token', // Simulando um token válido
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword'
+        ];
+
+        // Mock Password::reset() para simular uma redefinição de senha bem-sucedida
+        Password::shouldReceive('reset')
+            ->once()
+            ->andReturn(Password::PASSWORD_RESET);
+
+        $response = $this->post('api/reset-password', $resetData);
+        $actual = json_decode($response->getContent(), true);
+        // Verifique se a redefinição de senha foi bem-sucedida
+        $this->assertEquals(['status' => 'Sua senha foi redefinida!'], $actual);
+    }
+
+    public function testShouldNotResetPassword()
+    {
+        // Crie dados de redefinição de senha simulados
+        $resetData = [
+            'email' => 'test@example.com',
+            'token' => 'fake-token', // Simulando um token válido
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword'
+        ];
+
+        $response = $this->post('api/reset-password', $resetData);
+        $actual = json_decode($response->getContent(), true);
+        $user = User::where(['email' => 'test@example.com'])->first();
+        // Verifique se a redefinição de senha foi bem-sucedida
+        $this->assertEquals(['status' => 'Este token de redefinição de senha é inválido.'], $actual);
     }
 
     private function getFakePayload(): array

@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             DB::table('api_tokens')->where('api_token_expires_at', '<', now())->delete();
         })->daily();
+        $schedule->command('auth:clear-resets')->everyFifteenMinutes();
     }
 
     /**

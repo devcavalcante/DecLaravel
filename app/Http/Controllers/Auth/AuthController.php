@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\AbilitiesEnum;
 use App\Exceptions\AuthorizedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UserRequest;
-use App\Models\User;
 use App\Services\Auth\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use OpenApi\Annotations as OA;
+use Illuminate\Http\Request;
 use Throwable;
 
 /**
@@ -133,5 +132,20 @@ class AuthController extends Controller
     {
         $this->authService->logout();
         return response()->json([], 204);
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+        $email = $request->only('email');
+        $response = $this->authService->forgotPassword($email);
+        return response()->json($response);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $data = $request->only('email', 'password', 'password_confirmation', 'token');
+        $response = $this->authService->resetPassword($data);
+        return response()->json($response, 201);
     }
 }

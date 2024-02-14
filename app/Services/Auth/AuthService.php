@@ -2,21 +2,24 @@
 
 namespace App\Services\Auth;
 
-use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
 use App\Exceptions\EmailExists;
+use App\Models\User;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Passport\TokenRepository;
 use Throwable;
+use Illuminate\Support\Facades\Password;
 
 class AuthService extends AbstractAuthService
 {
@@ -82,5 +85,29 @@ class AuthService extends AbstractAuthService
         $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
 
         return $user;
+    }
+
+    public function forgotPassword(array $email): array
+    {
+        $status = Password::sendResetLink($email);
+        return ['status' => __($status)];
+    }
+
+    public function resetPassword(array $data): array
+    {
+        $status = Password::reset(
+            $data,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => bcrypt($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return ['status' => __($status)];
     }
 }
