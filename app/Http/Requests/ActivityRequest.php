@@ -39,27 +39,6 @@ class ActivityRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'name.string'              => 'O campo de nome deve ser uma string.',
-            'name.required'            => 'O campo de nome é obrigatório.',
-            'description.string'       => 'O campo de descrição deve ser uma string.',
-            'description.required'     => 'O campo de descrição é obrigatório.',
-            'start_date.date_format'   => 'O campo data de inicio deve ser no formato Y-m-d.',
-            'end_date.date_format'     => 'O campo data final deve ser no formato Y-m-d.',
-            'start_date.required_with' => 'O campo data final deve estar presente.',
-            'end_data.required_with'   => 'O campo data inicial deve estar presente.',
-            'start_date.required'      => 'O campo de data inicial é obrigatório.',
-            'end_date.required'        => 'O campo de data final é obrigatório.',
-        ];
-    }
-
-    /**
      * Handle a failed validation attempt.
      *
      * @param Validator $validator

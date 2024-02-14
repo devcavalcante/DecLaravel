@@ -42,34 +42,6 @@ class UserRequest extends FormRequest
             ],
         ];
     }
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'name.required'           => 'O campo nome é obrigatório.',
-            'name.string'             => 'O campo nome deve ser uma string.',
-            'name.min'                => 'O campo nome deve ter no mínimo 2 caracteres.',
-            'email.email'             => 'Email invalido.',
-            'email.required'          => 'O campo e-mail e obrigatório.',
-            'email.string'            => 'O campo email deve ser uma string.',
-            'password.required'       => 'O campo password e obrigatório.',
-            'password.min'            => 'O campo password deve ter no mínimo 8 caracteres.',
-            'password.string'         => 'O campo password deve ser uma string.',
-            'c_password.min'          => 'O campo password deve ter no mínimo 8 caracteres.',
-            'c_password.required'     => 'O campo confirmação de senha e obrigatório.',
-            'c_password.same'         => 'O campo confirmação de senha deve ser igual ao campo password.',
-            'c_password.string'       => 'O campo confirmação de senha deve ser uma string.',
-            'type_user_id.in'         => 'O valor passado em type_user_id nao existe',
-            'email.unique'            => 'Esse e-mail ja esta cadastrado',
-            'type_user_id.prohibited' => 'Esse campo não pode ser atualizado',
-            'file_url.image'          => 'O campo deve ser uma imagem',
-            'creator_user_id.exists'  => 'O campo de criador de usuario deve existir na base de dados.',
-        ];
-    }
 
     /**
      * Handle a failed validation attempt.
@@ -82,7 +54,6 @@ class UserRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

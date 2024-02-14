@@ -44,35 +44,6 @@ class MemberRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            '*.name.required'                 => 'O campo nome é obrigatório.',
-            '*.name.string'                   => 'O campo nome deve ser uma string.',
-            '*.name.min'                      => 'O campo nome deve  ter no min 4 caracteres.',
-            '*.role.required'                 => 'O campo papel é obrigatório.',
-            '*.role.string'                   => 'O campo papel deve ser uma string.',
-            '*.phone.required'                => 'O campo telefone é obrigatório.',
-            '*.phone.string'                  => 'O campo telefone deve ser uma string.',
-            '*.phone.min'                     => 'O campo telefone deve ter 11 caracteres.',
-            '*.phone.max'                     => 'O campo telefone deve ter 11 caracteres.',
-            '*.departure_date.date_format'    => 'O campo data de saida deve ser no formato Y-m-d.',
-            '*.departure_date.required'       => 'O campo de saida deve ser obrigatório',
-            '*.entry_date.date_format'        => 'O campo data de entrada deve ser no formato Y-m-d.',
-            '*.entry_date.required'           => 'O campo data de entrada deve ser obrigatório.',
-            '*.departure_date.after_or_equal' => 'A data de partida deve ser uma data posterior ou igual à data de entrada.',
-            '*.email.string'                  => 'O campo do email deve ser uma string.',
-            '*.email.email'                   => 'Email invalido.',
-            '*.email.unique'                  => 'Esse membro já está cadastrado no grupo',
-            '*.email.distinct'                => 'Cada e-mail deve ser único entre os membros enviados.',
-        ];
-    }
-
-    /**
      * Handle a failed validation attempt.
      *
      * @param Validator $validator

@@ -33,24 +33,6 @@ class MeetingRequest extends FormRequest
             'date_meet' => sprintf('%s|date_format:Y-m-d', $isRequired),
         ];
     }
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'content.required'      => 'O campo content é obrigatório.',
-            'content.string'        => 'O campo content deve ser uma string.',
-            'content.min'           => 'O campo content deve ter no mínimo 5 caracteres.',
-            'summary.required'      => 'O campo summary é obrigatório.',
-            'summary.string'        => 'O campo summary deve ser uma string.',
-            'summary.min'           => 'O campo summary deve ter no mínimo 5 caracteres.',
-            'date_meet.date_format' => 'O campo data da reunião deve ser no formato Y-m-d.',
-            'date_meet.required'    => 'O campo data da reunião deve ser obrigatório.',
-        ];
-    }
 
     /**
      * Handle a failed validation attempt.
@@ -62,7 +44,6 @@ class MeetingRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator): void
     {
-
         throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
     }
 }

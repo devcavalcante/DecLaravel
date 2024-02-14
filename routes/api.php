@@ -29,6 +29,8 @@ Route::get('health', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => '/type-users'], function () {

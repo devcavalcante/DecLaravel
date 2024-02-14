@@ -86,6 +86,7 @@ class MemberController extends Controller
      *          @OA\Schema(
      *              example={
      *                          {
+     *                              "name": "Debora",
      *                              "email": "bar@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",
@@ -93,6 +94,7 @@ class MemberController extends Controller
      *                              "departure_date": "23-10-2023"
      *                          },
      *                          {
+     *                              "name": "Emily",
      *                              "email": "outromail@mail.com",
      *                              "role": "bar",
      *                              "phone": "93991185489",

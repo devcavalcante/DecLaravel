@@ -533,6 +533,73 @@
                 }
             }
         },
+        "/forgot-password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Envia e-mail para o usuário recuperar a senha",
+                "description": "Envio de email para resetar a senha do usuário",
+                "operationId": "9e273ee835bbbe0d6ad487331f877940",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "email": "Email do usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Editar senha",
+                "description": "Reseta a senha do usuário",
+                "operationId": "3c793085ef8a11bc3209c9bc94792715",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "email": "Email do usuário",
+                                    "token": "Token enviado por e-mail",
+                                    "password": "Nova senha",
+                                    "password_confirmation": "Confirmar a nova senha"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
         "/groups/{groupId}/documents": {
             "get": {
                 "tags": [
@@ -1243,6 +1310,7 @@
                             "schema": {
                                 "example": [
                                     {
+                                        "name": "Debora",
                                         "email": "bar@mail.com",
                                         "role": "bar",
                                         "phone": "93991185489",
@@ -1250,6 +1318,7 @@
                                         "departure_date": "23-10-2023"
                                     },
                                     {
+                                        "name": "Emily",
                                         "email": "outromail@mail.com",
                                         "role": "bar",
                                         "phone": "93991185489",

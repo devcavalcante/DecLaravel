@@ -115,7 +115,7 @@ class MemberControllerTest extends TestCase
         $actual = json_decode($response->getContent(), true)['errors']['0.email'][0];
 
         $response->assertStatus(422);
-        $this->assertEquals('Esse membro já está cadastrado no grupo', $actual);
+        $this->assertEquals('O campo 0.email já está sendo utilizado.', $actual);
     }
 
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()

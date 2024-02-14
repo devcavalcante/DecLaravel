@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DocumentRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,10 @@ class DocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file'        => 'required|mimes:xml,pdf,csv,txt,xlsx,xls,docx,doc,jpg,jpeg,png,svg,zip',
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required|same:password|min:8|string'
         ];
     }
 
