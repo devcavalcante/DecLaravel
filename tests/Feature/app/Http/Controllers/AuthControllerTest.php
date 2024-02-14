@@ -86,7 +86,7 @@ class AuthControllerTest extends TestCase
         $actual = json_decode($response->getContent(), true);
 
         $this->assertEquals(422, $response->getStatusCode());
-        $this->assertEquals('Email invalido.', Arr::first($actual['errors']['email']));
+        $this->assertEquals('O campo email deve ser um endereço de e-mail válido.', Arr::first($actual['errors']['email']));
     }
 
     public function testShouldNotCreateWhenUserExists()
@@ -181,6 +181,7 @@ class AuthControllerTest extends TestCase
 
     public function testShouldNotResetPassword()
     {
+        User::factory()->create(['email' => 'test@example.com']);
         // Crie dados de redefinição de senha simulados
         $resetData = [
             'email' => 'test@example.com',
