@@ -40,6 +40,15 @@ services:
         depends_on:
             - plataforma.dev
 
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "example@email.com"
+            PGADMIN_DEFAULT_PASSWORD: "PgAdmin2019!"
+        ports:
+            - 8080:80
+
 volumes:
     plataforma.db:
 

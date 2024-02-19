@@ -23,7 +23,7 @@ class MeetingControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
-    const BASE_URL = 'api/meeting-history';
+    const BASE_URL = 'api/groups';
 
     public function setUp(): void
     {
@@ -39,7 +39,7 @@ class MeetingControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/meeting-history', $group->id));
+        $response = $this->get(sprintf('%s/%s/meeting-history', self::BASE_URL, $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true));
@@ -51,7 +51,7 @@ class MeetingControllerTest extends TestCase
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, $meeting->id));
+        $response = $this->get(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
@@ -59,9 +59,10 @@ class MeetingControllerTest extends TestCase
 
     public function testNotShouldListOneWhenNotFoundMeeting()
     {
+        $group = Group::factory()->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s', self::BASE_URL, 100));
+        $response = $this->get(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -80,7 +81,7 @@ class MeetingControllerTest extends TestCase
             'date_meet' => '2024-01-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/meeting-history', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $response->assertJsonStructure(['ata']);
@@ -101,7 +102,7 @@ class MeetingControllerTest extends TestCase
             'date_meet' => '2024-01-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/meeting-history', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(201);
         $response->assertJsonStructure(['ata']);
@@ -122,7 +123,7 @@ class MeetingControllerTest extends TestCase
             'date_meet' => '2024-01-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/meeting-history', 100), $payload);
+        $response = $this->post(sprintf('%s/%s/meeting-history', self::BASE_URL, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -143,7 +144,7 @@ class MeetingControllerTest extends TestCase
             'date_meet' => '2024-01-01',
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/meeting-history', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/meeting-history', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -159,10 +160,9 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content' => $this->faker->text,
             'ata'     => UploadedFile::fake()->create('file.pdf'),
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['ata']);
@@ -180,10 +180,9 @@ class MeetingControllerTest extends TestCase
         $payload = [
             'content' => $this->faker->text,
             'ata'     => UploadedFile::fake()->create('file.pdf'),
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['ata']);
@@ -199,10 +198,9 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('api/meeting-history/%s', 100), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -221,10 +219,9 @@ class MeetingControllerTest extends TestCase
 
         $payload = [
             'summary' => $this->faker->text,
-            'method'  => 'PUT',
         ];
 
-        $response = $this->post(sprintf('api/meeting-history/%s', $meeting->id), $payload);
+        $response = $this->put(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -237,7 +234,7 @@ class MeetingControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
+        $response = $this->delete(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('meetings', $meeting->toArray());
@@ -250,7 +247,7 @@ class MeetingControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
+        $response = $this->delete(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('meetings', $meeting->toArray());
@@ -263,7 +260,7 @@ class MeetingControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', 100, $meeting->id));
+        $response = $this->delete(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, 100, $meeting->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -275,7 +272,7 @@ class MeetingControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Reunião não encontrada', json_decode($response->getContent(), true)['errors']);
@@ -290,7 +287,7 @@ class MeetingControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative->id])->create();
         $meeting = Meeting::factory(['group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/meeting-history/%s', $group->id, $meeting->id));
+        $response = $this->delete(sprintf('%s/%s/meeting-history/%s', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -302,9 +299,10 @@ class MeetingControllerTest extends TestCase
         $file = UploadedFile::fake()->create('file.pdf');
         $file =  Storage::disk('local')->put('atas', $file);
 
-        $meeting = Meeting::factory()->create(['ata' => $file]);
+        $group = Group::factory()->create();
+        $meeting = Meeting::factory()->create(['ata' => $file, 'group_id' => $group->id]);
 
-        $response = $this->get("/api/meeting-history/download/{$meeting->id}");
+        $response = $this->get(sprintf('%s/%s/meeting-history/%s/download/', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(200);
         Storage::disk('local')->delete($file);

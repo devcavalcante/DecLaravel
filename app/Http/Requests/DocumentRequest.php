@@ -30,18 +30,6 @@ class DocumentRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'file.required' => 'O campo de arquivo é obrigatório.',
-        ];
-    }
-
-    /**
      * Handle a failed validation attempt.
      *
      * @param Validator $validator

@@ -3,12 +3,14 @@
 namespace App\Exceptions;
 
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use HttpException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\UnauthorizedException;
@@ -50,13 +52,13 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @param Throwable $exception
-     * @return Response|JsonResponse
+     * @return Response|JsonResponse|RedirectResponse
      *
      * @throws Throwable
      */
-    public function render($request, Throwable $exception): Response|JsonResponse
+    public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();
@@ -73,7 +75,7 @@ class Handler extends ExceptionHandler
             return response(['errors' => $exceptionMessage, 'code' => 403], 403);
         }
 
-        if ($exception instanceof QueryException || $exception instanceof TransportException) {
+        if ($exception instanceof QueryException) {
             preg_match('#\[(.*?)]#', $exception->getMessage(), $match);
             if ($match[1] == '23503') {
                 return response([
@@ -81,7 +83,16 @@ class Handler extends ExceptionHandler
                     'code'   => 400,
                 ], 400);
             }
-            return response(['errors' => 'Não é possivel executar essa ação.'], 400);
+            return response(['errors' => $exception->getMessage()], 400);
+        }
+
+        if ($exception instanceof TransportException) {
+            return response(['errors' => $exception->getMessage()], 400);
+        }
+
+        if ($exception instanceof ClientException) {
+            $message = json_decode($exception->getResponse()->getBody()->getContents(), true);
+            return response(['errors' => $message], 400);
         }
 
         return parent::render($request, $exception);

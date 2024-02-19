@@ -1,24 +1,27 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Auth;
 
-use App\Enums\TypeUserEnum;
 use App\Exceptions\AuthorizedException;
 use App\Exceptions\EmailExists;
+use App\Models\User;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
 use App\Repositories\Interfaces\RepresentativeRepositoryInterface;
 use App\Repositories\Interfaces\TypeUserRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Repositories\RepresentativeRepository;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Passport\TokenRepository;
 use Throwable;
+use Illuminate\Support\Facades\Password;
 
-class AuthService
+class AuthService extends AbstractAuthService
 {
     public function __construct(
         protected UserRepositoryInterface $userRepository,
@@ -65,7 +68,7 @@ class AuthService
             return $user;
         }
 
-        throw new AuthorizedException('Nao autorizado', 401);
+        throw new AuthorizedException('Não autorizado', 401);
     }
 
     /**
@@ -78,40 +81,33 @@ class AuthService
 
     private function createUser(array $data): Model
     {
-        $email = Arr::get($data, 'email');
-        $representative = $this->representativeRepository->findByFilters(['email' => $email]);
-        $member = $this->memberRepository->findByFilters(['email' => $email]);
-
-        $typeUserId = $this->getTypeUserId($representative);
-
-        $user = $this->userRepository->create(array_merge($data, ['type_user_id' => $typeUserId]));
-        $this->updateRepresentativeOrMember($representative, $member, $user->id);
+        $user = $this->createUserWithType($data);
         $user['token'] = $user->createToken(env('APP_NAME'))->accessToken;
 
         return $user;
     }
 
-    private function getTypeUserId($representative): string
+    public function forgotPassword(array $email): array
     {
-        if ($representative->isNotEmpty()) {
-            return $this->getTypeUserIdByName(TypeUserEnum::REPRESENTATIVE);
-        }
-        return $this->getTypeUserIdByName(TypeUserEnum::VIEWER);
+        $status = Password::sendResetLink($email);
+        return ['status' => __($status)];
     }
 
-    private function getTypeUserIdByName(string $typeName): string
+    public function resetPassword(array $data): array
     {
-        return $this->typeUserRepository->findByFilters(['name' => $typeName])->first()->id;
-    }
+        $status = Password::reset(
+            $data,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => bcrypt($password)
+                ])->setRememberToken(Str::random(60));
 
-    private function updateRepresentativeOrMember($representative, $member, $userId): void
-    {
-        $payload = ['user_id' => $userId];
-        if ($representative->isNotEmpty()) {
-            $this->representativeRepository->update($representative->first()->id, $payload);
-        }
-        if ($member->isNotEmpty()) {
-            $this->memberRepository->update($member->first()->id, $payload);
-        }
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return ['status' => __($status)];
     }
 }

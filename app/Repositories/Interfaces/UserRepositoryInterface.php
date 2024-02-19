@@ -12,5 +12,4 @@ interface UserRepositoryInterface
     public function findById(string $id): Model;
     public function update(string $id, array $data): Model;
     public function delete(string $id): Model;
-    public function restore(string $id): Model;
 }

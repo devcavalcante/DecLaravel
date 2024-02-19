@@ -20,6 +20,8 @@ class MemberControllerTest extends TestCase
     use DatabaseTransactions;
     use LoginUsersTrait;
 
+    const BASE_URL = 'api/groups';
+
     public function testShouldListAll()
     {
         $group = Group::factory()->create();
@@ -33,7 +35,7 @@ class MemberControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/group/%s/members', $group->id));
+        $response = $this->get(sprintf('%s/%s/members', self::BASE_URL, $group->id));
 
         $response->assertStatus(200);
         $this->assertCount(2, json_decode($response->getContent(), true)['data']);
@@ -47,7 +49,7 @@ class MemberControllerTest extends TestCase
 
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/members/%s', $member->id));
+        $response = $this->get(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, $member->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());
@@ -55,9 +57,10 @@ class MemberControllerTest extends TestCase
 
     public function testNotShouldListOneWhenNotFoundMember()
     {
+        $group = Group::factory()->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('api/members/%s', 100));
+        $response = $this->get(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -73,7 +76,7 @@ class MemberControllerTest extends TestCase
 
         $payload = $this->getFakePayload();
 
-        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, $group->id), $payload);
         Arr::set($payload, '0.entry_date', '2024-01-01');
         Arr::set($payload, '0.departure_date', '2024-01-01');
         Arr::set($payload, '1.entry_date', '2024-01-01');
@@ -90,7 +93,7 @@ class MemberControllerTest extends TestCase
 
         $payload = $this->getFakePayload();
 
-        $response = $this->post(sprintf('/api/group/%s/members', 100), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, 100), $payload);
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -108,11 +111,11 @@ class MemberControllerTest extends TestCase
         $payload = $this->getFakePayload();
         $payload[0]['email'] = $member->email;
 
-        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, $group->id), $payload);
         $actual = json_decode($response->getContent(), true)['errors']['0.email'][0];
 
         $response->assertStatus(422);
-        $this->assertEquals('Esse membro já está cadastrado no grupo', $actual);
+        $this->assertEquals('O campo 0.email já está sendo utilizado.', $actual);
     }
 
     public function testShouldNotCreateWhenIsNotTheRepresentativeOfGroup()
@@ -126,6 +129,7 @@ class MemberControllerTest extends TestCase
 
         $payload = [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
@@ -134,7 +138,7 @@ class MemberControllerTest extends TestCase
             ],
         ];
 
-        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, $group->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -149,6 +153,7 @@ class MemberControllerTest extends TestCase
         $user = User::factory()->create();
         $payload =  [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
@@ -159,7 +164,7 @@ class MemberControllerTest extends TestCase
 
         Mail::fake();
 
-        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, $group->id), $payload);
 
         $member = Member::where(['email' => $user->email])->first();
         $response->assertStatus(201);
@@ -174,6 +179,7 @@ class MemberControllerTest extends TestCase
 
         $payload =  [
             [
+                'name'           => 'teste',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
                 'entry_date'     => '2023-01-10',
@@ -184,7 +190,7 @@ class MemberControllerTest extends TestCase
 
         Mail::fake();
 
-        $response = $this->post(sprintf('/api/group/%s/members', $group->id), $payload);
+        $response = $this->post(sprintf('%s/%s/members', self::BASE_URL, $group->id), $payload);
 
         $member = Member::where(['email' => $payload[0]['email']])->first();
         $response->assertStatus(201);
@@ -203,7 +209,7 @@ class MemberControllerTest extends TestCase
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, $member->id), $payload);
+        $response = $this->put(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, $member->id), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
@@ -221,12 +227,12 @@ class MemberControllerTest extends TestCase
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, 100), $payload);
+        $response = $this->put(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, 100), $payload);
 
         $actual = json_decode($response->getContent(), true);
 
         $response->assertStatus(404);
-        $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
+        $this->assertEquals('Membro não encontrado', $actual['errors']);
     }
 
     public function testShouldNotUpdateWhenIsNotTheRepresentativeOfGroup()
@@ -243,7 +249,7 @@ class MemberControllerTest extends TestCase
             'phone' => '9391919191',
         ];
 
-        $response = $this->put(sprintf('api/group/%s/members/%s', $group->id, $member->id), $payload);
+        $response = $this->put(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, $member->id), $payload);
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -257,7 +263,7 @@ class MemberControllerTest extends TestCase
         $member = Member::factory()->create();
         MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
+        $response = $this->delete(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, $member->id));
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('members', $member->toArray());
@@ -271,7 +277,7 @@ class MemberControllerTest extends TestCase
         $member = Member::factory()->create();
         MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/members/%s', 100, $member->id));
+        $response = $this->delete(sprintf('%s/%s/members/%s', self::BASE_URL, 100, $member->id));
 
         $response->assertStatus(404);
         $this->assertEquals('Grupo não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -286,7 +292,7 @@ class MemberControllerTest extends TestCase
         $member = Member::factory(['user_id' => $user->id])->create();
         MemberHasGroup::factory(['member_id' => $member->id, 'group_id' => $group->id])->create();
 
-        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Membro não encontrado', json_decode($response->getContent(), true)['errors']);
@@ -302,7 +308,7 @@ class MemberControllerTest extends TestCase
         $group = Group::factory(['representative_id' => $representative2->id])->create();
         $member = Member::factory()->create();
 
-        $response = $this->delete(sprintf('api/group/%s/members/%s', $group->id, $member->id));
+        $response = $this->delete(sprintf('%s/%s/members/%s', self::BASE_URL, $group->id, $member->id));
 
         $response->assertStatus(403);
         $this->assertEquals('This action is unauthorized.', json_decode($response->getContent(), true)['errors']);
@@ -329,6 +335,7 @@ class MemberControllerTest extends TestCase
     {
         return [
             [
+                'name'           => 'teste',
                 'email'          => 'teste@teste.com',
                 'phone'          => '93991167653',
                 'role'           => 'professor',
@@ -336,6 +343,7 @@ class MemberControllerTest extends TestCase
                 'departure_date' => '2024-01-01',
             ],
             [
+                'name'           => 'teste',
                 'email'          => 'teste2@teste.com',
                 'phone'          => '93991778765',
                 'role'           => 'reitor',

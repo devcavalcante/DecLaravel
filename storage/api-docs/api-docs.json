@@ -12,14 +12,14 @@
     ],
     "paths": {
         "/auth": {},
-        "/group/{groupId}/activity": {
+        "/groups/{groupId}/activity": {
             "get": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Listar todos as atividades",
                 "description": "Lista todas as atividades, ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "f0acb07d5e32cc06eb9239e645d8730b",
+                "operationId": "e2185f754af6dcfad29a06a075ebbb59",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -49,7 +49,7 @@
                 ],
                 "summary": "Criar nova atividade",
                 "description": "Cria uma nova atividade, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "d1ead45e1fb6738ad0a9375a5efb7831",
+                "operationId": "8864b44c046d8217d5a033043fd3be21",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -104,14 +104,14 @@
                 }
             }
         },
-        "/activity/{id}": {
+        "/groups/{groupId}/activity/{id}": {
             "get": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Lista o registro de atividades por ID",
                 "description": "Lista o registro de atividades por ID de referência",
-                "operationId": "0f8a0773d3fe13f5a23743fbda8818f7",
+                "operationId": "4ece3f7cd9bc8e98577c41ee8e50445b",
                 "parameters": [
                     {
                         "name": "id",
@@ -141,7 +141,7 @@
                 ],
                 "summary": "Atualiza atividades",
                 "description": "Atualizar atividades, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "8a0046ad2f5568277508b8d3ecb52101",
+                "operationId": "5ac4589ad2dcdd666444d40306eb32e2",
                 "parameters": [
                     {
                         "name": "id",
@@ -196,14 +196,14 @@
                 }
             }
         },
-        "/group/{groupId}/activity/open": {
+        "/groups/{groupId}/activity/open": {
             "get": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Listar todos as atividades em aberto",
                 "description": "Lista todas as atividades em aberto.",
-                "operationId": "ad0a8959a4768cd02cdf3047e5d42580",
+                "operationId": "054a722c08a5e8798d4a076956ff07b4",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -228,14 +228,14 @@
                 }
             }
         },
-        "/group/{groupId}/activity/concluded": {
+        "/groups/{groupId}/activity/concluded": {
             "get": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Listar todos as atividades concluidas",
                 "description": "Lista todas as atividades concluídas.",
-                "operationId": "9485d9981a09ab7bba529503f53f12a2",
+                "operationId": "cfa04dc306982714919cfe7c78f3183d",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -260,14 +260,14 @@
                 }
             }
         },
-        "/activity/{id}/complete": {
+        "/groups/{groupId}/activity/{id}/complete": {
             "put": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Atualiza tarefa como pronta",
                 "description": "Atualiza tarefa como pronta",
-                "operationId": "0de1234f0cb4c0fb7a51f5212bfcedff",
+                "operationId": "b48cac56bb3fdadb6eb05f2899f4cab0",
                 "parameters": [
                     {
                         "name": "id",
@@ -295,14 +295,14 @@
                 }
             }
         },
-        "/activity/{id}/restore": {
+        "/groups/{groupId}/activity/{id}/restore": {
             "put": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Atualiza tarefa como aberta",
                 "description": "Atualiza tarefa como aberta",
-                "operationId": "85ef7da7abf150135b34879351670662",
+                "operationId": "24d212de5db2654f6acff7780721652e",
                 "parameters": [
                     {
                         "name": "id",
@@ -330,14 +330,14 @@
                 }
             }
         },
-        "/group/{groupId}/activity/{activityId}": {
+        "/groups/{groupId}/activity/{activityId}": {
             "delete": {
                 "tags": [
                     "activity"
                 ],
                 "summary": "Deletar atividade",
                 "description": "Deletar atividade por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "0d3be6468f3efcea49b77af0003feb6f",
+                "operationId": "cc2ade9961758b5af1a5c91f30157843",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -371,14 +371,87 @@
                 }
             }
         },
+        "/callback": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Retorno para salvar usuário",
+                "operationId": "4751235e81bc3293aaf2ad95b2c62fdb",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Código de autorização recebido no retorno",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Informação do usuário",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Error",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Error response",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/logout-ufopa": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Desloga usuário logado pela api da ufopa",
+                "description": "Endpoint para revogar o token",
+                "operationId": "13e79a2a8a49dae966d82a3a992e1be0",
+                "responses": {
+                    "204": {
+                        "description": "Not Content"
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "tags": [
                     "auth"
                 ],
                 "summary": "Criar novo usuário",
-                "description": "Cria novo usuário: Administradores podem criar qualquer tipo de usuário, Gerentes podem criar REPRESENTANTES, Representantes podem criar MEMBROS E VISUALIZADORES",
-                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "description": "Criação de novo usuário",
+                "operationId": "f367ea894b2ac44a9607f8e0a9a03537",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -402,9 +475,6 @@
                     },
                     "422": {
                         "description": "Erro de validação"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 }
             }
@@ -416,7 +486,7 @@
                 ],
                 "summary": "Login do usuário",
                 "description": "Usuário loga no sistema",
-                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "operationId": "ec9c379d2a959de66404708dd4a9322d",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -452,7 +522,7 @@
                 ],
                 "summary": "Desloga usuário",
                 "description": "Endpoint para revogar o token",
-                "operationId": "4d05b3b4c4627a89a3d62ea61d7aff88",
+                "operationId": "3e7d1f7cfbf48af19c928f0d946cc6b7",
                 "responses": {
                     "204": {
                         "description": "Not Content"
@@ -463,14 +533,81 @@
                 }
             }
         },
-        "/group/{groupId}/documents": {
+        "/forgot-password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Envia e-mail para o usuário recuperar a senha",
+                "description": "Envio de email para resetar a senha do usuário",
+                "operationId": "9e273ee835bbbe0d6ad487331f877940",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "email": "Email do usuário"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Editar senha",
+                "description": "Reseta a senha do usuário",
+                "operationId": "3c793085ef8a11bc3209c9bc94792715",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "email": "Email do usuário",
+                                    "token": "Token enviado por e-mail",
+                                    "password": "Nova senha",
+                                    "password_confirmation": "Confirmar a nova senha"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
+        "/groups/{groupId}/documents": {
             "get": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Listar todos os documentos",
                 "description": "Lista todos os documentos: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "4d39d0375316a2b9302cbeee27a34a4e",
+                "operationId": "afdf344a4217b080da5e58442123f713",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -500,7 +637,7 @@
                 ],
                 "summary": "Criar novo documento",
                 "description": "Cria um novo documento, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "3beed3e3aeaa9b0a0a5ea431400b26d0",
+                "operationId": "8ccaee2a9bd105d7329a1e2ff6c9bb4b",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -547,14 +684,14 @@
                 }
             }
         },
-        "/documents/{id}": {
+        "/groups/{groupId}/documents/{id}": {
             "get": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Lista o registro de documento por ID",
                 "description": "Lista o registro de documento por ID de referência",
-                "operationId": "9cf5289c9ad15ddb6da247477998f54b",
+                "operationId": "67240193e4ef54b943eb99d3e2a827f5",
                 "parameters": [
                     {
                         "name": "id",
@@ -579,14 +716,14 @@
                 }
             }
         },
-        "/group/{groupId}/documents/{documentId}": {
+        "/groups/{groupId}/documents/{documentId}": {
             "delete": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Deletar documento",
                 "description": "Deletar documento por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "2b113906220faa6735e222ca942fde22",
+                "operationId": "7474778b7a13610a90dead7abb85d7c3",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -620,14 +757,14 @@
                 }
             }
         },
-        "/documents/download/{id}": {
+        "/groups/{groupId}/documents/{id}/download": {
             "get": {
                 "tags": [
                     "documents"
                 ],
                 "summary": "Faz download do documento",
                 "description": "faz download do documento por ID",
-                "operationId": "a0f846764dbdc0ff1f54741881ba7143",
+                "operationId": "195c578ba093ac3fa319a62bd112a826",
                 "parameters": [
                     {
                         "name": "id",
@@ -652,14 +789,14 @@
                 }
             }
         },
-        "/group": {
+        "/groups": {
             "get": {
                 "tags": [
-                    "group"
+                    "groups"
                 ],
                 "summary": "Listar todos os grupos",
                 "description": "Lista todos os grupos",
-                "operationId": "e8330ffe5396478cbf1a2fb8a8cf0536",
+                "operationId": "bef7bc6436ad2524e81253beb2657bf9",
                 "parameters": [
                     {
                         "name": "entity",
@@ -684,11 +821,11 @@
             },
             "post": {
                 "tags": [
-                    "group"
+                    "groups"
                 ],
                 "summary": "Criar novo grupo",
                 "description": "Cria novo grupo",
-                "operationId": "e4177fdb8c798f4607f383faade958a2",
+                "operationId": "1066d2dc9a3c9d46e0b28da7505b4ac9",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -734,14 +871,14 @@
                 }
             }
         },
-        "/group/{id}": {
+        "/groups/{id}": {
             "get": {
                 "tags": [
-                    "group"
+                    "groups"
                 ],
                 "summary": "Lista o registro de grupos por ID",
                 "description": "Lista o registro de grupos por ID de referência",
-                "operationId": "493ecdf27d6748ca0f27a2647e91c9dd",
+                "operationId": "76a20ea28a20c0879a3588fd099f5651",
                 "parameters": [
                     {
                         "name": "id",
@@ -767,11 +904,11 @@
             },
             "put": {
                 "tags": [
-                    "group"
+                    "groups"
                 ],
                 "summary": "Atualizar grupo",
                 "description": "Atualizar grupo",
-                "operationId": "f75f2cc8da4d387333b87c85e463dcf4",
+                "operationId": "0841409d1cb106baef2ac166a7bda69b",
                 "parameters": [
                     {
                         "name": "id",
@@ -828,11 +965,11 @@
             },
             "delete": {
                 "tags": [
-                    "group"
+                    "groups"
                 ],
                 "summary": "Deletar grupo",
                 "description": "Deletargrupo por ID de referência",
-                "operationId": "46eb6481112edc002da8139e138951b2",
+                "operationId": "034d1a4e1246265f300642aed8b0b455",
                 "parameters": [
                     {
                         "name": "id",
@@ -860,14 +997,14 @@
                 }
             }
         },
-        "/group/{groupId}/meeting-history": {
+        "/groups/{groupId}/meeting-history": {
             "get": {
                 "tags": [
                     "meetings"
                 ],
                 "summary": "Listar todos os históricos de reuniões do grupo",
                 "description": "Lista todos os históricos de reuniões do grupo especificado",
-                "operationId": "f30ccf2bcbd2fca719790a8767ac2eda",
+                "operationId": "fd6143e946dc98dc7163e140836168b8",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -897,7 +1034,7 @@
                 ],
                 "summary": "Criar um novo histórico de reunião para o grupo especificado",
                 "description": "Cria um novo histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
-                "operationId": "8780f16fcb540ebde6c005d88f159339",
+                "operationId": "0127b9ecf0ef58b12d5cacc647630cb0",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -949,14 +1086,14 @@
                 }
             }
         },
-        "/group/{groupId}/meeting-history/{id}": {
+        "/groups/{groupId}/meeting-history/{id}": {
             "get": {
                 "tags": [
                     "meetings"
                 ],
                 "summary": "Exibir o histórico de uma reunião",
                 "description": "Exibe uma reunião no grupo especificado",
-                "operationId": "dab2ed89d7e0e6d95fd51c8b0f6229e7",
+                "operationId": "cb3a46a77163a9f71c8f348884092a67",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -989,7 +1126,7 @@
                 ],
                 "summary": "Atualizar o histórico de reunião para o grupo especificado",
                 "description": "Atualiza o histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
-                "operationId": "6f666e36a8c2093c601dd92311dddac8",
+                "operationId": "26370fd286db0598b52f144c2bd2b7c4",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1055,7 +1192,7 @@
                 ],
                 "summary": "Excluir histórico de reunião",
                 "description": "Excluir histórico de reunião para o grupo especificado: somente o ADMINISTRADOR e o REPRESENTANTE que estiver ligado ao grupo tem acesso desse endpoint",
-                "operationId": "82906fec0bf575b59b66fc6e61666c02",
+                "operationId": "723a5c50a74fb4c8c6bdaa803bf60a4d",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1089,14 +1226,14 @@
                 }
             }
         },
-        "/meeting-history/download/{id}": {
+        "/groups/{groupId}/meeting-history/{id}/download/": {
             "get": {
                 "tags": [
                     "meetings"
                 ],
                 "summary": "Faz download da ata",
                 "description": "faz download da ata por ID",
-                "operationId": "f89d68fe171af3508a0a7387d2cc45e0",
+                "operationId": "aaa8746e96184797bae7e1bc13aa29f9",
                 "parameters": [
                     {
                         "name": "id",
@@ -1118,14 +1255,14 @@
                 }
             }
         },
-        "/group/{groupId}/members": {
+        "/groups/{groupId}/members": {
             "get": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Listar todos os membros",
                 "description": "Lista todos os membros: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "8e46958b4c672ee8d37786a3e7f9ef35",
+                "operationId": "de831537748e1740e1890ce311914e44",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1155,7 +1292,7 @@
                 ],
                 "summary": "Criar novo membro",
                 "description": "Cria um novo membro, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "132ca5b0db7a8673ae8bea65a2eed21f",
+                "operationId": "f2355c9ee72792388c85bcb3b7f64797",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1173,6 +1310,7 @@
                             "schema": {
                                 "example": [
                                     {
+                                        "name": "Debora",
                                         "email": "bar@mail.com",
                                         "role": "bar",
                                         "phone": "93991185489",
@@ -1180,6 +1318,7 @@
                                         "departure_date": "23-10-2023"
                                     },
                                     {
+                                        "name": "Emily",
                                         "email": "outromail@mail.com",
                                         "role": "bar",
                                         "phone": "93991185489",
@@ -1207,14 +1346,14 @@
                 }
             }
         },
-        "/members/{id}": {
+        "/groups/{groupId}/members/{id}": {
             "get": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Lista o registro de membro por ID",
                 "description": "Lista o registro de membro por ID de referência.",
-                "operationId": "1fd856fdfaaf1e386c20f99e657e1904",
+                "operationId": "8817ebb1aaf5600c07f5d1d347f76bf2",
                 "parameters": [
                     {
                         "name": "id",
@@ -1237,16 +1376,14 @@
                         "description": "Não autorizado"
                     }
                 }
-            }
-        },
-        "/group/{groupId}/members/{id}": {
+            },
             "put": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Atualizar membro",
                 "description": "somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "5d9796c3f4923aa2711a8468ddf97870",
+                "operationId": "af90c926d353b3ee7065a0330587d36b",
                 "parameters": [
                     {
                         "name": "id",
@@ -1311,14 +1448,14 @@
                 }
             }
         },
-        "/group/{groupId}/members/{memberID}": {
+        "/groups/{groupId}/members/{memberID}": {
             "delete": {
                 "tags": [
                     "members"
                 ],
                 "summary": "Deletar membro",
                 "description": "Deletar membro por ID de referência, somente o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "b6a3e4aad017899e4a380903c4192d66",
+                "operationId": "4f9be8ba174845db12a096823062ecfa",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1352,14 +1489,14 @@
                 }
             }
         },
-        "/group/{groupId}/notes": {
+        "/groups/{groupId}/notes": {
             "get": {
                 "tags": [
                     "notes"
                 ],
                 "summary": "Listar todos as notas",
                 "description": "Lista todas as notas: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
-                "operationId": "254492338320496166e160e40f401f44",
+                "operationId": "8d8a903461aefae80ed93e512e523094",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1389,7 +1526,7 @@
                 ],
                 "summary": "Criar nova nota",
                 "description": "Cria uma nova nota, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "f400bd3c74283e0f8a1d87d886f136e3",
+                "operationId": "75a36357e42478508d1e1d9991080c3a",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1440,14 +1577,14 @@
                 }
             }
         },
-        "/notes/{id}": {
+        "/groups/{groupId}/notes/{id}": {
             "get": {
                 "tags": [
                     "notes"
                 ],
                 "summary": "Lista o registro de notas por ID",
                 "description": "Lista o registro de notas por ID de referência",
-                "operationId": "4ff1db70f3fbc8ab14e315c81fbff433",
+                "operationId": "6cafa664ab7b94ce6e74fa6d308f8bb4",
                 "parameters": [
                     {
                         "name": "id",
@@ -1477,7 +1614,7 @@
                 ],
                 "summary": "Atualiza notas",
                 "description": "Atualizar notas: somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "29a9163f38861fad93ae0510c516c5cd",
+                "operationId": "414de3a9c50bcc6e4def341e8798b7de",
                 "parameters": [
                     {
                         "name": "id",
@@ -1528,14 +1665,14 @@
                 }
             }
         },
-        "/group/{groupId}/notes/{noteId}": {
+        "/groups/{groupId}/notes/{noteId}": {
             "delete": {
                 "tags": [
                     "notes"
                 ],
                 "summary": "Deletar notas",
                 "description": "Deletar nota por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
-                "operationId": "628089016c53242300d6689edbff078b",
+                "operationId": "02fb81a4c0f9099e7c1be92808555fb6",
                 "parameters": [
                     {
                         "name": "groupId",
@@ -1569,14 +1706,14 @@
                 }
             }
         },
-        "/type-user": {
+        "/type-users": {
             "get": {
                 "tags": [
-                    "type-user"
+                    "type-users"
                 ],
                 "summary": "Listar todos os tipos de usuários",
                 "description": "Lista todos os tipos de usuários",
-                "operationId": "0658c79559e5f956adaf53d86cd7aae8",
+                "operationId": "e622e084e8b9cfab09522ee86efc6e83",
                 "responses": {
                     "200": {
                         "description": "Ok"
@@ -1591,11 +1728,11 @@
             },
             "post": {
                 "tags": [
-                    "type-user"
+                    "type-users"
                 ],
                 "summary": "Criar novo tipo de usuário",
                 "description": "Cria novo tipo de usuário",
-                "operationId": "9b51073d4a14a8a9b77a1f80502b5397",
+                "operationId": "4d0c8dd9b0f2b50b0c0b054b8b325569",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1623,14 +1760,14 @@
                 }
             }
         },
-        "/type-user/{id}": {
+        "/type-users/{id}": {
             "get": {
                 "tags": [
-                    "type-user"
+                    "type-users"
                 ],
                 "summary": "Lista o registro de tipos de usuários por ID",
                 "description": "Lista o registro de tipos de usuários por ID de referência",
-                "operationId": "8b966620ece503726bb2622036470b76",
+                "operationId": "2b3878a1c723933e65b2d5e9cb7c9089",
                 "parameters": [
                     {
                         "name": "id",
@@ -1656,11 +1793,11 @@
             },
             "put": {
                 "tags": [
-                    "type-user"
+                    "type-users"
                 ],
                 "summary": "Atualizar tipo de usuário",
                 "description": "Atualizar tipo de usuário",
-                "operationId": "e3915ed9a4f9caca167f43217a4ac7e0",
+                "operationId": "9877ee68cc9dbb26f77cd5649bf5d48b",
                 "parameters": [
                     {
                         "name": "id",
@@ -1700,11 +1837,11 @@
             },
             "delete": {
                 "tags": [
-                    "type-user"
+                    "type-users"
                 ],
                 "summary": "Deletar tipo de usuário",
                 "description": "Deletar tipo de usuário por ID de referência",
-                "operationId": "ac413f3a4d4d6b72726009645f379fe0",
+                "operationId": "cb4681d79b101c4b44b9244d8ffab47b",
                 "parameters": [
                     {
                         "name": "id",
@@ -1799,7 +1936,7 @@
                     "users"
                 ],
                 "summary": "Atualizar usuário",
-                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações ou o usuário que o criou",
+                "description": "Atualizar usuário: Apenas o usuário pode atualizar suas próprias informações",
                 "operationId": "ddfe232db1870b82493bf8bd25596d37",
                 "parameters": [
                     {
@@ -1845,7 +1982,7 @@
                     "users"
                 ],
                 "summary": "Deletar usuário",
-                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o usuário que o criou",
+                "description": "Deletar usuário por ID de referência: Apenas o usuário pode deletar suas próprias informações ou o administrador",
                 "operationId": "43dd20becb1f47444e484cbb18ce345c",
                 "parameters": [
                     {
@@ -1874,14 +2011,14 @@
                 }
             }
         },
-        "/users/restore/{id}": {
-            "patch": {
+        "/users/set-user/{id}": {
+            "put": {
                 "tags": [
                     "users"
                 ],
-                "summary": "Restaurar usuário",
-                "description": "Restaurar usuário: Apenas o usuário pode restaurar suas próprias informações ou o usuário que o criou",
-                "operationId": "282df5354ee2b04bf7ac4bbc6d5fb515",
+                "summary": "Atualiza usuário para se tornar gerente ou volta usuário para visualizador",
+                "description": "Transforma usuário em gerente por ID de referência: Apenas o administrador tem acesso",
+                "operationId": "b1e66f3e1f8d90059556aca8f6f7246c",
                 "parameters": [
                     {
                         "name": "id",
@@ -1893,15 +2030,29 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "example": {
+                                    "isManager": true
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
-                    "200": {
-                        "description": "Ok"
+                    "204": {
+                        "description": "No Content"
                     },
                     "500": {
                         "description": "Error"
                     },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
-                        "description": "Usuário not found"
+                        "description": "Usuario Not Found"
                     }
                 }
             }
@@ -1935,7 +2086,7 @@
             "description": "CRUD dos documentos, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar documentos"
         },
         {
-            "name": "group",
+            "name": "groups",
             "description": "Controle dos grupo: apenas usuários com o tipo de usuário GERENTE tem acesso aos endpoints de criação, deleção e atualizar"
         },
         {
@@ -1951,7 +2102,7 @@
             "description": "CRUD das notas, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar notas"
         },
         {
-            "name": "type-user",
+            "name": "type-users",
             "description": "Controle dos tipos de usuário: apenas usuários com o tipo de usuário ADMINISTRADOR tem acesso a esses endpoints"
         },
         {

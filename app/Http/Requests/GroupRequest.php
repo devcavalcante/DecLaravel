@@ -48,38 +48,6 @@ class GroupRequest extends FormRequest
             'type_group'         => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
         ];
     }
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'entity.string'             => 'O campo de entidade deve ser uma string.',
-            'organ.string'              => 'O campo orgão deve ser uma string.',
-            'council.string'            => 'O campo de conselho deve ser uma string.',
-            'acronym.string'            => 'O campo da sigla deve ser uma string.',
-            'team.string'               => 'O campo do time deve ser uma string.',
-            'unit.string'               => 'O campo da unidade deve ser uma string.',
-            'email.string'              => 'O campo do email deve ser uma string.',
-            'email.email'               => 'Email invalido.',
-            'representative.email'      => 'Email invalido.',
-            'representative.string'     => 'O campo do email do representante deve ser uma string.',
-            'office_requested.string'   => 'O campo do oficio solicitado deve ser uma string.',
-            'office_indicated.string'   => 'O campo do oficio indicado deve ser uma string.',
-            'internal_concierge.string' => 'O campo da portaria interna deve ser uma string.',
-            'observations.string'       => 'O campo de observacoes deve ser uma string.',
-            'observations.min'          => 'O campo de observacoes deve ter no mínimo 5 caracteres.',
-            'status.required'           => 'O campo status deve ser obrigatório',
-            'creator_user_id.exists'    => 'O campo de criador de usuario deve existir na base de dados.',
-            'name.required'             => 'O campo nome é obrigatório.',
-            'name.string'               => 'O campo nome deve ser uma string.',
-            'type_group.required'       => 'O campo tipo de grupo é obrigatório.',
-            'type_group.string'         => 'O campo tipo de grupo deve ser uma string.',
-            'type_group.in'             => 'O campo tipo de grupo deve ser interno ou externo',
-        ];
-    }
 
     /**
      * Handle a failed validation attempt.

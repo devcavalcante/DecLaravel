@@ -30,7 +30,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/group/{groupId}/documents",
+     *   path="/groups/{groupId}/documents",
      *   tags={"documents"},
      *   summary="Listar todos os documentos",
      *   description="Lista todos os documentos: ADMINISTRADOR, REPRESENTANTE E GERENTE têm acesso a este endpoint.",
@@ -66,7 +66,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/documents/{id}",
+     *   path="/groups/{groupId}/documents/{id}",
      *   tags={"documents"},
      *   summary="Lista o registro de documento por ID",
      *   description="Lista o registro de documento por ID de referência",
@@ -93,7 +93,7 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $groupId, string $id): JsonResponse
     {
         $document = $this->documentRepository->findById($id);
 
@@ -102,7 +102,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/group/{groupId}/documents",
+     *   path="/groups/{groupId}/documents",
      *   tags={"documents"},
      *   summary="Criar novo documento",
      *   description="Cria um novo documento, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -160,7 +160,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Delete(
-     *   path="/group/{groupId}/documents/{documentId}",
+     *   path="/groups/{groupId}/documents/{documentId}",
      *   tags={"documents"},
      *   summary="Deletar documento",
      *   description="Deletar documento por ID de referência, somente o ADMINISTRADOR e o REPRESENTANTE tem acesso a este endpoint.",
@@ -206,7 +206,7 @@ class DocumentController extends Controller
 
     /**
      * @OA\Get(
-     *   path="/documents/download/{id}",
+     *   path="/groups/{groupId}/documents/{id}/download",
      *   tags={"documents"},
      *   summary="Faz download do documento",
      *   description="faz download do documento por ID",
@@ -233,7 +233,7 @@ class DocumentController extends Controller
      *   )
      * )
      */
-    public function download(string $documentId): BinaryFileResponse|JsonResponse
+    public function download(string $groupId, string $documentId): BinaryFileResponse|JsonResponse
     {
         $document = $this->documentRepository->findById($documentId);
         $filePath = $document->file;
