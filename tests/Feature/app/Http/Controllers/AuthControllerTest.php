@@ -162,10 +162,10 @@ class AuthControllerTest extends TestCase
 
         // Crie dados de redefinição de senha simulados
         $resetData = [
-            'email' => 'test@example.com',
-            'token' => 'fake-token', // Simulando um token válido
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword'
+            'email'                 => 'test@example.com',
+            'token'                 => 'fake-token', // Simulando um token válido
+            'password'              => 'newpassword',
+            'password_confirmation' => 'newpassword',
         ];
 
         // Mock Password::reset() para simular uma redefinição de senha bem-sucedida
@@ -184,10 +184,10 @@ class AuthControllerTest extends TestCase
         User::factory()->create(['email' => 'test@example.com']);
         // Crie dados de redefinição de senha simulados
         $resetData = [
-            'email' => 'test@example.com',
-            'token' => 'fake-token', // Simulando um token válido
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword'
+            'email'                 => 'test@example.com',
+            'token'                 => 'fake-token', // Simulando um token válido
+            'password'              => 'newpassword',
+            'password_confirmation' => 'newpassword',
         ];
 
         $response = $this->post('api/reset-password', $resetData);
