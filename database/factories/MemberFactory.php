@@ -23,7 +23,7 @@ class MemberFactory extends Factory
         $user = User::factory()->create();
 
         return [
-            'name'          => $this->faker->text,
+            'name'           => $this->faker->text,
             'email'          => $this->faker->email,
             'role'           => $this->faker->word(),
             'phone'          => $this->faker->phoneNumber(),

@@ -48,7 +48,7 @@ class NoteControllerTest extends TestCase
         $note = Note::factory(['group_id' => $group->id])->create();
         $this->login(TypeUserEnum::REPRESENTATIVE);
 
-        $response = $this->get(sprintf('%s/%s/notes/%s', self::BASE_URL,  $group->id, $note->id));
+        $response = $this->get(sprintf('%s/%s/notes/%s', self::BASE_URL, $group->id, $note->id));
 
         $response->assertStatus(200);
         $response->assertJsonStructure($this->getJsonStructure());

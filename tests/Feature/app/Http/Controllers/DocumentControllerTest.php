@@ -182,7 +182,7 @@ class DocumentControllerTest extends TestCase
         $representative = Representative::factory(['user_id' => $userRepresentative->id])->create();
         $group = Group::factory(['representative_id' => $representative->id])->create();
 
-        $response = $this->delete(sprintf('%s/%s/documents/%s',self::BASE_URL, $group->id, 100));
+        $response = $this->delete(sprintf('%s/%s/documents/%s', self::BASE_URL, $group->id, 100));
 
         $response->assertStatus(404);
         $this->assertEquals('Documento não encontrado', json_decode($response->getContent(), true)['errors']);
