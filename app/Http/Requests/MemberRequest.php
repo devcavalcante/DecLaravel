@@ -51,8 +51,8 @@ class MemberRequest extends FormRequest
      *
      * @throws HttpResponseException
      */
-protected function failedValidation(Validator $validator): void
-{
-    throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
-}
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
+    }
 }
