@@ -13,7 +13,7 @@ class ApiTokenSeeder extends Seeder
             [
                 'user_id'              => 6,
                 'api_token'            => '8eb8f238-6067-4f92-a481-a7adfe7a6563',
-                'api_token_expires_at' => '2023-12-31 00:00:00',
+                'api_token_expires_at' => '2024-12-31 00:00:00',
                 'created_at'           => now(),
                 'updated_at'           => now(),
             ],
