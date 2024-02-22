@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class DocumentFactory extends Factory
 {
     protected $model = Document::class;
+
     public function definition(): array
     {
         $group = Group::factory()->create();

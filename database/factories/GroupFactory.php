@@ -14,7 +14,7 @@ class GroupFactory extends Factory
 
     public function definition(): array
     {
-        $typeGroup = TypeGroup::first();
+        $typeGroup = TypeGroup::factory()->create();
         $user = User::where(['type_user_id' => 2])->first();
         $representative = Representative::factory()->create();
 

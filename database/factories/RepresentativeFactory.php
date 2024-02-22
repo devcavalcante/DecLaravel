@@ -2,16 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\TypeUser;
+use App\Models\Representative;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
  */
 class RepresentativeFactory extends Factory
 {
+    protected $model = Representative::class;
+
     /**
      * Define the model's default state.
      *

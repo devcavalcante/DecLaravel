@@ -18,7 +18,7 @@ abstract class TestCase extends BaseTestCase
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
-        $this->artisan('migrate');
+        $this->artisan('migrate --seed');
         $this->artisan('passport:install');
     }
 }

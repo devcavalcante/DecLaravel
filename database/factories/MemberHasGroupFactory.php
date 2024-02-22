@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Group;
 use App\Models\Member;
+use App\Models\MemberHasGroup;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class MemberHasGroupFactory extends Factory
 {
+    protected $model = MemberHasGroup::class;
+
     /**
      * Define the model's default state.
      *
