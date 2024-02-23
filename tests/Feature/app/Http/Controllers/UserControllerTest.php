@@ -164,7 +164,7 @@ class UserControllerTest extends TestCase
 
     public function testShouldNotUpdateWithoutPermission()
     {
-        $this->login(TypeUserEnum::ADMIN);
+        $this->login(TypeUserEnum::MANAGER);
 
         $response = $this->put(sprintf('api/users/%s', 1), ['name' => 'outro nome']);
 
