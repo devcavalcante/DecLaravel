@@ -5,16 +5,19 @@ namespace Tests\Feature\app\Http\Controllers;
 use App\Http\Controllers\Auth\AuthAPIUFOPAController;
 use App\Services\Auth\AuthAPIService;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use InvalidArgumentException;
 use Mockery;
 use Tests\TestCase;
+use Throwable;
 
 class AuthAPIUFOPAControllerTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
-     * @throws \Throwable
+     * @throws Throwable
      * @throws GuzzleException
      */
     public function testSuccesfulCreateUserWithAPI()
@@ -42,7 +45,7 @@ class AuthAPIUFOPAControllerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      * @throws GuzzleException
      */
     public function testShouldNotCreateWithoutCode()

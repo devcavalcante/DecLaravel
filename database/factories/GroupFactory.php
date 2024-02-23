@@ -2,9 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\TypeUserEnum;
 use App\Models\Group;
 use App\Models\Representative;
 use App\Models\TypeGroup;
+use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,8 +16,9 @@ class GroupFactory extends Factory
 
     public function definition(): array
     {
-        $typeGroup = TypeGroup::factory()->create();
-        $user = User::where(['type_user_id' => 2])->first();
+        $typeGroup = TypeGroup::first();
+        $typeUser = TypeUser::where(['name' => TypeUserEnum::MANAGER])->first();
+        $user = User::factory(['type_user_id' => $typeUser->id])->create();
         $representative = Representative::factory()->create();
 
         return [
