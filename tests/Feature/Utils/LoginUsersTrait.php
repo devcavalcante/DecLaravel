@@ -11,7 +11,7 @@ trait LoginUsersTrait
     private function login(string $typeUser): User
     {
         $typeUser = TypeUser::where('name', $typeUser)->first();
-        $user = User::where('type_user_id', $typeUser->id)->first();
+        $user = User::factory(['type_user_id' => $typeUser->id])->create();
         Passport::actingAs($user);
         return $user;
     }
