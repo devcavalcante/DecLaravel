@@ -36,7 +36,10 @@ class ReportService
         $pdf->save(storage_path('app/pdf/' . $filename));
 
         $documents = $group->documents->toArray();
-        $fileNames = array_column($documents, 'file');
+        $fileDocuments = array_column($documents, 'file');
+        $meetings = $group->meetings->toArray();
+        $fileMeetings = array_column($meetings, 'ata');
+        $fileNames = array_merge($fileDocuments, $fileMeetings, ['pdf/' . $filename]);
 
         if(Arr::get($filters, 'withFiles')){
             $zipFilePath = $this->downloadZip($fileNames);
@@ -52,30 +55,17 @@ class ReportService
         $zipFileName = 'docs.zip';    
         $zipFilePath = storage_path("app/zip/{$zipFileName}");
 
-        // Cria um novo arquivo zip
         $zip = new ZipArchive;
         if ($zip->open($zipFilePath, ZipArchive::OVERWRITE|ZipArchive::CREATE) === TRUE) {
-            // dd('a');
-            // Adiciona cada arquivo ao arquivo zip
             foreach ($fileNames as $fileName) {
                 $filePath = storage_path('app/' . $fileName);
                 if (file_exists($filePath)) {
-                    preg_match('/[^\/]+$/', $fileName, $matches);
-                    $zip->addFile($filePath, $matches[0]);
+                    $zip->addFile($filePath, $fileName);
                 }
             }
             $zip->close();
         }
 
         return $zipFilePath;
-    
-        // Verifica se o arquivo zip foi criado com sucesso
-        // if (file_exists($zipFilePath)) {
-        //     // Faz o download do arquivo zip
-        //     return response()->download($zipFilePath)->deleteFileAfterSend(true);
-        // } else {
-        //     // Se ocorrer algum erro, redireciona de volta à página anterior
-        //     return back()->with('error', 'Erro ao criar o arquivo zip.');
-        // }
     }
 }
