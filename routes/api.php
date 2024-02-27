@@ -8,6 +8,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
+Route::get('download/{id}', [ReportController::class, 'downloadById']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => '/type-users'], function () {
