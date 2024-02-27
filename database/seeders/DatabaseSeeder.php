@@ -17,5 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MeetingSeeder::class);
         $this->call(TypeGroupSeeder::class);
         $this->call(ApiTokenSeeder::class);
+        $this->call(MeetingSeeder::class);
+        $this->call(ApiTokenSeeder::class);
     }
 }

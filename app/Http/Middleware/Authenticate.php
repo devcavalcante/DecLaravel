@@ -25,10 +25,14 @@ class Authenticate extends Middleware
         }
 
         $token = $request->header('Authorization');
-        if (!$token) {
+        if (!$token || !$this->checkTokenApi($token)) {
             throw new UnauthorizedException('Não autorizado', 401);
         }
-        return $this->checkTokenApi($token);
+
+        if ($this->checkTokenApi($token)) {
+            return $next($request);
+        }
+        throw new UnauthorizedException('Não autorizado', 401);
     }
 
     private function checkTokenApi(string $token): bool

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TypeUser;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -11,13 +12,14 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        $typeUsers = TypeUser::all()->toArray();
         DB::Table('users')->insertOrIgnore(
             [
                 [
                     'name'         => 'Debora Cavalcante',
                     'email'        => 'debs@mail.com',
                     'password'     => Hash::make('visualizador'),
-                    'type_user_id' => 4,
+                    'type_user_id' => $typeUsers[3]['id'],
                     'active'       => true,
                     'url_photo'    => 'http://foto.com',
                     'created_at'   => Carbon::now(),
@@ -29,7 +31,7 @@ class UserSeeder extends Seeder
                     'password'     => Hash::make('administrador'),
                     'active'       => true,
                     'url_photo'    => 'http://foto.com',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => Carbon::now(),
                     'updated_at'   => Carbon::now(),
                 ],
@@ -39,7 +41,7 @@ class UserSeeder extends Seeder
                     'password'     => Hash::make('gerente'),
                     'active'       => true,
                     'url_photo'    => 'http://foto.com',
-                    'type_user_id' => 2,
+                    'type_user_id' => $typeUsers[1]['id'],
                     'created_at'   => Carbon::now(),
                     'updated_at'   => Carbon::now(),
                 ],
@@ -49,7 +51,7 @@ class UserSeeder extends Seeder
                     'password'     => Hash::make('representante'),
                     'active'       => true,
                     'url_photo'    => 'http://foto.com',
-                    'type_user_id' => 3,
+                    'type_user_id' => $typeUsers[2]['id'],
                     'created_at'   => Carbon::now(),
                     'updated_at'   => Carbon::now(),
                 ],
@@ -59,7 +61,7 @@ class UserSeeder extends Seeder
                     'password'     => Hash::make('representante'),
                     'active'       => true,
                     'url_photo'    => 'http://foto.com',
-                    'type_user_id' => 3,
+                    'type_user_id' => $typeUsers[2]['id'],
                     'created_at'   => Carbon::now(),
                     'updated_at'   => Carbon::now(),
                 ],
@@ -69,7 +71,7 @@ class UserSeeder extends Seeder
                     'password'     => null,
                     'active'       => true,
                     'url_photo'    => 'https://example.com/john_photo.jpg',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ],
@@ -79,7 +81,7 @@ class UserSeeder extends Seeder
                     'password'     => null,
                     'active'       => true,
                     'url_photo'    => 'https://example.com/jane_photo.jpg',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ],
@@ -89,7 +91,7 @@ class UserSeeder extends Seeder
                     'password'     => null,
                     'active'       => true,
                     'url_photo'    => 'https://example.com/bob_photo.jpg',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ],
@@ -99,7 +101,7 @@ class UserSeeder extends Seeder
                     'password'     => null,
                     'active'       => true,
                     'url_photo'    => 'https://example.com/alice_photo.jpg',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ],
@@ -109,7 +111,7 @@ class UserSeeder extends Seeder
                     'password'     => null,
                     'active'       => true,
                     'url_photo'    => 'https://example.com/charlie_photo.jpg',
-                    'type_user_id' => 1,
+                    'type_user_id' => $typeUsers[0]['id'],
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ],
