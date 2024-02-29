@@ -109,6 +109,7 @@
     </tr>
 </table>
 
+@if($membersCount > 0)
 <h2>Informações dos Membros do Grupo</h2>
 <table>
 @foreach ($members as $member)
@@ -122,6 +123,6 @@
     </tr>
     @endforeach
 </table>
-
+@endif
 </body>
 </html>

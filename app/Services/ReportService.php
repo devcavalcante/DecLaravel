@@ -14,49 +14,61 @@ class ReportService
     ) {
     }
 
-    public function upload(string $id, array $filters)
+    public function uploadById(string $id, array $filters): string
     {
         $group = $this->groupRepository->findById($id);
         $data = [
             'representative' => $group->representative->email,
-            'manager' => $group->user->name,
-            'membersCount' => $group->members->count(),
-            'members' => $group->members,
-            'group' => $group,
-            'typeGroup' => $group->typeGroup
+            'manager'        => $group->user->name,
+            'membersCount'   => $group->members->count(),
+            'members'        => $group->members,
+            'group'          => $group,
+            'typeGroup'      => $group->typeGroup,
         ];
 
         $pdf = Pdf::loadView('pdf.report', $data);
         $filename = 'relatorio_' . time() . '.pdf';
 
-        if (!file_exists(storage_path('app/pdf'))) {
-            mkdir(storage_path('app/pdf'), 0775, true);
-        }
-
         $pdf->save(storage_path('app/pdf/' . $filename));
 
+        $zipName = sprintf('documents%s.zip', $group->id);
         $documents = $group->documents->toArray();
         $fileDocuments = array_column($documents, 'file');
         $meetings = $group->meetings->toArray();
         $fileMeetings = array_column($meetings, 'ata');
         $fileNames = array_merge($fileDocuments, $fileMeetings, ['pdf/' . $filename]);
 
-        if(Arr::get($filters, 'withFiles')){
-            $zipFilePath = $this->downloadZip($fileNames);
-            return $zipFilePath;
-        }
-
-        return $filename;
+        return Arr::get($filters, 'withFiles') ? $this->downloadZip($fileNames, $zipName) : $this->formatFileName($filename);
     }
 
-    protected function downloadZip(array $fileNames)
+    public function uploadMany(array $filters): string
     {
-        // Nome do arquivo zip
-        $zipFileName = 'docs.zip';    
+        $status = Arr::get($filters, 'status');
+        $startDate = Arr::get($filters, 'start_date');
+        $endDate = Arr::get($filters, 'end_date');
+
+        $groups = $this->getGroupsByFilter($status, $startDate, $endDate);
+
+        $data = [
+            'groups' => $groups,
+        ];
+
+        $pdf = Pdf::loadView('pdf.reportMany', $data);
+        $filename = 'relatorio_' . time() . '.pdf';
+
+        $pdf->save(storage_path('app/pdf/' . $filename));
+
+
+        return $this->formatFileName($filename);
+    }
+
+    protected function downloadZip(array $fileNames, string $zipName): string
+    {
+        $zipFileName = 'documentos.zip';
         $zipFilePath = storage_path("app/zip/{$zipFileName}");
 
         $zip = new ZipArchive;
-        if ($zip->open($zipFilePath, ZipArchive::OVERWRITE|ZipArchive::CREATE) === TRUE) {
+        if ($zip->open($zipFilePath, ZipArchive::OVERWRITE|ZipArchive::CREATE) === true) {
             foreach ($fileNames as $fileName) {
                 $filePath = storage_path('app/' . $fileName);
                 if (file_exists($filePath)) {
@@ -67,5 +79,29 @@ class ReportService
         }
 
         return $zipFilePath;
+    }
+
+    private function formatFileName(string $fileName): string
+    {
+        return storage_path("app/pdf/". $fileName);
+    }
+
+    private function getGroupsByFilter(?string $status, ?string $startDate, ?string $endDate)
+    {
+        $groups = $this->groupRepository->listAll();
+
+        if (!is_null($status)) {
+            $groups = $this->groupRepository->findByFilters(['status' => $status]);
+        }
+
+        if (!is_null($startDate)) {
+            $groups = $this->groupRepository->listAll()->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        if (!is_null($status) && !is_null($startDate)) {
+            $groups = $this->groupRepository->findByFilters(['status' => $status])->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        return $groups;
     }
 }

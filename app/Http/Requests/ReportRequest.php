@@ -20,16 +20,16 @@ class ReportRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'filters' => 'required|array',
-            'filters.withFiles' => 'required|boolean',
-            'filters.status' => 'required|in:active,complete,all',
+            'filters'            => 'required|array',
+            'filters.withFiles'  => 'required|boolean',
+            'filters.status'     => 'in:EM ANDAMENTO,FINALIZADO',
             'filters.start_date' => 'date_format:Y-m-d',
-            'filters.end_date' => 'date_format:Y-m-d|after_or_equal:start_date|required_with:start_date'
+            'filters.end_date'   => 'date_format:Y-m-d|after_or_equal:start_date|required_with:start_date',
         ];
     }
 

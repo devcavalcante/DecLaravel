@@ -6,6 +6,7 @@ use App\Http\Requests\ReportRequest;
 use Illuminate\Http\Request;
 use App\Services\ReportService;
 use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
@@ -14,11 +15,27 @@ class ReportController extends Controller
     ) {
     }
 
-    public function downloadById(Request $request, string $id)
+    public function downloadById(ReportRequest $request, string $id): BinaryFileResponse
     {
-        $request->validate(['filters.withFiles' => 'required']);
-        $filename = $this->reportService->upload($id, $request->get('filters'));
-        $filePath = storage_path("app/pdf/{$filename}");
-        return response()->download($filename);
+        $filename = $this->reportService->uploadById($id, $request->get('filters'));
+        $headers = [];
+
+        if (preg_match('/\.zip$/', $filename)) {
+            $headers = ["Content-Type" => "application/zip"];
+        }
+
+        return response()->download($filename, null, $headers)->deleteFileAfterSend();
+    }
+
+    public function download(ReportRequest $request): BinaryFileResponse
+    {
+        $filename = $this->reportService->uploadMany($request->get('filters'));
+        $headers = [];
+
+        if (preg_match('/\.zip$/', $filename)) {
+            $headers = ["Content-Type" => "application/zip"];
+        }
+
+        return response()->download($filename, null, $headers)->deleteFileAfterSend();
     }
 }

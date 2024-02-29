@@ -32,7 +32,6 @@ Route::get('/callback', [AuthAPIUFOPAController::class, 'handleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
-Route::get('download/{id}', [ReportController::class, 'downloadById']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => '/type-users'], function () {
@@ -60,6 +59,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', [GroupController::class, 'show']);
         Route::put('/{id}', [GroupController::class, 'update']);
         Route::delete('/{id}', [GroupController::class, 'destroy']);
+        Route::get('/download', [ReportController::class, 'download']);
 
         Route::group(['prefix' => '{groupId}/members'], function () {
             Route::get('/', [MemberController::class, 'index']);
@@ -105,6 +105,9 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::put('/{id}', [NoteController::class, 'update']);
             Route::get('/{id}', [NoteController::class, 'show']);
             Route::delete('/{id}', [NoteController::class, 'destroy']);
+        });
+        Route::group(['prefix' => '{groupId}/download'], function () {
+            Route::get('/', [ReportController::class, 'downloadById']);
         });
     });
 });
