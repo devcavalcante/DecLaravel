@@ -32,7 +32,7 @@ class ReportService
 
         $pdf->save(storage_path('app/pdf/' . $filename));
 
-        $zipName = sprintf('documents%s.zip', $group->id);
+        $zipName = sprintf('documento%s.zip', $group->id);
         $documents = $group->documents->toArray();
         $fileDocuments = array_column($documents, 'file');
         $meetings = $group->meetings->toArray();
@@ -64,8 +64,7 @@ class ReportService
 
     protected function downloadZip(array $fileNames, string $zipName): string
     {
-        $zipFileName = 'documentos.zip';
-        $zipFilePath = storage_path("app/zip/{$zipFileName}");
+        $zipFilePath = storage_path("app/zip/{$zipName}");
 
         $zip = new ZipArchive;
         if ($zip->open($zipFilePath, ZipArchive::OVERWRITE|ZipArchive::CREATE) === true) {
@@ -104,7 +103,7 @@ class ReportService
 
         if($groups->isEmpty())
         {
-            throw new NotFoundHttpException('Não encontrado nenhum relatório nesse período');
+            throw new NotFoundHttpException('Não encontrado nenhum grupo para o relatório.');
         }
 
         return $groups;

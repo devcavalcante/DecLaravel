@@ -54,6 +54,6 @@ class MeetingService
     {
         $group = $this->groupRepository->findById($groupId);
 
-        return $group->meeting;
+        return $group->meetings;
     }
 }

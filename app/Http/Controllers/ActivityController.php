@@ -58,7 +58,7 @@ class ActivityController extends Controller
     public function index(string $groupId): JsonResponse
     {
         $group = $this->groupRepository->findById($groupId);
-        $activities = $group->activity;
+        $activities = $group->activities;
 
         return response()->json($activities);
     }
