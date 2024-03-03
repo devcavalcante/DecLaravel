@@ -101,8 +101,7 @@ class ReportService
             $groups = $this->groupRepository->findWhereBetweenWithFilters($startDate, $endDate, $status);
         }
 
-        if($groups->isEmpty())
-        {
+        if ($groups->isEmpty()) {
             throw new NotFoundHttpException('Não encontrado nenhum grupo para o relatório.');
         }
 

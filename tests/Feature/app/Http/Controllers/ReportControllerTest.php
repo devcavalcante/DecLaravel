@@ -85,9 +85,10 @@ class ReportControllerTest extends TestCase
             [
                 'filters' => [
                     'withFiles' => false,
-                    'status' => 'EM ANDAMENTO'
-                ]
-            ]);
+                    'status'    => 'EM ANDAMENTO',
+                ],
+            ]
+        );
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/pdf');
@@ -106,9 +107,10 @@ class ReportControllerTest extends TestCase
                 'filters' => [
                     'withFiles' => false,
                     'startDate' => Carbon::now()->format('Y-m-d'),
-                    'endDate' => Carbon::now()->addDay()->format('Y-m-d')
-                ]
-            ]);
+                    'endDate'   => Carbon::now()->addDay()->format('Y-m-d'),
+                ],
+            ]
+        );
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/pdf');
@@ -127,10 +129,11 @@ class ReportControllerTest extends TestCase
                 'filters' => [
                     'withFiles' => false,
                     'startDate' => Carbon::now()->format('Y-m-d'),
-                    'endDate' => Carbon::now()->addDay()->format('Y-m-d'),
-                    'status' => 'EM ANDAMENTO'
-                ]
-            ]);
+                    'endDate'   => Carbon::now()->addDay()->format('Y-m-d'),
+                    'status'    => 'EM ANDAMENTO',
+                ],
+            ]
+        );
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/pdf');
@@ -146,8 +149,9 @@ class ReportControllerTest extends TestCase
             [
                 'filters' => [
                     'withFiles' => false,
-                ]
-            ]);
+                ],
+            ]
+        );
 
         $response->assertStatus(404);
         $this->assertEquals('Não encontrado nenhum grupo para o relatório.', json_decode($response->getContent(), true)['errors']);
