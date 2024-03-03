@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Arr;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use ZipArchive;
 
 class ReportService
@@ -58,7 +59,6 @@ class ReportService
 
         $pdf->save(storage_path('app/pdf/' . $filename));
 
-
         return $this->formatFileName($filename);
     }
 
@@ -95,11 +95,16 @@ class ReportService
         }
 
         if (!is_null($startDate)) {
-            $groups = $this->groupRepository->listAll()->whereBetween('created_at', [$startDate, $endDate]);
+            $groups = $this->groupRepository->findWhereBetween($startDate, $endDate);
         }
 
         if (!is_null($status) && !is_null($startDate)) {
-            $groups = $this->groupRepository->findByFilters(['status' => $status])->whereBetween('created_at', [$startDate, $endDate]);
+            $groups = $this->groupRepository->findWhereBetweenWithFilters($startDate, $endDate, $status);
+        }
+
+        if($groups->isEmpty())
+        {
+            throw new NotFoundHttpException('Não encontrado nenhum relatório nesse período');
         }
 
         return $groups;

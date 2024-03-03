@@ -54,12 +54,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => '/groups'], function () {
+        Route::get('/download', [ReportController::class, 'download']);
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
         Route::get('/{id}', [GroupController::class, 'show']);
         Route::put('/{id}', [GroupController::class, 'update']);
         Route::delete('/{id}', [GroupController::class, 'destroy']);
-        Route::get('/download', [ReportController::class, 'download']);
 
         Route::group(['prefix' => '{groupId}/members'], function () {
             Route::get('/', [MemberController::class, 'index']);
