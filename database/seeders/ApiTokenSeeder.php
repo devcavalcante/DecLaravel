@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +14,7 @@ class ApiTokenSeeder extends Seeder
             [
                 'user_id'              => 6,
                 'api_token'            => '8eb8f238-6067-4f92-a481-a7adfe7a6563',
-                'api_token_expires_at' => '2024-12-31 00:00:00',
+                'api_token_expires_at' => Carbon::now()->addDay(),
                 'created_at'           => now(),
                 'updated_at'           => now(),
             ],
@@ -41,7 +42,7 @@ class ApiTokenSeeder extends Seeder
             [
                 'user_id'              => 10,
                 'api_token'            => 'aaaa1111-bbbb-cccc-dddd-eeeeeeffffff',
-                'api_token_expires_at' => '2023-12-31 00:00:00',
+                'api_token_expires_at' => Carbon::now()->addDay(),
                 'created_at'           => now(),
                 'updated_at'           => now(),
             ],
