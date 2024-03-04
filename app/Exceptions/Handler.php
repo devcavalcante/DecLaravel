@@ -52,13 +52,13 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param Request $request
+     * @param $request
      * @param Throwable $exception
      * @return Response|JsonResponse|RedirectResponse
      *
      * @throws Throwable
      */
-    public function render(Request $request, Throwable $exception): Response|JsonResponse|RedirectResponse
+    public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();
