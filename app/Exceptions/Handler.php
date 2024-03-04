@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
      *
      * @throws Throwable
      */
-    public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
+    public function render(Request $request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();

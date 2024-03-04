@@ -1,3 +1,7 @@
 *
 !public/
+!atas/
+!docs/
+!pdf/
+!zip/
 !.gitignore
