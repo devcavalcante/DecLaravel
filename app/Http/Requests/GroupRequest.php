@@ -44,6 +44,7 @@ class GroupRequest extends FormRequest
             'status'             => sprintf('%s|string|in:EM ANDAMENTO,FINALIZADO', $isRequired),
             'creator_user_id'    => 'exists:users,id',
             'representative'     => sprintf('%s|string|email', $isRequired),
+            'representative.name'=> sprintf('%s|min:4|string', $isRequired),
             'name'               => sprintf('%s|min:4|string', $isRequired),
             'type_group'         => [$isRequired, 'string', 'min:4', Rule::in(GetValues::listOfValuesTypeGroupEnum())],
         ];

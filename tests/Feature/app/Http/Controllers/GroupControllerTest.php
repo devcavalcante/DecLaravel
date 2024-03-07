@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Passport\Passport;
 use Tests\Feature\Utils\LoginUsersTrait;
 use Tests\TestCase;
-
+use Database\Factories\RepresentativeFactory;
 class GroupControllerTest extends TestCase
 {
     use DatabaseTransactions;
@@ -118,7 +118,6 @@ class GroupControllerTest extends TestCase
         $user = User::factory(['type_user_id' => $typeUserId])->create();
         $payload = $this->fakePayload();
         $payload['representative'] = $user->email;
-
         $response = $this->post(self::BASE_URL, $payload);
 
         $representative = Representative::where(['email' => $user->email])->first();
@@ -200,7 +199,6 @@ class GroupControllerTest extends TestCase
 
         $group = Group::factory(['creator_user_id' => $user->id])->create();
         $payload = $this->fakePayload();
-
         $payload['representative'] = $user->email;
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
         $actual = json_decode($response->getContent(), true);
@@ -288,7 +286,10 @@ class GroupControllerTest extends TestCase
             'observations'       => $this->faker->text,
             'status'             => $this->faker->randomElement(['EM ANDAMENTO', 'FINALIZADO']),
             'type_group_id'      => $typeGroup->id,
-            'representative'     => $user->email,
+            'representative'     => [
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
             'name'               => 'Comissão',
             'type_group'         => TypeGroupEnum::INTERNO,
         ];

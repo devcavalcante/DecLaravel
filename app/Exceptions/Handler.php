@@ -60,9 +60,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
+        //dd($exception->getMessage());
         $exceptionCode = $exception->getCode();
         $exceptionMessage = $exception->getMessage();
-
         if ($exception instanceof BaseException) {
             return response(['errors' => $exceptionMessage, 'code' => $exceptionCode], $exceptionCode);
         }
