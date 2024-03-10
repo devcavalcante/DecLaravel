@@ -52,8 +52,7 @@ class GroupService
             $typeGroup = $this->createTypeGroup($payloadTypeGroup);
             $payloadGroup = Arr::except($data, ['name', 'type_group']);
 
-            $representative = Arr::get($data, 'representative');
-            $representative = $this->createGroupHasRepresentative($representative);
+            $representative = $this->createGroupHasRepresentative($data);
 
             $payloadGroup = array_merge($payloadGroup, [
                 'representative_id' => $representative->id,
@@ -81,7 +80,7 @@ class GroupService
 
             $representative = Arr::get($data, 'representative');
             if (!empty($representative)) {
-                $representative = $this->updateGroupHasRepresentative($representative, $groupId);
+                $representative = $this->updateGroupHasRepresentative($data, $groupId);
                 $data['representative_id'] = $representative->id;
             }
 
@@ -125,14 +124,17 @@ class GroupService
         }
     }
 
-    private function createGroupHasRepresentative(string $representative): Model
+    private function createGroupHasRepresentative(array $data): Model
     {
+        $representative = Arr::get($data, 'representative');
+        $name = Arr::get($data, 'name_representative');
         $user = $this->userRepository->findByFilters(['email' => $representative]);
 
         if ($user->isNotEmpty()) {
             $userId = $user->first()->id;
 
             $data = [
+                'name'    => $name,
                 'email'   => $representative,
                 'user_id' => $userId,
             ];
@@ -143,12 +145,16 @@ class GroupService
 
         Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
         return $this->representativeRepository->create([
-            'email'  => $representative,
+            'name'  => $name,
+            'email' => $representative,
         ]);
     }
 
-    private function updateGroupHasRepresentative(string $representative, string $groupId): Model
+    private function updateGroupHasRepresentative(array $data, string $groupId): Model
     {
+        $representative = Arr::get($data, 'representative');
+        $name = Arr::get($data, 'name_representative');
+
         $user = $this->userRepository->findByFilters(['email' => $representative]);
         $group = $this->groupRepository->findById($groupId);
 
@@ -156,6 +162,7 @@ class GroupService
             $userId = $user->first()->id;
 
             $data = [
+                'name'    => $name ?? $group->representative->name,
                 'email'   => $representative,
                 'user_id' => $userId,
             ];
@@ -166,6 +173,7 @@ class GroupService
 
         Mail::to($representative)->send(new RegisterEmail(TypeUserEnum::REPRESENTATIVE));
         return $this->representativeRepository->update($group->representative->id, [
+            'name'    => $name ?? $group->representative->name,
             'email'   => $representative,
             'user_id' => null,
         ]);

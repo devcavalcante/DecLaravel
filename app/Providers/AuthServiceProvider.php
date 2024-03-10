@@ -18,7 +18,7 @@ class AuthServiceProvider extends ServiceProvider
         Passport::refreshTokensExpireIn(now()->addHours(24));
         Passport::personalAccessTokensExpireIn(now()->addHours(24));
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return sprintf('%s/reset-password?token=%s&email=%s', env('FRONT_URL'), $token, $user->email);
+            return sprintf('%s/nova-senha?token=%s&email=%s', env('FRONT_URL'), $token, $user->email);
         });
     }
 }

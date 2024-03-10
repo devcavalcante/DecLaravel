@@ -120,7 +120,7 @@ class ReportControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::VIEWER);
 
-        Group::factory(3)->create();
+        Group::factory(3)->create(['status' => 'EM ANDAMENTO']);
 
         $response = $this->json(
             'GET',

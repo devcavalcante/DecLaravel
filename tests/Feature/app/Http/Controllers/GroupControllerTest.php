@@ -63,7 +63,6 @@ class GroupControllerTest extends TestCase
 
         $response = $this->get(sprintf('%s/%s', self::BASE_URL, $group->id));
 
-        $actual = json_decode($response->getContent(), true)['data'];
         $response->assertStatus(200);
         $this->assertCount(1, $group->all());
     }
@@ -132,6 +131,7 @@ class GroupControllerTest extends TestCase
 
         $payload = $this->fakePayload();
         $payload['representative'] = 'outroteste@Mail.com';
+        $payload['name'] = 'Camila Guedes';
 
         Mail::fake();
 
@@ -222,6 +222,8 @@ class GroupControllerTest extends TestCase
         $group = Group::factory(['creator_user_id' => $user->id])->create();
         $payload = $this->fakePayload();
         $payload['representative'] = 'teste@teste.com';
+        $payload['name_representative'] = 'Manoel Garcia';
+
         $response = $this->put(sprintf('%s/%s', self::BASE_URL, $group->id), $payload);
         $actual = json_decode($response->getContent(), true);
         $representative = Representative::where(['email' => 'teste@teste.com'])->first();
@@ -275,22 +277,23 @@ class GroupControllerTest extends TestCase
 
         $user = User::where(['type_user_id' => $typeUser->id])->first();
         return [
-            'entity'             => $this->faker->word,
-            'organ'              => $this->faker->word,
-            'council'            => $this->faker->word,
-            'acronym'            => 'SIGLA',
-            'team'               => $this->faker->word,
-            'unit'               => $this->faker->word,
-            'email'              => $this->faker->email,
-            'office_requested'   => $this->faker->word,
-            'office_indicated'   => $this->faker->word,
-            'internal_concierge' => $this->faker->word,
-            'observations'       => $this->faker->text,
-            'status'             => $this->faker->randomElement(['EM ANDAMENTO', 'FINALIZADO']),
-            'type_group_id'      => $typeGroup->id,
-            'representative'     => $user->email,
-            'name'               => 'Comissão',
-            'type_group'         => TypeGroupEnum::INTERNO,
+            'entity'              => $this->faker->word,
+            'organ'               => $this->faker->word,
+            'council'             => $this->faker->word,
+            'acronym'             => 'SIGLA',
+            'team'                => $this->faker->word,
+            'unit'                => $this->faker->word,
+            'email'               => $this->faker->email,
+            'office_requested'    => $this->faker->word,
+            'office_indicated'    => $this->faker->word,
+            'internal_concierge'  => $this->faker->word,
+            'observations'        => $this->faker->text,
+            'status'              => $this->faker->randomElement(['EM ANDAMENTO', 'FINALIZADO']),
+            'type_group_id'       => $typeGroup->id,
+            'representative'      => $user->email,
+            'name_representative' => $user->name,
+            'name'                => 'Comissão',
+            'type_group'          => TypeGroupEnum::INTERNO,
         ];
     }
 }
