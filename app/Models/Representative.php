@@ -15,6 +15,7 @@ class Representative extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'name',
         'email',
         'user_id',
     ];

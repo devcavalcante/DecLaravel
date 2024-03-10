@@ -305,7 +305,6 @@ class MeetingControllerTest extends TestCase
         $response = $this->get(sprintf('%s/%s/meeting-history/%s/download/', self::BASE_URL, $group->id, $meeting->id));
 
         $response->assertStatus(200);
-        Storage::disk('local')->delete($file);
     }
 
     private function getJsonStructure(): array

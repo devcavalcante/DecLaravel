@@ -23,6 +23,7 @@ class RepresentativeFactory extends Factory
         $user = User::factory()->create();
 
         return [
+            'name'    => $this->faker->text,
             'email'   => $this->faker->email(),
             'user_id' => $user->id, // Associe o ID do usuário ao campo user_id
         ];
