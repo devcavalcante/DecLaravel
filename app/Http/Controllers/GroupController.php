@@ -86,7 +86,7 @@ class GroupController extends Controller
      *                 "type_group_id": 1,
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
      *                 "status": "EM ANDAMENTO",
-     *                 "name_representative: "Carlos Manoel",
+     *                 "name_representative": "Carlos Manoel",
      *                 "representative": "representante@mail.com",
      *                 "name": "comissão",
      *                 "type_group": "interno"
@@ -197,7 +197,7 @@ class GroupController extends Controller
      *                 "observations": "Repellendus aut voluptatem quaerat consequuntur illum. Dolor est sed natus est. Qui voluptatibus iure necessitatibus velit.",
      *                 "status": "EM ANDAMENTO",
      *                 "representative": "representante@mail.com",
-     *                 "name_representative: "Carlos Manoel",
+     *                 "name_representative": "Carlos Manoel"
      *              }
      *          )
      *      )
