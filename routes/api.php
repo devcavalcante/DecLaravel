@@ -8,6 +8,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => '/groups'], function () {
+        Route::get('/download', [ReportController::class, 'download']);
         Route::get('/', [GroupController::class, 'index']);
         Route::post('/', [GroupController::class, 'store']);
         Route::get('/{id}', [GroupController::class, 'show']);
@@ -103,6 +105,9 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::put('/{id}', [NoteController::class, 'update']);
             Route::get('/{id}', [NoteController::class, 'show']);
             Route::delete('/{id}', [NoteController::class, 'destroy']);
+        });
+        Route::group(['prefix' => '{groupId}/download'], function () {
+            Route::get('/', [ReportController::class, 'downloadById']);
         });
     });
 });

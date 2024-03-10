@@ -1706,6 +1706,112 @@
                 }
             }
         },
+        "/groups/{groupId}/download/": {
+            "get": {
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Faz download do relatório baseado no ID",
+                "description": "faz download do relatório baseado no ID",
+                "operationId": "d5acbb800e899a739458a92ea54b751d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "filters": {
+                                        "properties": {
+                                            "withFiles": {
+                                                "type": "boolean",
+                                                "example": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "group not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
+        "/groups/download/": {
+            "get": {
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Faz download do relatório baseado no ID",
+                "description": "faz download do relatório baseado no ID",
+                "operationId": "a5ec3e0cf53cf8080743ba5ef356c339",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do grupo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "filters": {
+                                        "properties": {
+                                            "status": {
+                                                "type": "string",
+                                                "example": "EM ANDAMENTO"
+                                            },
+                                            "start_date": {
+                                                "type": "string",
+                                                "example": "2023-03-03"
+                                            },
+                                            "end_date": {
+                                                "type": "string",
+                                                "example": "2023-03-03"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "group not found"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
         "/type-users": {
             "get": {
                 "tags": [
@@ -2091,7 +2197,7 @@
         },
         {
             "name": "meetings",
-            "description": "CRUD das reuniõe, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
+            "description": "CRUD das reuniões, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
         },
         {
             "name": "members",
@@ -2100,6 +2206,10 @@
         {
             "name": "notes",
             "description": "CRUD das notas, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar notas"
+        },
+        {
+            "name": "reports",
+            "description": "Download de relatórios dos grupos"
         },
         {
             "name": "type-users",

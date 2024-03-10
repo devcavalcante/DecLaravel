@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 /**
  * @OA\Tag(
  *     name="meetings",
- *     description="CRUD das reuniõe, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
+ *     description="CRUD das reuniões, apenas os usuários do tipo ADMINISTRADOR e REPRESENTANTE podem criar, atualizar e editar historico de reuniões"
  * )
  */
 class MeetingController extends Controller

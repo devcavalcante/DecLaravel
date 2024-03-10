@@ -166,7 +166,8 @@ class UserControllerTest extends TestCase
     {
         $this->login(TypeUserEnum::MANAGER);
 
-        $response = $this->put(sprintf('api/users/%s', 1), ['name' => 'outro nome']);
+        $user = User::factory()->create();
+        $response = $this->put(sprintf('api/users/%s', $user->id), ['name' => 'outro nome']);
 
         $this->assertEquals(403, $response->getStatusCode());
     }

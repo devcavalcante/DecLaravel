@@ -61,6 +61,6 @@ class DocumentService
     {
         $group = $this->groupRepository->findById($groupId);
 
-        return $group->document;
+        return $group->documents;
     }
 }

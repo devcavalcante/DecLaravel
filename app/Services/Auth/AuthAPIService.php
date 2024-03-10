@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Laravel\Passport\TokenRepository;
 use Throwable;
 
@@ -72,22 +71,17 @@ class AuthAPIService extends AbstractAuthService
      */
     public function logoutUsers(string $token): void
     {
-        $token = Str::substr($token, 7);
-
         if (!$token) {
             throw new AuthorizedException('O Token é obrigatório', 401);
         }
 
-        $user = $this->userRepository->findByFilters(['api_token' => $token])->first();
+        $apiToken = $this->apiTokenRepository->findByFilters(['api_token' => $token])->first();
 
-        if (!$user) {
+        if (!$apiToken) {
             throw new AuthorizedException('Token inválido', 401);
         }
 
-        $this->userRepository->update($user->id, [
-            'api_token'            => null,
-            'api_token_expires_at' => null,
-        ]);
+        $this->apiTokenRepository->delete($apiToken->id);
     }
 
     /**

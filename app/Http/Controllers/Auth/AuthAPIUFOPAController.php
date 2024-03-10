@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Services\Auth\AuthAPIService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
 use Throwable;
 
 class AuthAPIUFOPAController extends Controller
@@ -75,7 +73,7 @@ class AuthAPIUFOPAController extends Controller
      */
     public function logoutUser(): JsonResponse
     {
-        $token = request()->header('token');
+        $token = request()->header('Authorization');
         $this->authService->logoutUsers($token);
         return response()->json([], 204);
     }

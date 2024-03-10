@@ -46,7 +46,7 @@ class Group extends Model
 
     public function representative(): BelongsTo
     {
-        return $this->belongsTo(Representative::class, 'representative_id');
+        return $this->belongsTo(Representative::class);
     }
 
     public function typeGroup(): BelongsTo
@@ -59,22 +59,22 @@ class Group extends Model
         return $this->belongsTo(User::class, 'creator_user_id');
     }
 
-    public function document(): HasMany
+    public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
     }
 
-    public function meeting(): HasMany
+    public function meetings(): HasMany
     {
         return $this->hasMany(Meeting::class);
     }
 
-    public function activity(): HasMany
+    public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
     }
 
-    public function note(): HasMany
+    public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
     }

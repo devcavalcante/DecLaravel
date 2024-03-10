@@ -59,7 +59,7 @@ class NoteController extends Controller
     public function index(string $groupId): JsonResponse
     {
         $group = $this->groupRepository->findById($groupId);
-        $notes = $group->note;
+        $notes = $group->notes;
 
         return response()->json($notes);
     }
