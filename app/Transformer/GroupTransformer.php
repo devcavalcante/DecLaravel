@@ -38,6 +38,7 @@ class GroupTransformer extends TransformerAbstract
             ],
             'representative'     => [
                 'id'    => $group->representative->id,
+                'name'  => $group->representative->name,
                 'email' => $group->representative->email,
             ],
             'members'            => $this->transformMembers($group->members->toArray()),
