@@ -19,12 +19,17 @@ class MemberTransformer extends TransformerAbstract
             'departure_date' => $member->departure_date,
             'created_at'     => $member->created_at,
             'updated_at'     => $member->updated_at,
-            'user'           => $member->user ? [
-                'id'        => $member->user->id,
-                'name'      => $member->user->name,
-                'email'     => $member->user->email,
-                'type_user' => $member->user->typeUser->name,
-            ] : null,
+            'user'           => $member->user ? $this->getUser($member->user) : null,
+        ];
+    }
+
+    private function getUser(User $user): array
+    {
+        return [
+            'id'        => $user->id,
+            'name'      => $user->name,
+            'email'     => $user->email,
+            'type_user' => $user->typeUser->name,
         ];
     }
 }
